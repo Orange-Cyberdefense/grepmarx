@@ -1,0 +1,223 @@
+/**
+ * Copyright (c) 2021 - present Orange Cyberdefense
+ */
+
+/* ------------ Split.js layout styles */
+
+.content,
+.wrapper,
+.row,
+.container-fluid,
+body,
+html {
+    height: 100% !important;
+}
+
+.split {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow-y: auto;
+    /*overflow-x: hidden;*/
+}
+
+.gutter {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-vertical {
+    cursor: row-resize;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+}
+
+.gutter.gutter-horizontal {
+    cursor: col-resize;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+}
+
+.split.split-horizontal,
+.gutter.gutter-horizontal {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.split-panel-block {
+    display: block;
+    height: 10px;
+    color: black;
+}
+
+.dark-mode .split-panel-block {
+    color: var(--light);
+}
+
+.split-bottom {
+    float: left;
+    height: 100%;
+}
+
+/* ------------ Workbench styles */
+
+/* Slightly bigger font for highligthed source code 
+.enlighter span {
+    font-size: 1.15em;
+}*/
+
+/* More visible line highlight color */
+.enlighter-special {
+    background-color: rgba(255, 166, 0, 0.40) !important;
+}
+
+.dark-mode .enlighter-special {
+    background-color: rgb(100, 67, 0) !important;
+}
+
+/* Remove padding for marked code, and more visible color */
+mark, .mark {
+    padding: 0;
+    background-color: rgba(255, 166, 0, 0.50) !important;
+}
+
+/* Badges for occurences count to the right */
+.badge.vulnerabilities-list {
+    float: right;
+    margin-top: 0.45em;
+    color: #808080;
+}
+
+/* Small caps for vulnerabilities titles */
+.text-smallcaps {
+    font-variant: all-petite-caps;
+}
+
+/* Vulnerability list colors */
+.workbench-list-group-item {
+    color: var(--text-default) !important;
+}
+
+.dark-mode .workbench-list-group-item {
+    color: var(--light) !important;
+}
+
+.workbench-list-group-item.active {
+    background-color: var(--gray) !important;
+    border-color: var(--gray) !important;
+    color: var(--light) !important;
+}
+
+/* Fix active items margin to avoid a jiggle effect when dynamically (de)activating items */
+.list-group-item+.list-group-item.active {
+    margin-top: 0;
+    border-top-width: 0;
+}
+
+/* Fixed toolbar on top */
+.toolbar {
+    position: fixed;
+    z-index: 1;
+    background-color: transparent;
+    width: 100%;
+    padding-left: 3.5em;
+    padding-top: 1em;
+    padding-right: 5.5em;
+}
+
+/* Force englighter.js font and background */
+.enlighter {
+    font-size: 1.05em !important;
+    background-color: white !important;
+}
+
+/* Occurences table fixed columns sizes */
+.th-col-width-30 {
+    width: 30%;
+}
+
+.th-col-width-25 {
+    width: 25%;
+}
+
+.th-col-width-20 {
+    width: 20%;
+}
+
+.th-col-width-10 {
+    width: 10%;
+}
+
+.th-col-width-5 {
+    width: 5%;
+}
+
+/* Occurences table displays values on one line */
+.occurences-table {
+    white-space: nowrap;
+}
+
+/* Occurences table hides overflow text */
+.occurences-table td {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /*padding: 0.5em;*/
+}
+
+/* Occurence table links style */
+.occurences-table a {
+    text-decoration: none;
+}
+
+/* Occurence code snippet style */
+.occurence-snippet {
+    color: #a0a0a0;
+}
+
+/* mark selected occurence in the table */
+.tr-occurence.active {
+    background-color: #dee2e6 !important;
+}
+
+.dark-mode .tr-occurence.active {
+    background-color: var(--gray-dark) !important;
+}
+
+/* ERROR severity is red */
+.severity-high {
+    color: var(--bs-danger);
+}
+
+/* WARNING severity is orange */
+.severity-medium {
+    color: var(--bs-warning);
+}
+
+/* INFO severity is yellow */
+.severity-low {
+    color: var(--bs-info);
+}
+
+/* Larger modal dialog for occurence details */
+.modal-occurence-details {
+    max-width: 800px;
+}
+
+/* ------------ Loading div syles */
+
+.loader {
+    position: fixed;
+    visibility: hidden;
+    z-index: 1;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    display: block;
+    height: 100%;
+    margin: 0;
+}
+
+.loader-wheel {
+    margin-top: 100px;
+    margin-left: 40%;
+}

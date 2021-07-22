@@ -1,0 +1,190 @@
+# -*- encoding: utf-8 -*-
+"""
+Copyright (c) 2021 - present Orange Cyberdefense
+"""
+import json
+import os
+
+from flask import current_app, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
+from grepmarx import db
+from grepmarx.rules import blueprint
+from grepmarx.rules.forms import RulePackForm
+from grepmarx.rules.model import Rule, RulePack, SupportedLanguage
+from grepmarx.rules.util import validate_languages_rules
+
+
+@blueprint.route("/rules")
+@login_required
+def rules_list():
+    rules = Rule.query.all()
+    return render_template(
+        "rules_list.html",
+        rules=rules,
+        owasp_links=Rule.OWASP_TOP10_LINKS,
+        user=current_user,
+        segment="rules",
+    )
+
+
+@blueprint.route("/rules/refresh")
+@login_required
+def rules_refresh():
+    current_app.logger.info("Started refreshing rules")
+    Rule.refresh_db(Rule.RULES_PATH)
+    current_app.logger.info("Finished refreshing rules")
+    return redirect(url_for("rules_blueprint.rules_list"))
+
+
+@blueprint.route("/rules/details/<rule_id>")
+@login_required
+def rules_details(rule_id):
+    rule = Rule.query.filter_by(id=rule_id).first_or_404()
+    file = os.path.join(Rule.RULES_PATH, rule.file_path)
+    with open(file, "r") as f:
+        rule_content = f.read()
+    return render_template("rules_details.html", rule=rule, rule_content=rule_content)
+
+
+@blueprint.route("/rules/packs")
+@login_required
+def rule_packs_list():
+    rule_packs = RulePack.query.all()
+    return render_template(
+        "rules_packs_list.html",
+        rule_packs=rule_packs,
+        user=current_user,
+        segment="rule_packs",
+    )
+
+def rule_packs_form_page(edit=False, rule_pack_form=None, error_message="", success_message=""):
+    # No form given: create an empty one
+    if rule_pack_form is None:
+        rule_pack_form = RulePackForm()
+    # Dynamically adds choices for multiple selection fields
+    rule_pack_form.languages.choices = (
+        (l.id, l.name) for l in SupportedLanguage.query.all()
+    )
+    rules = Rule.query.all()
+    return render_template(
+        "rules_packs_edit.html",
+        edit=edit,
+        rules=rules,
+        form=rule_pack_form,
+        owasp_links=Rule.OWASP_TOP10_LINKS,
+        error_message=error_message,
+        success_message=success_message,
+        user=current_user,
+        segment="rule_packs",
+    )
+
+@blueprint.route("/rules/packs/create")
+@login_required
+def rules_packs_create():
+    return rule_packs_form_page()
+
+@blueprint.route("/rules/packs/create", methods=["POST"])
+@login_required
+def rules_packs_create_post():
+    rule_pack_form = RulePackForm()
+    # Dynamically adds choices for multiple selection fields
+    rule_pack_form.languages.choices = (
+        (l.id, l.name) for l in SupportedLanguage.query.all()
+    )
+    # Form is valid
+    if rule_pack_form.validate_on_submit():
+        # Perform additional custom validation
+        err = validate_languages_rules(rule_pack_form)
+        if err is not None:
+            return rule_packs_form_page(rule_pack_form=rule_pack_form, error_message=err)
+        # Set applicable languages
+        rp_languages = SupportedLanguage.query.filter(
+            SupportedLanguage.id.in_(rule_pack_form.languages.data)
+        ).all()
+        # Set rules to include
+        rp_rules = Rule.query.filter(
+            Rule.id.in_(rule_pack_form.rules.data.split(","))
+        ).all()
+        # Create the rule pack
+        rule_pack = RulePack(
+            name=rule_pack_form.name.data,
+            description=rule_pack_form.description.data,
+            languages=rp_languages,
+            rules=rp_rules,
+        )
+        # Remove the id attribute to let the DB auto set it
+        delattr(rule_pack, "id")
+        db.session.add(rule_pack)
+        db.session.commit()
+        current_app.logger.info("New rule pack added (rule_pack.id=%i)", rule_pack.id)
+        return rule_packs_form_page(edit=True,rule_pack_form=rule_pack_form, success_message="Rule pack has been successfully created")
+    # Form is invalid, form.error is populated
+    else:
+        current_app.logger.warning("Rule pack add form invalid entries: %s", json.dumps(rule_pack_form.errors))
+        return rule_packs_form_page(rule_pack_form=rule_pack_form)
+
+
+@blueprint.route("/rules/packs/edit/<rule_pack_id>", methods=["GET", "POST"])
+@login_required
+def rules_packs_edit(rule_pack_id):
+    # Get the rule pack to edit
+    edit_rule_pack = RulePack.query.filter_by(id=rule_pack_id).first_or_404()
+    # POST / Form submitted
+    if "save-rule-pack" in request.form:
+        rule_pack_form = RulePackForm()
+        # Dynamically adds choices for multiple selection fields
+        rule_pack_form.languages.choices = (
+            (l.id, l.name) for l in SupportedLanguage.query.all()
+        )
+        # Form is valid
+        if rule_pack_form.validate_on_submit():
+            # Perform additional custom validation
+            err = validate_languages_rules(rule_pack_form)
+            if err is not None:
+                return rule_packs_form_page(rule_pack_form=rule_pack_form, error_message=err)
+            # Set applicable languages
+            rp_languages = SupportedLanguage.query.filter(
+                SupportedLanguage.id.in_(rule_pack_form.languages.data)
+            ).all()
+            # Set rules to include
+            rp_rules = Rule.query.filter(
+                Rule.id.in_(rule_pack_form.rules.data.split(","))
+            ).all()
+            # Update rule pack attributes
+            edit_rule_pack.name = rule_pack_form.name.data
+            edit_rule_pack.description = rule_pack_form.description.data
+            edit_rule_pack.languages = rp_languages
+            edit_rule_pack.rules = rp_rules
+            db.session.commit()
+            current_app.logger.info("Rule pack updated (rule_pack.id=%i)", edit_rule_pack.id)
+            return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form, success_message="Rule pack has been successfully saved")
+        # Form is invalid, form.error is populated
+        else:
+            current_app.logger.warning("Rule pack edit form invalid entries: %s", json.dumps(rule_pack_form.errors))
+            return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
+    # GET / Display the rule pack
+    else:
+        # Load form from the given rule pack
+        rule_pack_form = RulePackForm(obj=edit_rule_pack)
+        # Dynamically adds choices for multiple selection fields
+        rule_pack_form.languages.choices = (
+            (l.id, l.name) for l in SupportedLanguage.query.all()
+        )
+        # Manually handle languages and rules fields
+        rule_pack_form.languages.data = list()
+        for c_lang in edit_rule_pack.languages:
+            rule_pack_form.languages.data.append(c_lang.id)
+        rule_pack_form.rules.data = ""
+        for c_rule in edit_rule_pack.rules:
+            rule_pack_form.rules.data = rule_pack_form.rules.data + "," + str(c_rule.id)
+        return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
+
+
+@blueprint.route("/rules/packs/remove/<rule_pack_id>")
+@login_required
+def rules_packs_remove(rule_pack_id):
+    rule_pack = RulePack.query.filter_by(id=rule_pack_id).first_or_404()
+    db.session.delete(rule_pack)
+    db.session.commit()
+    current_app.logger.info("Rule pack deleted (rule_pack.id=%i)", rule_pack.id)
+    return redirect(url_for("rules_blueprint.rule_packs_list"))

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %} Rule packs {% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Rule packs</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Rule packs</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        The following content shows all available rule packs. Pick one to view, edit or delete the rule pack.
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="btn-group float-sm-right">
+                        <a class="btn btn-default" href="/rules/packs/create">
+                            <span class="fas fa-plus-circle"></span>
+                            New rule pack
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            {% for c_rule_pack in rule_packs %}
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-secondary" title="{{ c_rule_pack.description }}">
+                    <div class="inner">
+                        <h4>{{ c_rule_pack.name }}</h4>
+                        {{ c_rule_pack.rules | length }} rules<br />
+                        <p>
+                            Languages: 
+                            {% for c_language in c_rule_pack.languages %}
+                            {{ c_language.name }}
+                            {{ ", " if not loop.last }}
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <a href="/rules/packs/edit/{{ c_rule_pack.id }}" class="small-box-footer">
+                        View / edit rule pack <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </section>
+</div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

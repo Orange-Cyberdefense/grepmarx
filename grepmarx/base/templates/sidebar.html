@@ -1,0 +1,96 @@
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-orange elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="/static/assets/img/grepmarx-logo.png" alt="grepmarx" class="brand-image">
+      <span class="brand-text">
+        <h4 class="d-inline">
+          <div class="text-orange d-inline">grep</div>marx
+        </h4>
+      </span>
+    </a>
+    <!--
+    <a href="/" class="brand-link">
+      <img src="/static/assets/img/grepmarx-logo.png" class="grepmarx-logo" alt="grepmarx" />
+    </a>-->
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <!-- SidebarSearch Form -->
+      <div class="form-inline mt-3">
+        <div class="input-group" data-widget="sidebar-search">
+          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-sidebar">
+              <i class="fas fa-search fa-fw"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+          <!-- Dashboard -->
+
+          <li class="nav-item">
+            <a href="/dashboard" class="nav-link {% if 'dashboard' in segment %} active {% endif %}">
+              <i class="fas fa-tachometer-alt"></i>
+              <p>
+                Dashboard
+              </p>
+            </a>
+          </li>
+
+          <!-- Projects -->
+
+          <li class="nav-item">
+            <a href="/projects" class="nav-link {% if 'projects' in segment %} active {% endif %}">
+              <i class="far fa-window-restore"></i>
+              <p>
+                Projects
+              </p>
+            </a>
+          </li>
+
+          <!-- Rules Management -->
+
+          <li class="nav-header">RULES MANAGEMENT</li>
+          <li class="nav-item">
+            <a href="/rules" class="nav-link {% if 'rules' in segment %} active {% endif %}">
+              <i class="fas fa-tasks"></i>
+              <p>
+                Analysis rules
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/rules/packs" class="nav-link {% if 'rule_packs' in segment %} active {% endif %}">
+              <i class="fas fa-th"></i>
+              <p>
+                Rule packs
+              </p>
+            </a>
+          </li>
+
+          <!-- Administration -->
+
+          <li class="nav-header">ADMINISTRATION</li>
+          <li class="nav-item">
+            <a href="/users" class="nav-link {% if 'users' in segment %} active {% endif %}">
+              <i class="fas fa-users"></i>
+              <p>
+                User accounts
+              </p>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  

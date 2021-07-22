@@ -1,0 +1,31 @@
+<div class="modal-dialog modal-lg modal-rule-details" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="h5">
+                {% if rule.severity == "high" %}
+                <span class="badge badge-sm bg-danger p-2">HIGH</span>
+                {% endif %}
+                {% if rule.severity == "medium" %}
+                <span class="badge badge-lg bg-warning p-2">MEDIUM</span>
+                {% endif %}
+                {% if rule.severity == "low" %}
+                <span class="badge badge-sm bg-info p-2">LOW</span>
+                {% endif %}
+                &nbsp;
+            </div>
+            <h4 class="text-smallcaps">
+                {{ rule.title|replace('-',' ')|replace('_',' ') }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="lead">{{ rule.repository }}/{{ rule.category }}</p>
+            <pre class="modal-code text-monospace">{{ rule_content }}</pre>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="h5">
+                {% if occurence.vulnerability.severity == "high" %}
+                <span class="badge badge-sm bg-danger p-2">HIGH</span>
+                {% endif %}
+                {% if occurence.vulnerability.severity == "medium" %}
+                <span class="badge badge-lg bg-warning p-2">MEDIUM</span>
+                {% endif %}
+                {% if occurence.vulnerability.severity == "low" %}
+                <span class="badge badge-sm bg-info p-2">LOW</span>
+                {% endif %}
+                &nbsp;
+            </div>
+            <h4 class="text-smallcaps">
+                {{ occurence.vulnerability.title|replace('-',' ')|replace('_',' ') }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>{{ occurence.vulnerability.description }}</p>
+            <small><i>
+                @{{ occurence.file_path }}:{{ occurence.position.line_start }}-{{ occurence.position.line_end }}
+            </i></small>
+            <pre class="modal-code text-monospace">{{ occurence.match_string }}</pre>
+            {% if occurence.vulnerability.owasp is not none %}
+            <a href="{{ owasp_links[occurence.vulnerability.owasp[:3].split(':')[0]] }}" target="_blank">
+                <span class="badge badge-lg bg-success">{{ occurence.vulnerability.owasp }}</span>
+            </a>
+            {% endif %}
+            {% if occurence.vulnerability.cwe is not none %}
+            <a href="https://cwe.mitre.org/data/definitions/{{ occurence.vulnerability.cwe[:8].split(':')[0].split('-')[1] }}.html" target="_blank">
+                <span class="badge badge-lg bg-info">{{ occurence.vulnerability.cwe }}</span>
+            </a>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            {% if occurence.vulnerability.references is not none %}
+            <p>
+                {% for reference in occurence.vulnerability.references.split(' ') %}
+                <a target="_blank" href="{{ reference }}">
+                    <i class="fas fa-external-link-square-alt"></i>
+                    Reference#{{ loop.index }}
+                </a>&nbsp;&nbsp;
+                {% endfor %}
+            </p>
+            {% endif %}
+            <button type="button" class="btn btn-sm btn-default ml-auto" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

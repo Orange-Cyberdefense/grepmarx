@@ -1,0 +1,24 @@
+<div class="split-panel-block">
+    <div id="language" hidden="true">{{ language }}</div>
+    <div id="highlight-theme" hidden="true">{% if user is defined and user.dark_theme %}atomic{% else %}godzilla{% endif %}</div>
+    <div id="anchor-line" hidden="true">{{ hl_lines }}</div>
+    <!-- Begin toolbar -->
+    <div class="toolbar">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+            <div class="toolbar-grp">
+                <a class="btn btn-sm btn-secondary text-white" href="/projects">
+                    <span class="fas fa-arrow-circle-left"></span> Back
+                </a>
+                <a class="btn btn-sm btn-secondary text-white" href="/switch-theme">
+                    <span class="fas fa-adjust"></span></a>
+            </div>
+            <div class="toolbar-grp">
+                <span class="badge badge-secondary badge-lg p-2 font-weight-normal text-md text-white">
+                    {{ path }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- End toolbar -->
+    <pre id="code-englight">{{ code }}</pre>
+</div>

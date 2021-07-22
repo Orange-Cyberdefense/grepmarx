@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %} Analysis Workbench {% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/enlighterjs/css/enlighterjs.min.css" />
+<link rel="stylesheet" href="/static/assets/css/grepmarx-workbench.css" />
+{% endblock stylesheets %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <div class="split split-horizontal">
+        <!-- Panel for the vulnerability occurence source code -->
+        <div id="code" onclick="highlightSelectedCode()" class="split split-panel">
+            <!-- Placeholder for the source code -->
+        </div>
+        <!-- Panel for vulnerabilities listing and occurences table -->
+        <div id="results" class="split split-panel">
+            <!-- Listing of vulnerabilities -->
+            <div id="vulnerabilities" class="split split-bottom split-panel">
+                <div class="split-panel-block">
+                    <div class="list-group">
+                        {% for vulnerability in vulnerabilities %}
+                        <a href="#" onclick="ajaxOccurencesTable(this, '{{ vulnerability.id }}');" class="list-group-item workbench-list-group-item text-smallcaps">
+                            {% if vulnerability.severity == "high" %}
+                            <span class="badge badge-sm bg-danger w-20p">H</span>
+                            {% endif %}
+                            {% if vulnerability.severity == "medium" %}
+                            <span class="badge badge-lg bg-warning w-20p">M</span>
+                            {% endif %}
+                            {% if vulnerability.severity == "low" %}
+                            <span class="badge badge-sm bg-info w-20p">L</span>
+                            {% endif %}
+                            &nbsp;
+                            {{ vulnerability.title|replace('-',' ')|replace('_',' ') }}
+                            <span class="badge vulnerabilities-list bg-light">{{ vulnerability.occurences|length }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!-- Vulnerability occurences table -->
+            <div id="occurences" class="split split-bottom split-panel">
+                <!-- Loading div -->
+                <div id="occurences-load" class="loader">
+                    <div class="spinner-border text-secondary loader-wheel" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div id="occurences-dyn" class="split-panel-block">
+                    <!-- Placeholder for occurences table -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Vulnerability occurence details modal dialog -->
+<div class="modal fade" id="modal-occurence-details" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <!-- Placeholder for occurence details -->
+    </div>
+</div>
+<!-- End vulnerability occurence details modal dialog -->
+{% endblock content %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/static/assets/plugins/split/split.min.js"></script>
+<script type="text/javascript" src="/static/assets/plugins/enlighterjs/enlighterjs.min.js"></script>
+<script type="text/javascript" src="/static/assets/plugins/mark/mark.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/grepmarx-workbench.js"></script>
+<script type="text/javascript">
+    // Workbench special display: activate the mini-sidebar and remove header/footer
+    document.body.classList.add("sidebar-mini");
+    document.body.classList.add("sidebar-collapse");
+    document.getElementsByClassName("main-header")[0].remove();
+    document.getElementsByClassName("main-footer")[0].remove();
+    // Init : show the code of the first occurence and occurences of the first vulnerability
+    ajaxOccurenceCode(null, '{{ vulnerabilities[0].occurences[0].id }}');
+    ajaxOccurencesTable(null, '{{ vulnerabilities[0].id }}');
+</script>
+{% endblock javascripts %}

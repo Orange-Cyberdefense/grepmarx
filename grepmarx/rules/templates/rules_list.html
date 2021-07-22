@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %} Rules List {% endblock %}
+
+{% block stylesheets %}
+<!-- DataTables -->
+<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Rules list</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Rules</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        The following table shows all available analysis rules.
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="btn-group float-sm-right">
+                        <button class="btn btn-default" data-toggle="modal" data-target="#modal-new-project">
+                            <span class="fas fa-plus-circle"></span>
+                            New Rule
+                        </button>
+                        <button class="btn btn-default" onclick="document.location='/rules/refresh'">
+                            <span class="fas fa-sync-alt"></span>
+                            Refresh Rules
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Analysis rules list</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="rules-list-table" class="table table-hover dataTable"
+                                role="grid">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Severity</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Repository</th>
+                                        <th>Languages</th>
+                                        <th>OWASP</th>
+                                        <th>CWE</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c_rule in rules %}
+                                    <tr>
+                                        <td>
+                                            <span class="font-weight-normal">
+                                                {{ c_rule.id }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="font-weight-normal">
+                                                {% if c_rule.severity == "high" %}
+                                                <span class="badge badge-lg bg-danger p-2 w-100">HIGH</span>
+                                                {% endif %}
+                                                {% if c_rule.severity == "medium" %}
+                                                <span class="badge badge-lg bg-warning p-2 w-100">MEDIUM</span>
+                                                {% endif %}
+                                                {% if c_rule.severity == "low" %}
+                                                <span class="badge badge-sm bg-info p-2 w-100">LOW</span>
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-truncate">
+                                            <span class="font-weight-bold text-smallcaps">
+                                                {{ c_rule.title|replace('-',' ')|replace('_',' ') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-truncate">
+                                            <span class="font-weight-normal">
+                                                {{ c_rule.category }}
+                                            </span>
+                                        </td>
+                                        <td class="text-truncate">
+                                            <span class="font-weight-normal">
+                                                {{ c_rule.repository }}
+                                            </span>
+                                        </td>
+                                        <td class="text-truncate">
+                                            <span class="font-weight-normal">
+                                                {% for c_language in c_rule.languages %}
+                                                {{ c_language.name }}
+                                                {{ ", " if not loop.last }}
+                                                {% endfor %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if c_rule.owasp is not none %}
+                                            {% set owasp_id = c_rule.owasp[:3].split(':')[0] %}
+                                            <a href="{{ owasp_links[owasp_id ]}}" target="_blank">
+                                                <span class="badge badge-sm bg-success p-2 w-100">
+                                                    {{ owasp_id }}
+                                                </span>
+                                            </a>
+                                            {% else %}
+                                            <span class="font-weight-normal">-</span>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if c_rule.cwe is not none %}
+                                            {% set cwe_id = c_rule.cwe[:8].split(':')[0] %}
+                                            <a href="https://cwe.mitre.org/data/definitions/{{ cwe_id.split('-')[1] }}.html"
+                                                target="_blank">
+                                                <span class="badge badge-sm bg-info p-2 w-100">
+                                                    {{ cwe_id }}
+                                                </span>
+                                            </a>
+                                            {% else %}
+                                            <span class="font-weight-normal">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-right py-0 align-middle">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="#" class="btn btn-default" onclick="ajaxRuleDetails(this, '{{ c_rule.id }}')"
+                                                    data-toggle="modal" data-target="#modal-rule-details"><i class="fas fa-eye"></i></a>
+                                                <a href="#" class="btn btn-default"><i class="fas fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </section>
+</div>
+
+<!-- Ruledetails modal dialog -->
+<div class="modal fade" id="modal-rule-details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-rule-details" role="document">
+        <!-- Placeholder for rule details -->
+    </div>
+</div>
+<!-- End ruledetails modal dialog -->
+{% endblock content %}
+
+{% block javascripts %}
+<!-- DataTables -->
+<script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#rules-list-table').DataTable();
+    });
+</script>
+{% endblock javascripts %}

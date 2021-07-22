@@ -1,0 +1,90 @@
+{% extends "base-fullscreen.html" %}
+
+{% block title %} Grepmarx - Login {% endblock %} 
+
+{% block body_class %} login-page {% endblock body_class %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="login-box">
+
+    <div class="login-logo">
+      <h1>
+        <div class="text-orange d-inline">grep</div>marx
+        </h1>
+    </div>
+
+    <div class="card">
+      <div class="card-body login-card-body">
+
+            <p class="login-box-msg">
+            {% if msg %}
+                {{ msg | safe }}
+            {% else %}
+                Add your credentials
+            {% endif %}
+        </p>
+
+        <form method="post" action="">
+
+          {{ form.hidden_tag() }}
+
+          <div class="input-group mb-3">
+            {{ form.username(placeholder="Username", class="form-control") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            {{ form.password(placeholder="Password", class="form-control", type="password") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="remember">
+                <label for="remember">
+                  Remember Me
+                </label>
+              </div>
+            </div>
+            <div class="col-4">
+              <button type="submit" name="login" class="btn btn-primary btn-block">Sign In</button>
+            </div>
+          </div>
+        </form>
+
+        <br /><br />
+
+        <div class="text-center">
+          <h6>
+            &copy; <div class="text-orange d-inline">Orange</div>Cyberdefense
+          </h6>
+          <small>
+            grepmarx v0.1
+          </small>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <!-- jQuery -->
+  <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+{% endblock javascripts %}

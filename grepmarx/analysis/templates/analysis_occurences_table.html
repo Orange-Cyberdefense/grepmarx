@@ -1,0 +1,60 @@
+<table class="table table-sm table-hover occurences-table">
+    <thead class="thead-light">
+        <tr>
+            <th class="th-col-width-5">#</th>
+            <th class="th-col-width-30">Snippet</th>
+            <th class="th-col-width-25">Folder</th>
+            <th class="th-col-width-20">File</th>
+            <th class="th-col-width-10">Lines</th>
+            <th class="th-col-width-10">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for occurence in vulnerability.occurences %}
+        <tr class="tr-occurence font-weight-normal">
+            <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
+                {{ loop.index }}
+            </td>
+            <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
+                <span class="font-weight-normal text-monospace text-sm occurence-snippet">
+                    {{ occurence.match_string }}
+                </span>
+            </td>
+            {% set folder = occurence.file_path[:-(occurence.file_path.split('/') | last | length)] %}
+            <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')" title="{{ folder }}">
+                <span class="font-weight-normal">
+                    {{ folder }}
+                </span>
+            </td>
+            {% set file = occurence.file_path.split('/')|last %}
+            <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')" title="{{ file }}">
+                <span class="font-weight-normal">
+                    {{ file }}
+                </span>
+            </td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
+            <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
+                <span class="font-weight-normal">
+                    {{ occurence.position.line_start }}
+                    {% if occurence.position.line_end > occurence.position.line_start %}
+                    -{{ occurence.position.line_end }}
+                    {% endif %}
+                </span>
+            </td>
+            <td class="table-action">
+                <div class="btn-group btn-group-sm">
+                    <a href="#" class="btn btn-default" onclick="ajaxOccurenceDetails(this, '{{ occurence.id }}')"
+                        data-toggle="modal" data-target="#modal-occurence-details">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <a href="#" class="btn btn-default" ondblclick="alert('TODO :)');">
+                        <i class="fas fa-check-circle"></i></i>
+                    </a>
+                    <a href="#" class="btn btn-default" ondblclick="alert('TODO :)');">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

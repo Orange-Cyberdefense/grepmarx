@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/static/assets/favicon.ico" type="image/x-icon">
+  <link rel="canonical" href="https://appseed.us/adminlte"/>
+  
+  <title>
+    Grepmarx - {% block title %}{% endblock %}
+  </title> 
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+  <!-- Grepmarx specific styles -->
+  <link rel="stylesheet" href="/static/assets/css/grepmarx-common.css">
+
+  {% block stylesheets %}
+  {% endblock stylesheets %}
+
+</head>
+<body class="hold-transition accent-orange
+{% if user is defined and user.dark_theme %}
+dark-mode
+{% endif %}
+{% block body_class %}{% endblock body_class %}">
+<div class="wrapper">
+
+    {% include 'navigation.html' %}
+
+    {% include 'sidebar.html' %}
+
+    {% block content %}{% endblock content %}
+
+    {% include 'footer.html' %}
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/assets/js/adminlte.min.js"></script>
+<!-- Grepmarx common scripts -->
+<script src="/static/assets/js/grepmarx-common.js"></script>
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}
+
+</body>
+</html>

@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if edit %}Edit rule pack{% else %}Create rule pack{% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{% if edit %}Edit{% else %}New{% endif %} rule pack</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/rules/packs">Rule Packs</a></li>
+                        <li class="breadcrumb-item active">{% if edit %}Edit{% else %}New{% endif %} rule pack</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        Fill the following form to {% if edit %}modify the{% else %}create a new{% endif %} rule pack.
+                    </p>
+                </div>
+                {% if edit %}
+                <div class="col-sm-4">
+                    <div class="btn-group float-sm-right">
+                        <a class="btn btn-default" href="#"
+                            onclick="setConfirmAction('confirm-rulepack-removal-button', '/rules/packs/remove/{{ form.id.data }}')"
+                            data-toggle="modal" data-target="#confirm-removal">
+                            <span class="fas fa-trash"></span>
+                            Delete rule pack
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        {% if form.errors or error_message|length %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-exclamation-triangle"></i> Form error</h5>
+            {{ error_message }}
+            <ul class="errors">
+                {% for error in form.errors %}
+                <li>{{ error }}: {{ form.errors[error] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if success_message|length %}
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
+            {{ success_message }}
+        </div>
+        {% endif %}
+        <form method="post" {% if edit %} action="/rules/packs/edit/{{ form.id.data }}" {% else %}
+            action="/rules/packs/create" {% endif %}>
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-default">
+                        <div class="card-header">
+                            <h3 class="card-title">Rule pack configuration</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="rule-pack-name" class="form-label">Rule pack's name</label>
+                                {{ form.name(class="form-control", placeholder="Name of the rule pack") }}
+                            </div>
+                            <div class="form-group">
+                                <label for="rule-pack-description" class="form-label">Description</label>
+                                {{ form.description(class="form-control", placeholder="Short description of the rule pack", rows="3")}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card card-default">
+                        <div class="card-header">
+                            <h3 class="card-title">Applicable languages</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="rule-pack-extensions" class="form-label mb-4">
+                                    Select the programming languages for which this rule pack is applicable :
+                                </label>
+                                <div class="form-group">
+                                    <div class="row">
+                                        {% for lang_choice in form.languages %}
+                                        <div class="col-md-3 mb-3">
+                                            <div class="custom-control custom-switch">
+                                                {{ lang_choice(class="custom-control-input") }}
+                                                <label class="custom-control-label" for="{{ lang_choice[0] }}">
+                                                    {{ lang_choice.label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-default">
+                        <div class="card-header">
+                            <h3 class="card-title">Select analysis rules</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12 div-select-rules">
+                                    <div class="form-group">
+                                        <table id="rules-list-table" class="table table-sm table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th id="th-select-all" class="p-1">
+                                                        <a class="btn btn-tertiary p-0" href="#pel"
+                                                            onclick="switchPageSelection()">
+                                                            <span class="fas fa-check-square"></span>
+                                                        </a>
+                                                    </th>
+                                                    <th>#</th>
+                                                    <th>Severity</th>
+                                                    <th>Rule</th>
+                                                    <th>Languages</th>
+                                                    <th>OWASP</th>
+                                                    <th>CWE</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for c_rule in rules %}
+                                                <tr>
+                                                    <td class="align-middle">
+                                                        <input class="ml-0 datatable-checkbox"
+                                                            onclick="toggleLine(this)" type="checkbox"
+                                                            id="{{ c_rule.id }}">
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {{ c_rule.id }}
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {% if c_rule.severity == "high" %}
+                                                        <span class="badge badge-sm bg-danger p-2 w-100">HIGH</span>
+                                                        {% endif %}
+                                                        {% if c_rule.severity == "medium" %}
+                                                        <span class="badge badge-sm bg-warning p-2 w-100">MEDIUM</span>
+                                                        {% endif %}
+                                                        {% if c_rule.severity == "low" %}
+                                                        <span class="badge badge-sm bg-info p-2 w-100">LOW</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <span class="text-smallcaps font-weight-bold p-0">
+                                                            {{ c_rule.title|replace('-',' ')|replace('_',' ') }}
+                                                        </span>
+                                                        <br />
+                                                        <small class="p-0">
+                                                            {{ c_rule.repository }}/{{ c_rule.category }}
+                                                        </small>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {% for c_language in c_rule.languages %}
+                                                        {{ c_language.name }}
+                                                        {{ ", " if not loop.last }}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {% if c_rule.owasp is not none %}
+                                                        {% set owasp_id = c_rule.owasp[:3].split(':')[0] %}
+                                                        <a href="{{ owasp_links[owasp_id ]}}" target="_blank">
+                                                            <span class="badge badge-sm bg-success p-2 w-100">
+                                                                {{ owasp_id }}
+                                                            </span>
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="font-weight-normal">-</span>
+                                                        {% endif %}
+                                                        </span>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {% if c_rule.cwe is not none %}
+                                                        {% set cwe_id = c_rule.cwe[:8].split(':')[0] %}
+                                                        <a href="https://cwe.mitre.org/data/definitions/{{ cwe_id.split('-')[1] }}.html"
+                                                            target="_blank">
+                                                            <span class="badge badge-sm bg-info p-2 w-100">
+                                                                {{ cwe_id }}
+                                                            </span>
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="font-weight-normal">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <a href="/rules/packs" class="btn btn-secondary">Cancel</a>
+                    <input type="submit" name="save-rule-pack" value="Save rule pack" class="btn btn-default float-right">
+                </div>
+            </div>
+
+        </form>
+    </section>
+</div>
+
+<!-- Modal remove confirmation -->
+<div class="modal fade" id="confirm-removal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <p class="mb-0">You are about to delete a rule pack. This operation is irreversible.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-rulepack-removal-button">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of modal remove confirmation -->
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- DataTables -->
+<script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript">
+    /* Initialize datatable */
+    var dataTable = $('#rules-list-table');
+    $(document).ready(function () {
+        dataTable.DataTable({
+            paging: false,
+            dom: 'ft',
+            columnDefs: [{
+                orderable: false,
+                targets: 0
+            }]
+        });
+        /* Reset selection to ensure sync */
+        refreshSelectedLines();
+    });
+
+    /* Convert dataTable's controls to bootstrap
+    document.getElementsByClassName("dataTable-top")[0].classList.add("row");
+    document.getElementsByClassName("dataTable-bottom")[0].classList.add("row");
+
+    var element = document.getElementsByClassName("dataTable-dropdown")[0];
+    if (element) {
+        var parent = element.parentNode;
+        var wrapper = document.createElement('div');
+        wrapper.classList.add("col-sm-12");
+        wrapper.classList.add("col-md-6");
+        parent.replaceChild(wrapper, element);
+        wrapper.appendChild(element);
+    }
+
+    var element = document.getElementsByClassName("dataTable-search")[0];
+    if (element) {
+    var parent = element.parentNode;
+    var wrapper = document.createElement('div');
+    wrapper.classList.add("col-sm-12");
+    wrapper.classList.add("col-md-6");
+    parent.replaceChild(wrapper, element);
+    wrapper.appendChild(element);
+    }
+
+    var element = document.getElementsByClassName("dataTable-info")[0];
+    if (element) {
+    var parent = element.parentNode;
+    var wrapper = document.createElement('div');
+    wrapper.classList.add("col-sm-12");
+    wrapper.classList.add("col-md-6");
+    parent.replaceChild(wrapper, element);
+    wrapper.appendChild(element);
+    }
+
+    var element = document.getElementsByClassName("dataTable-pagination")[0];
+    if (element) {
+    var parent = element.parentNode;
+    var wrapper = document.createElement('div');
+    wrapper.classList.add("col-sm-12");
+    wrapper.classList.add("col-md-6");
+    parent.replaceChild(wrapper, element);
+    wrapper.appendChild(element);
+    }*/
+
+
+    /* Workaround for selected lines not being saved during datable navigation
+    dataTable.on('datatable.sort', function () {
+        refreshSelectedLines()
+    });
+    dataTable.on('datatable.page', function () {
+        refreshSelectedLines()
+    });*/
+</script>
+{% endblock javascripts %}

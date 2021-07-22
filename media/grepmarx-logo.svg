@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   sodipodi:docname="grepmarx-logo.svg"
+   inkscape:export-filename="/home/fxbru/dev/grepmarx/logo/grepmarx-logo.png"
+   inkscape:export-xdpi="10.946801"
+   inkscape:export-ydpi="10.946801"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.618262"
+     inkscape:cx="221.58891"
+     inkscape:cy="648.59234"
+     inkscape:window-width="1920"
+     inkscape:window-height="926"
+     inkscape:window-x="0"
+     inkscape:window-y="44"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="257.28987"
+       y="129.66667"
+       width="231.46688"
+       height="47.825393"
+       id="rect24554" />
+    <rect
+       x="292.48339"
+       y="328.11218"
+       width="193.95085"
+       height="198.11435"
+       id="rect4350" />
+    <rect
+       x="257.28986"
+       y="129.66667"
+       width="231.46687"
+       height="47.825394"
+       id="rect24554-1" />
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g22438"
+       transform="matrix(0.18334969,0,0,0.18334969,86.323093,103.29815)"
+       inkscape:export-filename="/home/fxbru/dev/grepmarx/logo/grepmarx-logo.png"
+       inkscape:export-xdpi="89.581711"
+       inkscape:export-ydpi="89.581711">
+      <rect
+         style="fill:#454d55;fill-opacity:1;stroke:none;stroke-width:1.165;stroke-linecap:round"
+         id="rect846"
+         width="113.72412"
+         height="113.72412"
+         x="88.609329"
+         y="-53.122631"
+         rx="0"
+         ry="0"
+         transform="rotate(45)" />
+      <path
+         style="fill:#454d55;fill-opacity:1;stroke:#ffffff;stroke-width:14.3146;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 78.409508,134.14413 21.662652,21.66265 55.49456,-55.49456"
+         id="path1302" />
+    </g>
+  </g>
+</svg>
