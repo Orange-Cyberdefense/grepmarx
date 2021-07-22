@@ -1,6 +1,5 @@
 
-
-# grepmarx
+# Grepmarx
 
 A source code static analysis platform for security auditors.
 
@@ -45,94 +44,11 @@ $
 $ # Access grepmarx in browser: http://127.0.0.1:5000/
 ```
 
-## Code-base structure
-
-The project is coded using blueprints, app factory pattern, dual configuration profile (development and production) and the structure presented bellow:
-
-> Simplified version
-
-```bash
-< PROJECT ROOT >
-   |
-   |-- grepmarx/                 # Implements app logic
-   |    |-- administration/      # Administration Blueprint
-   |    |-- base/                # Base Blueprint
-   |    |-- data/
-   |    |-- projects/            # Projects Blueprint
-   |    |-- rules/               # Rules Blueprint
-   |    |
-   |   __init__.py               # Initialize the app
-   |
-   |-- requirements.txt          # Development modules - SQLite storage
-   |-- requirements-mysql.txt    # Production modules  - Mysql DMBS
-   |-- requirements-pqsql.txt    # Production modules  - PostgreSql DMBS
-   |
-   |-- .env                      # Inject Configuration via Environment
-   |-- config.py                 # Set up the app
-   |-- run.py                    # Start the app - WSGI gateway
-   |
-   |-- ************************************************************************
-```
-
-<br />
-
-> The bootstrap flow
-
-- `run.py` loads the `.env` file
-- Initialize the app using the specified profile: *Debug* or *Production*
-  - If env.DEBUG is set to *True* the SQLite storage is used
-  - If env.DEBUG is set to *False* the specified DB driver is used (MySql, PostgreSQL)
-- Call the app factory method `create_app` defined in app/__init__.py
-- Redirect the guest users to Login page
-- Unlock the pages served by *home* blueprint for authenticated users
-
-<br />
-
-> App / Base Blueprint
-
-The *Base* blueprint handles the authentication (routes and forms) and assets management. The structure is presented below:
-
-```bash
-< PROJECT ROOT >
-   |
-   |-- app/
-   |    |-- home/                                # Home Blueprint - serve app pages (private area)
-   |    |-- base/                                # Base Blueprint - handles the authentication
-   |         |-- static/
-   |         |    |-- <css, JS, images>          # CSS files, Javascripts files
-   |         |
-   |         |-- templates/                      # Templates used to render pages
-   |              |
-   |              |-- includes/                  #
-   |              |    |-- navigation.html       # Top menu component
-   |              |    |-- sidebar.html          # Sidebar component
-   |              |    |-- footer.html           # App Footer
-   |              |    |-- scripts.html          # Scripts common to all pages
-   |              |
-   |              |-- layouts/                   # Master pages
-   |              |    |-- base-fullscreen.html  # Used by Authentication pages
-   |              |    |-- base.html             # Used by common pages
-   |              |
-   |              |-- accounts/                  # Authentication pages
-   |                   |-- login.html            # Login page
-   |                   |-- register.html         # Registration page
-   |
-   |-- requirements.txt                          # Development modules - SQLite storage
-   |-- requirements-mysql.txt                    # Production modules  - Mysql DMBS
-   |-- requirements-pqsql.txt                    # Production modules  - PostgreSql DMBS
-   |
-   |-- .env                                      # Inject Configuration via Environment
-   |-- config.py                                 # Set up the app
-   |-- run.py                                    # Start the app - WSGI gateway
-   |
-   |-- ************************************************************************
-```
-
-<br />
+On first launch, call /init to initialize the database and to create a default admin/admin user account.
 
 ## Deployment
 
-Grepmarx is provided with a basic configuration to be executed in [Docker](https://www.docker.com/), [Heroku](https://www.heroku.com/), [Gunicorn](https://gunicorn.org/), and [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/).
+Grepmarx is provided with a basic configuration to be executed in [Docker](https://www.docker.com/), [Heroku](https://www.heroku.com/), and [Gunicorn](https://gunicorn.org/).
 
 <br />
 
@@ -171,7 +87,7 @@ Steps to deploy on **Heroku**
 ```bash
 $ # Clone the source code:
 $ git clone https://...grepmarx.git
-$ cd flask-dashboard-adminlte
+$ cd grepmarx
 $
 $ # Check Heroku CLI is installed
 $ heroku -v
@@ -214,32 +130,11 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 
 <br />
 
-### [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/)
----
-
-Waitress (Gunicorn equivalent for Windows) is meant to be a production-quality pure-Python WSGI server with very acceptable performance. It has no dependencies except ones that live in the Python standard library.
-
-> Install using pip
-
-```bash
-$ pip install waitress
-```
-> Start the app using [waitress-serve](https://docs.pylonsproject.org/projects/waitress/en/stable/runner.html)
-
-```bash
-$ waitress-serve --port=8001 run:app
-Serving on http://localhost:8001
-```
-
-Visit `http://localhost:8001` in your browser. The app should be up & running.
-
-<br />
-
 ## Credits & Links
 
-- [Flask Framework](https://www.palletsprojects.com/p/flask/) - The offcial website
-- [Boilerplate Code](https://appseed.us/boilerplate-code) - Index provided by **AppSeed**
-- [Boilerplate Code](https://github.com/app-generator/boilerplate-code) - Index published on Github
+- AdminLTE / AppSeed
+- LibSAST / Semgrep
+- Pygount
 
 <br />
 
