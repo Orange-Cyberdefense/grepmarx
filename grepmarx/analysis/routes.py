@@ -6,15 +6,13 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 
-from flask.helpers import url_for
-
 from grepmarx import db
 from grepmarx.analysis import blueprint
 from grepmarx.analysis.forms import ScanForm
 from grepmarx.analysis.model import Analysis, Occurence, Vulnerability
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import Rule, RulePack
-from flask import current_app, render_template, redirect
+from flask import current_app, render_template, redirect, url_for, flash
 from flask_login import current_user, login_required
 from pygments.lexers import guess_lexer_for_filename
 
@@ -29,7 +27,7 @@ def analysis_workbench(analysis_id):
         "analysis_workbench.html",
         user=current_user,
         vulnerabilities=vulnerabilities,
-        segment=''
+        segment="",
     )
 
 
@@ -85,17 +83,17 @@ def analysis_occurences_table(vulnerability_id):
 
 @blueprint.route("/analysis/scans/new/<project_id>")
 @login_required
-def scans_new(project_id, error_message=""):
+def scans_new(project_id, scan_form=None):
     # Asscociate corresponding project
     project = Project.query.filter_by(id=project_id).first_or_404()
-    scan_form = ScanForm(project_id=project.id)
+    if scan_form is None:
+        scan_form = ScanForm(project_id=project.id)
     # Dynamically adds choices for multiple selection fields
     scan_form.rule_packs.choices = ((rp.id, rp.name) for rp in RulePack.query.all())
     return render_template(
         "analysis_scans_new.html",
         project=project,
         form=scan_form,
-        error_message=error_message,
         user=current_user,
         segment="projects",
     )
@@ -112,10 +110,8 @@ def scans_launch():
     if scan_form.validate_on_submit():
         # Need at least one rule pack
         if len(scan_form.rule_packs.data) <= 0:
-            return scans_new(
-                form=scan_form,
-                error_message="Please select at least one rule pack",
-            )
+            flash("At least one rule pack should be selected", "error")
+            return scans_new(project_id=project.id, scan_form=scan_form)
         # Status in now Analysing
         project.status = Project.STATUS_ANALYZING
         db.session.commit()
@@ -142,5 +138,8 @@ def scans_launch():
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated
     else:
-        current_app.logger.warning("Analysis launch form invalid entries: %s", json.dumps(scan_form.errors))
-        return scans_new(form=scan_form)
+        current_app.logger.warning(
+            "Analysis launch form invalid entries: %s", json.dumps(scan_form.errors)
+        )
+        flash(str(scan_form.errors), "error")
+        return scans_new(project_id=project.id, scan_form=scan_form)
