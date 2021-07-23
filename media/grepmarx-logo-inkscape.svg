@@ -28,7 +28,7 @@
      showgrid="false"
      inkscape:zoom="0.618262"
      inkscape:cx="221.58891"
-     inkscape:cy="648.59234"
+     inkscape:cy="496.55324"
      inkscape:window-width="1920"
      inkscape:window-height="926"
      inkscape:window-x="0"
@@ -37,6 +37,12 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs2">
+    <rect
+       x="172.13238"
+       y="539.56529"
+       width="580.7508"
+       height="114.6715"
+       id="rect3402" />
     <rect
        x="257.28987"
        y="129.66667"
@@ -60,12 +66,22 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       style="fill:#343a40;fill-opacity:1;stroke-width:0.635198;stroke-linecap:round"
+       id="rect12000"
+       width="161.01553"
+       height="45.05275"
+       x="25.334021"
+       y="130.33672"
+       inkscape:export-filename="/home/fxbru/dev/grepmarx/media/grepmarx-logo.png"
+       inkscape:export-xdpi="89.581711"
+       inkscape:export-ydpi="89.581711" />
     <g
        id="g22438"
-       transform="matrix(0.18334969,0,0,0.18334969,86.323093,103.29815)"
-       inkscape:export-filename="/home/fxbru/dev/grepmarx/logo/grepmarx-logo.png"
-       inkscape:export-xdpi="89.581711"
-       inkscape:export-ydpi="89.581711">
+       transform="matrix(0.18334969,0,0,0.18334969,30.311122,133.36708)"
+       inkscape:export-filename="/home/fxbru/dev/grepmarx/media/grepmarx-icon.png"
+       inkscape:export-xdpi="89.581696"
+       inkscape:export-ydpi="89.581696">
       <rect
          style="fill:#454d55;fill-opacity:1;stroke:none;stroke-width:1.165;stroke-linecap:round"
          id="rect846"
@@ -81,5 +97,20 @@
          d="m 78.409508,134.14413 21.662652,21.66265 55.49456,-55.49456"
          id="path1302" />
     </g>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,22.076488,-3.8368171)"
+       id="text3400"
+       style="font-style:normal;font-weight:normal;font-size:85.3333px;line-height:1.25;font-family:'HelveticaNeue LT 75 Bold';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect3402);fill:#000000;fill-opacity:1;stroke:none;-inkscape-font-specification:'HelveticaNeue LT 75 Bold, Normal';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       inkscape:export-filename="/home/fxbru/dev/grepmarx/media/grepmarx-logo.png"
+       inkscape:export-xdpi="89.581711"
+       inkscape:export-ydpi="89.581711"><tspan
+         x="172.13281"
+         y="618.23112"
+         id="tspan889"><tspan
+           style="font-size:85.3333px;fill:#fd7e14"
+           id="tspan885">grep</tspan><tspan
+           style="font-size:85.3333px;fill:#ffffff"
+           id="tspan887">marx</tspan></tspan></text>
   </g>
 </svg>
