@@ -46,7 +46,7 @@ class Rule(db.Model):
     SEVERITY_HIGH = "high"
     SEVERITY_MEDIUM = "medium"
     SEVERITY_LOW = "low"
-    RULES_PATH = "grepmarx/data/rules/"
+    RULES_PATH = "data/rules/"
     RULE_EXTENSION = ".yaml"
     OWASP_TOP10_LINKS = {
         "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",

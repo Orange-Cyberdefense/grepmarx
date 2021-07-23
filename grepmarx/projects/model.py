@@ -7,7 +7,6 @@ import os
 from shutil import rmtree
 
 from grepmarx import db
-from grepmarx.base import util
 from sqlalchemy import Column, Integer, String
 
 
@@ -17,7 +16,7 @@ class Project(db.Model):
     STATUS_FINISHED = 1
     STATUS_ANALYZING = 2
     STATUS_ERROR = 3
-    PROJECTS_SRC_PATH = "grepmarx/data/projects/"
+    PROJECTS_SRC_PATH = "data/projects/"
     EXTRACT_FOLDER_NAME = "extract"
 
     __tablename__ = "Project"

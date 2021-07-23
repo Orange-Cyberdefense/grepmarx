@@ -12,8 +12,8 @@ __pycache__/
 *.log
 
 # grepmarx uploaded projects / rules
-grepmarx/data/projects/*
-grepmarx/data/rules/*
+data/projects
+data/rules
 
 # venv
 env

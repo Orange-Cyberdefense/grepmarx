@@ -5,6 +5,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import json
 import os
+import pathlib
 from glob import glob
 from zipfile import ZipFile
 
@@ -62,6 +63,8 @@ def projects_create():
         db.session.add(project)
         db.session.commit()
         # Store the archive on disk
+        if not os.path.isdir(Project.PROJECTS_SRC_PATH):
+            pathlib.Path(Project.PROJECTS_SRC_PATH).mkdir(parents=True, exist_ok=True)
         project_path = os.path.join(Project.PROJECTS_SRC_PATH, str(project.id))
         os.mkdir(project_path)
         archive_path = os.path.join(project_path, secure_filename(file.filename))
