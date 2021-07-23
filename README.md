@@ -1,17 +1,29 @@
+![Grepmarx](media/grepmarx-logo.png)
 
-# Grepmarx
+**A source code static analysis platform for security auditors.**
 
-A source code static analysis platform for security auditors.
+# Features
 
-# TODO
-- Rule repository management
-- Display handling of WTForms errors
-- Database is locked during a scan / rule refresh
-- Line counting optimization
-- Dashboard
-- Scan and rule refresh in background
-- Code dependency checking
-- Application inspection features
+Grepmarx is a web application providing a single platform to quickly understand, analyze and identify vulnerabilities in possibly large and unknown code bases.
+
+- Security code analysis (SAST - Static Analysis Security Testing)
+- Multiple languages support: C/C++, C#, Go, HTML, Java, Kotlin, JavaScript, TypeScript, OCaml, PHP, Python, Ruby
+- Multiple frameworks support: Spring, Django, Flask, jQuery, Express, Angular...
+- Audit workbench designed to efficiently browse scan results
+- 1000+ existing analysis rules
+- Easily extend analysis rules using Semgrep syntax: https://semgrep.dev/editor 
+- Scan code that doesn't compile
+- Manage rules in rule packs to tailor code scanning
+- Comprehensive LOC (Lines of Code) counter
+- ... and a Dark Mode
+
+# Requirements
+
+| OS | CPU | Cores | RAM | Browser |
+| ------ | ------ | ------ | ------ | ------ |
+| GNU/Linux | 2.8Ghz | 4-6 | 12GB | IE9+, Edge (latest), Firefox (latest), Safari (latest), Chrome (latest), Opera (latest) |
+
+
 
 ## How to use it
 
@@ -19,32 +31,30 @@ A source code static analysis platform for security auditors.
 $ # Get the code
 $ git clone https://...grepmarx.git
 $ cd grepmarx
-$
-$ # Virtualenv modules installation (Unix based systems)
+
+$ # Virtualenv modules installation
 $ virtualenv env
 $ source env/bin/activate
-$
+
 $ # Install modules - SQLite Database
 $ pip3 install -r requirements.txt
-$
 $ # OR with PostgreSQL connector
 $ # pip install -r requirements-pgsql.txt
-$
+
 $ # Set the FLASK_APP environment variable
 $ export FLASK_APP=run.py
-$
 $ # Set up the DEBUG environment
 $ # export FLASK_ENV=development
-$
+
 $ # Start the application (development mode)
 $ # --host=0.0.0.0 - expose the app on all network interfaces (default 127.0.0.1)
 $ # --port=5000    - specify the app port (default 5000)  
 $ flask run --host=0.0.0.0 --port=5000
-$
+
 $ # Access grepmarx in browser: http://127.0.0.1:5000/
 ```
 
-On first launch, call /init to initialize the database and to create a default admin/admin user account.
+**Note: On first launch, call `/init` to initialize the database and create a default user account (user=admin / password=admin). Change the default password immediately.**
 
 ## Deployment
 
@@ -88,21 +98,21 @@ Steps to deploy on **Heroku**
 $ # Clone the source code:
 $ git clone https://...grepmarx.git
 $ cd grepmarx
-$
+
 $ # Check Heroku CLI is installed
 $ heroku -v
 heroku/7.25.0 win32-x64 node-v12.13.0 # <-- All good
-$
+
 $ # Check Heroku CLI is installed
 $ heroku login
 $ # this command will open a browser window - click the login button (in browser)
-$
+
 $ # Create the Heroku project
 $ heroku create
-$
+
 $ # Trigger the LIVE deploy
 $ git push heroku master
-$
+
 $ # Open the LIVE app in browser
 $ heroku open
 ```
@@ -132,11 +142,21 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 
 ## Credits & Links
 
-- AdminLTE / AppSeed
-- LibSAST / Semgrep
-- Pygount
+- The web application dashboard is based on [AdminLTE Flask](https://github.com/app-generator/flask-dashboard-adminlte)
+- Code scanning is performed through the [libsast](https://github.com/ajinabraham/libsast) library, which is powered by the [semgrep](https://semgrep.dev/) engine
+- LOC counting is handled by [pygount](https://github.com/roskakori/pygount)
 
 <br />
 
+# TODO
+- Rule repository management
+- Display handling of WTForms errors
+- Database is locked during a scan / rule refresh
+- Line counting optimization
+- Dashboard
+- Scan and rule refresh in background
+- Code dependency checking
+- Application inspection features
+
 ---
-Grepmarx - Provided by **Orange Cyberdefense [OCD](https://orangecyebrdefense.com)**.
+Grepmarx - Provided by **[Orange Cyberdefense](https://orangecyebrdefense.com)**.
