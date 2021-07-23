@@ -49,27 +49,34 @@
 
     <!-- Main content -->
     <section class="content">
-        {% if form.errors or error_message|length%}
-        <!-- Error message -->
-        <div class="alert alert-warning alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-exclamation-triangle"></i> Form error</h5>
-            {{ error_message }}
-            <ul class="errors">
-                {% for error in form.errors %}
-                <li>{{ error }}: {{ form.errors[error] }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-        <!-- Success message -->
-        {% if success_message is defined and success_message|length %}
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
-            {{ success_message }}
-        </div>
-        {% endif %}
+        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+            {% if messages %}
+            <!-- Success message -->
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+            {% if messages %}
+            <!-- Error message -->
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> Operation failed</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
         <form class="form-horizontal" method="post" 
             {% if edit %}action="/users/edit/{{ form.id.data }}"{% else %}action="/users/add"{% endif %}>
             {{ form.hidden_tag() }}

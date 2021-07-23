@@ -3,13 +3,14 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import json
+
 from grepmarx.administration.util import validate_user_form
 from grepmarx import db
 from grepmarx.administration import blueprint
 from grepmarx.administration.forms import UserForm
 from grepmarx.base import util
 from grepmarx.base.models import User
-from flask import current_app, redirect, render_template, request, url_for
+from flask import current_app, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
 
 
@@ -22,23 +23,9 @@ def users_list():
     )
 
 
-def user_form_page(edit=False, user_form=None, error_message="", success_message=""):
-    # No form given: create an empty one
-    if user_form is None:
-        user_form = UserForm()
-    return render_template(
-        "users_edit.html",
-        edit=edit,
-        form=user_form,
-        user=current_user,
-        error_message=error_message,
-        success_message=success_message,
-    )
-
-
 @blueprint.route("/users/add", methods=["GET", "POST"])
 @login_required
-def user_add():
+def users_add():
     user_form = UserForm()
     # POST / Form submitted
     if "save-user" in request.form:
@@ -47,7 +34,14 @@ def user_add():
             # Perform additional custom checks
             err = validate_user_form(user_form)
             if err is not None:
-                return user_form_page(error_message=err)
+                flash(err, "error")
+                return render_template(
+                    "users_edit.html",
+                    edit=False,
+                    form=user_form,
+                    user=current_user,
+                    segment="users",
+                )
             # We can create the user
             user = User(**request.form)
             # Remove id attribute to let the DB set it
@@ -55,18 +49,30 @@ def user_add():
             db.session.add(user)
             db.session.commit()
             current_app.logger.info("New user added (user.id=%i)", user.id)
-            return user_form_page(
-                edit=True,
-                user_form=user_form,
-                success_message="New user successfully added",
-            )
+            flash("New user successfully added", "success")
+            return redirect(url_for("administration_blueprint.users_list"))
         # Form is invalid, form.error is populated
         else:
-            current_app.logger.warning("User add form invalid entries: %s", json.dumps(user_form.errors))
-            return user_form_page(user_form=user_form)
+            current_app.logger.warning(
+                "User add form invalid entries: %s", json.dumps(user_form.errors)
+            )
+            flash(str(user_form.errors), "error")
+            return render_template(
+                "users_edit.html",
+                edit=False,
+                form=user_form,
+                user=current_user,
+                segment="users",
+            )
     # GET / Display form
     else:
-        return user_form_page(user_form=user_form)
+        return render_template(
+            "users_edit.html",
+            edit=False,
+            form=user_form,
+            user=current_user,
+            segment="users",
+        )
 
 
 @blueprint.route("/users/edit/<user_id>", methods=["GET", "POST"])
@@ -86,8 +92,14 @@ def users_edit(user_id):
                 skip_password=(user_form.password.data == ""),
             )
             if err is not None:
-                return user_form_page(edit=True, user_form=user_form, error_message=err)
-
+                flash(err, "error")
+                return render_template(
+                    "users_edit.html",
+                    edit=True,
+                    form=UserForm(obj=edit_user),
+                    user=current_user,
+                    segment="users",
+                )
             # Change the password if needed only
             if user_form.password.data == "":
                 edit_password = edit_user.password
@@ -98,24 +110,29 @@ def users_edit(user_id):
             edit_user.password = edit_password
             db.session.commit()
             current_app.logger.info("User updated (user.id=%i)", user_form.id.data)
-            return user_form_page(
-                edit=True,
-                user_form=user_form,
-                success_message="User successfully updated",
-            )
+            flash("User successfully updated", "success")
+            return redirect(url_for("administration_blueprint.users_list"))
         # Form is invalid, form.error is populated
         else:
-            current_app.logger.warning("User edit form invalid entries: %s", json.dumps(user_form.errors))
-            return user_form_page(
+            current_app.logger.warning(
+                "User edit form invalid entries: %s", json.dumps(user_form.errors)
+            )
+            flash(str(user_form.errors), "error")
+            return render_template(
+                "users_edit.html",
                 edit=True,
-                user_form=user_form,
+                form=UserForm(obj=edit_user),
+                user=current_user,
+                segment="users",
             )
     # GET / Display form
     else:
-        user_form = UserForm(obj=edit_user)
-        return user_form_page(
+        return render_template(
+            "users_edit.html",
             edit=True,
-            user_form=user_form,
+            form=UserForm(obj=edit_user),
+            user=current_user,
+            segment="users",
         )
 
 
@@ -126,4 +143,5 @@ def users_remove(user_id):
     db.session.delete(user)
     db.session.commit()
     current_app.logger.info("User removed (user.id=%i)", user.id)
+    flash("User successfully deleted", "success")
     return redirect(url_for("administration_blueprint.users_list"))
