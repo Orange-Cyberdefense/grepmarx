@@ -112,8 +112,6 @@ def rules_packs_create_post():
             languages=rp_languages,
             rules=rp_rules,
         )
-        # Remove the id attribute to let the DB auto set it
-        delattr(rule_pack, "id")
         db.session.add(rule_pack)
         db.session.commit()
         current_app.logger.info("New rule pack added (rule_pack.id=%i)", rule_pack.id)
