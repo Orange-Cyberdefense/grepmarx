@@ -9,7 +9,7 @@ import pathlib
 from glob import glob
 from zipfile import ZipFile
 
-from flask import current_app, redirect, render_template, url_for
+from flask import current_app, redirect, render_template, url_for, flash
 from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.analysis.model import ProjectLinesCount
@@ -42,6 +42,7 @@ def projects_remove(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
     project.remove()
     current_app.logger.info("Project deleted (project.id=%i)", project.id)
+    flash("Project successfully deleted", "success")
     return redirect(url_for("projects_blueprint.projects_list"))
 
 

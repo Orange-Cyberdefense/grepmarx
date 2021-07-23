@@ -53,34 +53,7 @@
     <!-- Main content -->
     <section class="content">
 
-        {% with messages = get_flashed_messages(category_filter=["success"]) %}
-            {% if messages %}
-            <!-- Success message -->
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-        {% endwith %}
-        {% with messages = get_flashed_messages(category_filter=["error"]) %}
-            {% if messages %}
-            <!-- Error message -->
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas fa-exclamation-triangle"></i> Operation failed</h5>
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-        {% endwith %}
+        {% include 'messages.html' %}
 
         <form method="post" {% if edit %} action="/rules/packs/edit/{{ form.id.data }}" {% else %}
             action="/rules/packs/create" {% endif %}>
