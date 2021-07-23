@@ -24,7 +24,8 @@
             <div class="row mb-2 ">
                 <div class="col-sm-8">
                     <p class="mb-3">
-                        The following content shows all available rule packs. Pick one to view, edit or delete the rule pack.
+                        The following content shows all available rule packs. Pick one to view, edit or delete the rule
+                        pack.
                     </p>
                 </div>
                 <div class="col-sm-4">
@@ -40,6 +41,36 @@
 
     <!-- Main content -->
     <section class="content">
+
+        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+            {% if messages %}
+            <!-- Success message -->
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+            {% if messages %}
+            <!-- Error message -->
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> Operation failed</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+
         <div class="row">
             {% for c_rule_pack in rule_packs %}
             <div class="col-lg-3 col-6">
@@ -48,7 +79,7 @@
                         <h4>{{ c_rule_pack.name }}</h4>
                         {{ c_rule_pack.rules | length }} rules<br />
                         <p>
-                            Languages: 
+                            Languages:
                             {% for c_language in c_rule_pack.languages %}
                             {{ c_language.name }}
                             {{ ", " if not loop.last }}

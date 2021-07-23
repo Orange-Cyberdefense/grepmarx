@@ -52,25 +52,36 @@
 
     <!-- Main content -->
     <section class="content">
-        {% if form.errors or error_message|length %}
-        <div class="alert alert-warning alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-exclamation-triangle"></i> Form error</h5>
-            {{ error_message }}
-            <ul class="errors">
-                {% for error in form.errors %}
-                <li>{{ error }}: {{ form.errors[error] }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-        {% if success_message|length %}
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
-            {{ success_message }}
-        </div>
-        {% endif %}
+
+        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+            {% if messages %}
+            <!-- Success message -->
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-check"></i> Operation succeeded</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+            {% if messages %}
+            <!-- Error message -->
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> Operation failed</h5>
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+
         <form method="post" {% if edit %} action="/rules/packs/edit/{{ form.id.data }}" {% else %}
             action="/rules/packs/create" {% endif %}>
             {{ form.hidden_tag() }}
@@ -92,7 +103,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="rule-pack-description" class="form-label">Description</label>
-                                {{ form.description(class="form-control", placeholder="Short description of the rule pack", rows="3")}}
+                                {{ form.description(class="form-control", 
+                                placeholder="Short description of the rule pack", 
+                                rows="3")}}
                             </div>
                         </div>
                     </div>
@@ -244,7 +257,8 @@
             <div class="row">
                 <div class="col-12 mb-3">
                     <a href="/rules/packs" class="btn btn-secondary">Cancel</a>
-                    <input type="submit" name="save-rule-pack" value="Save rule pack" class="btn btn-default float-right">
+                    <input type="submit" name="save-rule-pack" value="Save rule pack"
+                        class="btn btn-default float-right">
                 </div>
             </div>
 
