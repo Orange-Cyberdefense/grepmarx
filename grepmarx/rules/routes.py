@@ -58,10 +58,7 @@ def rule_packs_list():
     )
 
 
-def rule_packs_form_page(edit=False, rule_pack_form=None):
-    # No form given: create an empty one
-    if rule_pack_form is None:
-        rule_pack_form = RulePackForm()
+def rule_packs_form_page(edit, rule_pack_form):
     # Dynamically adds choices for multiple selection fields
     rule_pack_form.languages.choices = (
         (l.id, l.name) for l in SupportedLanguage.query.all()
@@ -82,7 +79,6 @@ def rule_packs_form_page(edit=False, rule_pack_form=None):
 @login_required
 def rules_packs_create():
     rule_pack_form = RulePackForm()
-    rules = Rule.query.all()
     # Dynamically adds choices for multiple selection fields
     rule_pack_form.languages.choices = (
         (l.id, l.name) for l in SupportedLanguage.query.all()
@@ -95,15 +91,7 @@ def rules_packs_create():
             err = validate_languages_rules(rule_pack_form)
             if err is not None:
                 flash(err, "error")
-                return render_template(
-                    "rules_packs_edit.html",
-                    edit=False,
-                    rules=rules,
-                    form=rule_pack_form,
-                    owasp_links=Rule.OWASP_TOP10_LINKS,
-                    user=current_user,
-                    segment="rule_packs",
-                )
+                return rule_packs_form_page(edit=False, rule_pack_form=rule_pack_form)
             # Set applicable languages
             rp_languages = SupportedLanguage.query.filter(
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
@@ -133,31 +121,10 @@ def rules_packs_create():
                 json.dumps(rule_pack_form.errors),
             )
             flash(str(rule_pack_form.errors), "error")
-            return render_template(
-                "rules_packs_edit.html",
-                edit=False,
-                rules=rules,
-                form=rule_pack_form,
-                owasp_links=Rule.OWASP_TOP10_LINKS,
-                user=current_user,
-                segment="rule_packs",
-            )
+            return rule_packs_form_page(edit=False, rule_pack_form=rule_pack_form)
     # GET / Display form
     else:
-        rule_pack_form = RulePackForm()
-        # Dynamically adds choices for multiple selection fields
-        rule_pack_form.languages.choices = (
-            (l.id, l.name) for l in SupportedLanguage.query.all()
-        )
-        return render_template(
-            "rules_packs_edit.html",
-            edit=False,
-            rules=rules,
-            form=rule_pack_form,
-            owasp_links=Rule.OWASP_TOP10_LINKS,
-            user=current_user,
-            segment="rule_packs",
-        )
+        return rule_packs_form_page(edit=False, rule_pack_form=RulePackForm())
 
 
 @blueprint.route("/rules/packs/edit/<rule_pack_id>", methods=["GET", "POST"])
@@ -165,7 +132,6 @@ def rules_packs_create():
 def rules_packs_edit(rule_pack_id):
     # Get the rule pack to edit
     edit_rule_pack = RulePack.query.filter_by(id=rule_pack_id).first_or_404()
-    rules = Rule.query.all()
     # POST / Form submitted
     if "save-rule-pack" in request.form:
         rule_pack_form = RulePackForm()
@@ -179,15 +145,7 @@ def rules_packs_edit(rule_pack_id):
             err = validate_languages_rules(rule_pack_form)
             if err is not None:
                 flash(err, "error")
-                return render_template(
-                    "rules_packs_edit.html",
-                    edit=True,
-                    rules=rules,
-                    form=rule_pack_form,
-                    owasp_links=Rule.OWASP_TOP10_LINKS,
-                    user=current_user,
-                    segment="rule_packs",
-                )
+                return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
             # Set applicable languages
             rp_languages = SupportedLanguage.query.filter(
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
@@ -206,15 +164,7 @@ def rules_packs_edit(rule_pack_id):
                 "Rule pack updated (rule_pack.id=%i)", edit_rule_pack.id
             )
             flash("Rule pack has been successfully saved", "success")
-            return render_template(
-                "rules_packs_edit.html",
-                edit=True,
-                rules=rules,
-                form=rule_pack_form,
-                owasp_links=Rule.OWASP_TOP10_LINKS,
-                user=current_user,
-                segment="rule_packs",
-            )
+            return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
         # Form is invalid, form.error is populated
         else:
             current_app.logger.warning(
@@ -238,15 +188,7 @@ def rules_packs_edit(rule_pack_id):
         rule_pack_form.rules.data = ""
         for c_rule in edit_rule_pack.rules:
             rule_pack_form.rules.data = rule_pack_form.rules.data + "," + str(c_rule.id)
-        return render_template(
-            "rules_packs_edit.html",
-            edit=True,
-            rules=rules,
-            form=rule_pack_form,
-            owasp_links=Rule.OWASP_TOP10_LINKS,
-            user=current_user,
-            segment="rule_packs",
-        )
+        return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
 
 
 @blueprint.route("/rules/packs/remove/<rule_pack_id>")
