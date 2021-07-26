@@ -6,14 +6,15 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 
+from flask import current_app, flash, redirect, render_template, url_for
+from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.analysis import blueprint
 from grepmarx.analysis.forms import ScanForm
 from grepmarx.analysis.model import Analysis, Occurence, Vulnerability
+from grepmarx.analysis.util import async_scan
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import Rule, RulePack
-from flask import current_app, render_template, redirect, url_for, flash
-from flask_login import current_user, login_required
 from pygments.lexers import guess_lexer_for_filename
 
 
@@ -112,10 +113,6 @@ def scans_launch():
         if len(scan_form.rule_packs.data) <= 0:
             flash("At least one rule pack should be selected", "error")
             return scans_new(project_id=project.id, scan_form=scan_form)
-        # Status in now Analysing
-        project.status = Project.STATUS_ANALYZING
-        db.session.commit()
-        current_app.logger.info("New analysis started (project.id=%i)", project.id)
         # Get applicable rule packs
         selected_rule_packs = RulePack.query.filter(
             RulePack.id.in_(scan_form.rule_packs.data)
@@ -126,15 +123,19 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
-        # Launch the scan
-        if project.analysis.scan():
-            # Status in now Finished
-            project.status = Project.STATUS_FINISHED
-        else:
-            # Error during scan, project.error_message is populated
-            project.status = Project.STATUS_ERROR
         db.session.commit()
+        # Set rule folder for the project
+        project_rules_path = os.path.join(
+            Project.PROJECTS_SRC_PATH, str(project.id), "rules"
+        )
+        # Copy all applicable rules in a folder under the project's directory
+        project.analysis.import_rules(project_rules_path)
+        # Start celery asynchronous scan
+        current_app.logger.info("New analysis started (project.id=%i)", project.id)
+        async_scan.delay(project.analysis.id)
+        # Done
         current_app.logger.info("Analysis completed (project.id=%i)", project.id)
+        flash("Analysis successfully launched", "success")
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated
     else:

@@ -5,17 +5,13 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import os
 import re
-from datetime import datetime
 from shutil import copyfile, rmtree
-from json import dumps
 
 from flask import current_app
 from grepmarx import db
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import Rule, analysis_to_rule_pack_association_table
 from grepmarx.rules.util import generate_severity
-from libsast import Scanner
-from semgrep.error import SemgrepError
 from sqlalchemy import Column, ForeignKey, Integer, String
 
 
@@ -38,39 +34,6 @@ class Analysis(db.Model):
     )
     ignore_paths = Column(String)
     ignore_filenames = Column(String)
-
-    def scan(self):
-        self.started_on = datetime.now()
-        # Set rule folder for the project
-        project_rules_path = os.path.join(
-            Project.PROJECTS_SRC_PATH, str(self.project.id), "rules"
-        )
-        # Copy all applicable rules in a folder under the project's directory
-        self.import_rules(project_rules_path)
-        # Define the scan path
-        scan_path = os.path.join(
-            Project.PROJECTS_SRC_PATH, str(self.project.id), Project.EXTRACT_FOLDER_NAME
-        )
-        # Set scanner options
-        options = self.generate_options(project_rules_path)
-        current_app.logger.debug(
-            "Scanner options for project with id=%i: %s", self.project.id, str(options)
-        )
-        # Start scan
-        scanner = Scanner(options, [scan_path])
-        try:
-            result = scanner.scan()
-            self.load_scan_results(result)
-            success = True
-        except SemgrepError as e:
-            self.project.error_message = repr(e)
-            e.level
-            success = False
-            current_app.logger.error(
-                "Error while scanning project with id=%i: %s", self.project.id, str(e)
-            )
-        self.finished_on = datetime.now()
-        return success
 
     def import_rules(self, rule_folder):
         if os.path.isdir(rule_folder):

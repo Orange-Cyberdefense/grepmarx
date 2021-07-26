@@ -1,5 +1,17 @@
-version: '3'
+version: '3.1'
 services:
+
+  redis:
+    image: redis:latest
+
+  celery:
+    build: .
+    volumes:
+      - celery-data:/data/celery-data/
+    command: ['celery', '-A', 'celery_worker.celery', 'worker', '-l', 'info']
+    links:
+      - redis
+
   grepmarx:
     restart: always
     env_file: .env
@@ -9,6 +21,11 @@ services:
     networks:
       - db_network
       - web_network
+    links:
+      - redis
+    depends_on:
+      - redis
+
   nginx:
     restart: always
     image: "nginx:latest"
@@ -20,8 +37,12 @@ services:
       - web_network
     depends_on: 
       - grepmarx
+
 networks:
   db_network:
     driver: bridge
   web_network:
     driver: bridge
+
+volumes: 
+  celery-data:

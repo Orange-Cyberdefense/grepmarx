@@ -11,7 +11,11 @@ class Config(object):
 
     basedir    = os.path.abspath(os.path.dirname(__file__))
 
-    SECRET_KEY = config('SECRET_KEY', default='changeme')
+    SECRET_KEY = config('SECRET_KEY', default='***REMOVED***')
+
+    # Celery
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
     # SqlAlechemy - This will create a file in <app> FOLDER
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')

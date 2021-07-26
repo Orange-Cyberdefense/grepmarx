@@ -3,15 +3,16 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import Flask, url_for
+from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from celery import Celery
 from importlib import import_module
-from logging import basicConfig, DEBUG, getLogger, StreamHandler
-from os import path
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+# Instantiate Celery
+celery = Celery(__name__, broker='redis://localhost:6379/0', result_backend='redis://localhost:6379/0')
 
 def register_extensions(app):
     db.init_app(app)
@@ -35,6 +36,8 @@ def configure_database(app):
 def create_app(config):
     app = Flask(__name__, static_folder='base/static')
     app.config.from_object(config)
+    # Configure celery
+    celery.conf.update(app.config)
     register_extensions(app)
     register_blueprints(app)
     configure_database(app)

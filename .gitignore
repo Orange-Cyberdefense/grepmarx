@@ -32,3 +32,5 @@ _templates
 package-lock.json
 .vscode/symbols.json
 .vscode/settings.json
+
+dump.rdb

@@ -18,6 +18,23 @@
                 "--no-debugger"
             ],
             "jinja": true
+        },
+        {
+            "name": "Python: Celery",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "celery_worker.celery",
+                "worker",
+                "-l",
+                "info",
+                "-P",
+                "solo",
+            ]
         }
+    
     ]
 }

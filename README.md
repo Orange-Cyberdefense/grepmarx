@@ -34,8 +34,12 @@ Extra
 | ------ | ------ | ------ | ------ | ------ |
 | GNU/Linux | 2.8Ghz | 4-6 | 12GB | IE9+, Edge (latest), Firefox (latest), Safari (latest), Chrome (latest), Opera (latest) |
 
-
 ### How to use it
+
+A Redis server is required to queue security scans. Install the `redis` package with your favorite distro package manager, then:
+```bash
+$ redis-server
+```
 
 ```bash
 $ # Get the code
@@ -56,6 +60,9 @@ $ export FLASK_APP=run.py
 $ # Set up the DEBUG environment
 $ # export FLASK_ENV=development
 
+$ # Start the celery worker process
+$ celery -A celery_worker.celery worker --pool=solo --loglevel=info --detach
+
 $ # Start the application (development mode)
 $ # --host=0.0.0.0 - expose the app on all network interfaces (default 127.0.0.1)
 $ # --port=5000    - specify the app port (default 5000)  
@@ -68,7 +75,7 @@ $ # Access grepmarx in browser: http://127.0.0.1:5000/
 
 ### Deployment
 
-Grepmarx is provided with a basic configuration to be executed in [Docker](https://www.docker.com/), [Heroku](https://www.heroku.com/), and [Gunicorn](https://gunicorn.org/).
+Grepmarx is provided with a configuration to be executed in [Docker](https://www.docker.com/) and [Gunicorn](https://gunicorn.org/).
 
 #### [Docker](https://www.docker.com/) execution
 ---
@@ -91,39 +98,6 @@ $ sudo docker-compose pull && sudo docker-compose build && sudo docker-compose u
 
 Visit `http://localhost:5005` in your browser. The app should be up & running.
 
-
-#### [Heroku](https://www.heroku.com/)
----
-
-Steps to deploy on **Heroku**
-
-- [Create a FREE account](https://signup.heroku.com/) on Heroku platform
-- [Install the Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-python#set-up) for GNU/Linux
-- Open a terminal window and authenticate via `heroku login` command
-- Clone the sources and push the project for LIVE deployment
-
-```bash
-$ # Clone the source code:
-$ git clone https://...grepmarx.git
-$ cd grepmarx
-
-$ # Check Heroku CLI is installed
-$ heroku -v
-heroku/7.25.0 win32-x64 node-v12.13.0 # <-- All good
-
-$ # Check Heroku CLI is installed
-$ heroku login
-$ # this command will open a browser window - click the login button (in browser)
-
-$ # Create the Heroku project
-$ heroku create
-
-$ # Trigger the LIVE deploy
-$ git push heroku master
-
-$ # Open the LIVE app in browser
-$ heroku open
-```
 
 #### [Gunicorn](https://gunicorn.org/)
 ---
@@ -159,7 +133,7 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 - Database is locked during a scan / rule refresh
 - Line counting optimization
 - Dashboard
-- Scan and rule refresh in background
+- Rule refresh in background
 - Code dependency checking
 - Application inspection features
 
