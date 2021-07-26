@@ -15,7 +15,7 @@ class Config(object):
 
     # Celery
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    RESULT_BACKEND = 'redis://localhost:6379/0'
 
     # SqlAlechemy - This will create a file in <app> FOLDER
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
