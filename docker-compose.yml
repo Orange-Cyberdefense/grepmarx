@@ -1,6 +1,6 @@
 version: '3'
 services:
-  appseed-app:
+  grepmarx:
     restart: always
     env_file: .env
     build: .
@@ -19,7 +19,7 @@ services:
     networks:
       - web_network
     depends_on: 
-      - appseed-app
+      - grepmarx
 networks:
   db_network:
     driver: bridge

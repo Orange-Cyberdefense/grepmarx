@@ -27,7 +27,8 @@ def generate_severity(cwe_string):
     """
     ret = grepmarx.rules.model.Rule.SEVERITY_LOW
     if cwe_string is not None:
-        if match := re.search("(CWE-\d+)", cwe_string, re.IGNORECASE):
+        match = re.search("(CWE-\d+)", cwe_string, re.IGNORECASE)
+        if match:
             cwe_id = match.group(1).upper()
             if cwe_id in grepmarx.rules.model.Rule.TOP40_CWE_SEVERITIES:
                 ret = grepmarx.rules.model.Rule.TOP40_CWE_SEVERITIES[cwe_id]
