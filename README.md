@@ -130,7 +130,6 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 ## TODO
 - Rule repository management
 - Display handling of WTForms errors
-- Database is locked during a scan / rule refresh
 - Line counting optimization
 - Dashboard
 - Rule refresh in background
