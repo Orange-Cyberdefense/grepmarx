@@ -140,13 +140,9 @@
                                     {% elif c_project.status == 1 %}
                                     <span class="badge badge-lg bg-success w-100 p-2">Ready</span>
                                     {% elif c_project.status == 2 %}
-                                    <div class="progress w-100" style="height: 2.5em;">
-                                        <div class="bg-info font-weight-bold progress-bar progress-bar-striped progress-bar-animated"
-                                            role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0"
-                                            aria-valuemax="100">
-                                            analyzing
-                                        </div>
-                                    </div>
+                                    <span class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated w-100 p-2">
+                                        Analyzing
+                                    </span>    
                                     {% elif c_project.status == 3 %}
                                     <span class="badge badge-lg bg-danger w-100 p-2" title="{{ c_project.error_message }}">Error</span>
                                     {% endif %}
