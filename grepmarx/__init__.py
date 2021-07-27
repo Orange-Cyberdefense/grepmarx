@@ -3,28 +3,38 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from importlib import import_module
+
+from celery import Celery
 from flask import Flask
 from flask_login import LoginManager
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from celery import Celery
-from importlib import import_module
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+migrate = Migrate()
+
 # Instantiate Celery
-celery = Celery(__name__, broker='redis://localhost:6379/0', result_backend='redis://localhost:6379/0')
+celery = Celery(
+    __name__,
+    broker="redis://localhost:6379/0",
+    result_backend="redis://localhost:6379/0",
+)
+
 
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
 
+
 def register_blueprints(app):
-    for module_name in ('base', 'administration', 'analysis', 'rules', 'projects'):
-        module = import_module('grepmarx.{}.routes'.format(module_name))
+    for module_name in ("base", "administration", "analysis", "rules", "projects"):
+        module = import_module("grepmarx.{}.routes".format(module_name))
         app.register_blueprint(module.blueprint)
 
-def configure_database(app):
 
+def configure_database(app):
     @app.before_first_request
     def initialize_database():
         db.create_all()
@@ -33,9 +43,11 @@ def configure_database(app):
     def shutdown_session(exception=None):
         db.session.remove()
 
+
 def create_app(config):
-    app = Flask(__name__, static_folder='base/static')
+    app = Flask(__name__, static_folder="base/static")
     app.config.from_object(config)
+    migrate.init_app(app, db)
     # Configure celery
     celery.conf.update(app.config)
     register_extensions(app)
