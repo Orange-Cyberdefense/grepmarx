@@ -12,6 +12,5 @@ redis==3.5.3
 celery==5.1.2
 jsonschema==3.2.0
 pygments==2.9.0
-pygount==1.2.4
 is_safe_url==1.0
 libsast==1.4.5

@@ -130,7 +130,6 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 ## TODO
 - Rule repository management
 - Display handling of WTForms errors
-- Line counting optimization
 - Dashboard
 - Code dependency checking
 - Application inspection features

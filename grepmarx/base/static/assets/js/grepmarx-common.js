@@ -37,7 +37,7 @@ function animateUploadProgress() {
     progress.setAttribute("aria-valuenow", 100);
     progress.classList.add("progress-bar-striped");
     progress.classList.add("progress-bar-animated");
-    progress.innerText = "Counting lines of code";
+    progress.innerText = "Creating project...";
 }
 
 function updateUploadProgress(percent) {

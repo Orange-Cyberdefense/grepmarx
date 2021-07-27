@@ -12,12 +12,10 @@ from zipfile import ZipFile
 from flask import current_app, redirect, render_template, url_for, flash
 from flask_login import current_user, login_required
 from grepmarx import db
-from grepmarx.analysis.model import ProjectLinesCount
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
-from grepmarx.projects.model import Project
+from grepmarx.projects.model import Project, ProjectLinesCount
 from grepmarx.projects.util import sha256sum, check_zipfile
-from grepmarx.rules.model import SupportedLanguage
 from pygount import ProjectSummary, SourceAnalysis
 from werkzeug.utils import secure_filename
 
@@ -84,21 +82,14 @@ def projects_create():
         with ZipFile(archive_path, "r") as zip_ref:
             # TODO try/catch BadZipFile + error msg + rollback / delete project
             zip_ref.extractall(source_path)
-        # Start counting lines of code
-        project_summary = ProjectSummary()
-        source_files = glob(
-            pathname=os.path.join(source_path, "**", "*"), recursive=True
-        )
-        for source_file in source_files:
-            if os.path.isfile(source_file):
-                source_analysis = SourceAnalysis.from_file(source_file, "pygount")
-                project_summary.add(source_analysis)
-        project.project_lines_count = ProjectLinesCount.load_project_lines_count(
-            project_summary
-        )
 
-        # glob(pathname="**/*test*/", recursive=True)
-        # glob(pathname="**/*.min.js", recursive=True)
+
+        # Start counting lines of code
+        project.count_lines()
+        #project.project_lines_count = ProjectLinesCount.load_project_lines_count(
+        #    project_summary
+        #)
+
         db.session.commit()
         current_app.logger.info("New project created (project.id=%i)", project.id)
         return str(project.id), 200
