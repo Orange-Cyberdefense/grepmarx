@@ -132,7 +132,6 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 - Display handling of WTForms errors
 - Line counting optimization
 - Dashboard
-- Rule refresh in background
 - Code dependency checking
 - Application inspection features
 
