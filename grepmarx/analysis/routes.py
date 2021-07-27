@@ -23,6 +23,9 @@ from pygments.lexers import guess_lexer_for_filename
 def analysis_workbench(analysis_id):
     # TODO LFI via vulnerability location !
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    if len(analysis.vulnerabilities) <= 0:
+        flash("No findings were found for this project during the last analysis", "error")
+        return redirect(url_for("projects_blueprint.projects_list"))
     vulnerabilities = analysis.vulnerabilities_sorted_by_severity()
     return render_template(
         "analysis_workbench.html",
