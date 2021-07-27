@@ -5,7 +5,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 
-from flask import current_app, redirect, render_template, request, url_for, flash
+from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.rules import blueprint
@@ -33,7 +33,8 @@ def rules_sync():
     current_app.logger.info("Started rules sync")
     Rule.sync_db(Rule.RULES_PATH)
     current_app.logger.info("Finished rules sync")
-    return 200
+    return "done", 200
+
 
 # TODO: do this client side somehow
 @blueprint.route("/rules/sync_success")
@@ -41,6 +42,7 @@ def rules_sync():
 def rules_sync_success():
     flash("Rules were successfully synced", "success")
     return redirect(url_for("rules_blueprint.rules_list"))
+
 
 @blueprint.route("/rules/details/<rule_id>")
 @login_required
