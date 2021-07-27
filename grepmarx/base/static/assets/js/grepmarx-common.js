@@ -74,6 +74,21 @@ function ajaxRuleDetails(el, ruleId) {
     reqRuleDetails.send();
 }
 
+// ------------ Asynchronous rules sync
+
+function ajaxSyncRules() {
+    document.getElementById('overlay-modal-sync').classList.remove('d-none');
+    document.getElementById('confirm-sync-button').setAttribute('disabled', 'true');
+    reqRuleSync = new XMLHttpRequest();
+    reqRuleSync.onreadystatechange = function () {
+        if (reqRuleSync.readyState === XMLHttpRequest.DONE) {
+            document.location = "/rules/sync_success"
+        }
+    };
+    reqRuleSync.open('GET', '/rules/sync');
+    reqRuleSync.send();
+}
+
 // ------------ Datatables with checkboxes
 
 /**

@@ -36,11 +36,12 @@
                     <div class="btn-group float-sm-right">
                         <button class="btn btn-default" data-toggle="modal" data-target="#modal-new-project">
                             <span class="fas fa-plus-circle"></span>
-                            New Rule
+                            New rule
                         </button>
-                        <button class="btn btn-default" onclick="document.location='/rules/refresh'">
+                        <button class="btn btn-default" 
+                        data-toggle="modal" data-target="#confirm-sync">
                             <span class="fas fa-sync-alt"></span>
-                            Refresh Rules
+                            Sync rules
                         </button>
                     </div>
                 </div>
@@ -48,7 +49,7 @@
     </section>
     <!-- Main content -->
     <section class="content">
-        
+
         {% include 'messages.html' %}
 
         <div class="card card-default">
@@ -62,105 +63,105 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="rules-list-table" class="table table-hover dataTable"
-                                role="grid">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Severity</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Repository</th>
-                                        <th>Languages</th>
-                                        <th>OWASP</th>
-                                        <th>CWE</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for c_rule in rules %}
-                                    <tr>
-                                        <td>
-                                            <span class="font-weight-normal">
-                                                {{ c_rule.id }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="font-weight-normal">
-                                                {% if c_rule.severity == "high" %}
-                                                <span class="badge badge-lg bg-danger p-2 w-100">HIGH</span>
-                                                {% endif %}
-                                                {% if c_rule.severity == "medium" %}
-                                                <span class="badge badge-lg bg-warning p-2 w-100">MEDIUM</span>
-                                                {% endif %}
-                                                {% if c_rule.severity == "low" %}
-                                                <span class="badge badge-sm bg-info p-2 w-100">LOW</span>
-                                                {% endif %}
-                                            </span>
-                                        </td>
-                                        <td class="text-truncate">
-                                            <span class="font-weight-bold text-smallcaps">
-                                                {{ c_rule.title|replace('-',' ')|replace('_',' ') }}
-                                            </span>
-                                        </td>
-                                        <td class="text-truncate">
-                                            <span class="font-weight-normal">
-                                                {{ c_rule.category }}
-                                            </span>
-                                        </td>
-                                        <td class="text-truncate">
-                                            <span class="font-weight-normal">
-                                                {{ c_rule.repository }}
-                                            </span>
-                                        </td>
-                                        <td class="text-truncate">
-                                            <span class="font-weight-normal">
-                                                {% for c_language in c_rule.languages %}
-                                                {{ c_language.name }}
-                                                {{ ", " if not loop.last }}
-                                                {% endfor %}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {% if c_rule.owasp is not none %}
-                                            {% set owasp_id = c_rule.owasp[:3].split(':')[0] %}
-                                            <a href="{{ owasp_links[owasp_id ]}}" target="_blank">
-                                                <span class="badge badge-sm bg-success p-2 w-100">
-                                                    {{ owasp_id }}
-                                                </span>
-                                            </a>
-                                            {% else %}
-                                            <span class="font-weight-normal">-</span>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="rules-list-table" class="table table-hover dataTable" role="grid">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Severity</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Repository</th>
+                                    <th>Languages</th>
+                                    <th>OWASP</th>
+                                    <th>CWE</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c_rule in rules %}
+                                <tr>
+                                    <td>
+                                        <span class="font-weight-normal">
+                                            {{ c_rule.id }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="font-weight-normal">
+                                            {% if c_rule.severity == "high" %}
+                                            <span class="badge badge-lg bg-danger p-2 w-100">HIGH</span>
                                             {% endif %}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {% if c_rule.cwe is not none %}
-                                            {% set cwe_id = c_rule.cwe[:8].split(':')[0] %}
-                                            <a href="https://cwe.mitre.org/data/definitions/{{ cwe_id.split('-')[1] }}.html"
-                                                target="_blank">
-                                                <span class="badge badge-sm bg-info p-2 w-100">
-                                                    {{ cwe_id }}
-                                                </span>
-                                            </a>
-                                            {% else %}
-                                            <span class="font-weight-normal">-</span>
+                                            {% if c_rule.severity == "medium" %}
+                                            <span class="badge badge-lg bg-warning p-2 w-100">MEDIUM</span>
                                             {% endif %}
-                                        </td>
-                                        <td class="text-right py-0 align-middle">
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="#" class="btn btn-default" onclick="ajaxRuleDetails(this, '{{ c_rule.id }}')"
-                                                    data-toggle="modal" data-target="#modal-rule-details"><i class="fas fa-eye"></i></a>
-                                                <a href="#" class="btn btn-default"><i class="fas fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                            {% if c_rule.severity == "low" %}
+                                            <span class="badge badge-sm bg-info p-2 w-100">LOW</span>
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span class="font-weight-bold text-smallcaps">
+                                            {{ c_rule.title|replace('-',' ')|replace('_',' ') }}
+                                        </span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span class="font-weight-normal">
+                                            {{ c_rule.category }}
+                                        </span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span class="font-weight-normal">
+                                            {{ c_rule.repository }}
+                                        </span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span class="font-weight-normal">
+                                            {% for c_language in c_rule.languages %}
+                                            {{ c_language.name }}
+                                            {{ ", " if not loop.last }}
+                                            {% endfor %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if c_rule.owasp is not none %}
+                                        {% set owasp_id = c_rule.owasp[:3].split(':')[0] %}
+                                        <a href="{{ owasp_links[owasp_id ]}}" target="_blank">
+                                            <span class="badge badge-sm bg-success p-2 w-100">
+                                                {{ owasp_id }}
+                                            </span>
+                                        </a>
+                                        {% else %}
+                                        <span class="font-weight-normal">-</span>
+                                        {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if c_rule.cwe is not none %}
+                                        {% set cwe_id = c_rule.cwe[:8].split(':')[0] %}
+                                        <a href="https://cwe.mitre.org/data/definitions/{{ cwe_id.split('-')[1] }}.html"
+                                            target="_blank">
+                                            <span class="badge badge-sm bg-info p-2 w-100">
+                                                {{ cwe_id }}
+                                            </span>
+                                        </a>
+                                        {% else %}
+                                        <span class="font-weight-normal">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right py-0 align-middle">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-default"
+                                                onclick="ajaxRuleDetails(this, '{{ c_rule.id }}')" data-toggle="modal"
+                                                data-target="#modal-rule-details"><i class="fas fa-eye"></i></a>
+                                            <a href="#" class="btn btn-default"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>
@@ -168,6 +169,36 @@
         </div>
     </section>
 </div>
+
+<!-- Modal refresh confirmation -->
+<div class="modal fade" id="confirm-sync" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <!-- Modal overlay-->
+        <div id="overlay-modal-sync" class="overlay d-none">
+            <i class="fas fa-2x fa-sync fa-spin"></i>
+        </div>
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm rules sync</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <p class="mb-0">You are about to sync analysis rules: all rules from the registered repositories are
+                    going to be injected into the database for further use in rules packs. This operation may take a few minutes.
+                    <br />
+                    <b>Already imported rules IDs will be kept</b> to prevent existing rule packs corruption.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" id="confirm-sync-button" onclick="ajaxSyncRules()">Sync</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of modal refresh confirmation -->
 
 <!-- Ruledetails modal dialog -->
 <div class="modal fade" id="modal-rule-details" tabindex="-1" role="dialog" aria-hidden="true">

@@ -27,14 +27,20 @@ def rules_list():
     )
 
 
-@blueprint.route("/rules/refresh")
+@blueprint.route("/rules/sync")
 @login_required
-def rules_refresh():
-    current_app.logger.info("Started refreshing rules")
-    Rule.refresh_db(Rule.RULES_PATH)
-    current_app.logger.info("Finished refreshing rules")
-    return redirect(url_for("rules_blueprint.rules_list"))
+def rules_sync():
+    current_app.logger.info("Started rules sync")
+    Rule.sync_db(Rule.RULES_PATH)
+    current_app.logger.info("Finished rules sync")
+    return 200
 
+# TODO: do this client side somehow
+@blueprint.route("/rules/sync_success")
+@login_required
+def rules_sync_success():
+    flash("Rules were successfully synced", "success")
+    return redirect(url_for("rules_blueprint.rules_list"))
 
 @blueprint.route("/rules/details/<rule_id>")
 @login_required

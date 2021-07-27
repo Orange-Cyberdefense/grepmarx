@@ -126,7 +126,7 @@ class Rule(db.Model):
     )
 
     @staticmethod
-    def refresh_db(rules_folder):
+    def sync_db(rules_folder):
         rules_filenames = glob(
             pathname=os.path.join(rules_folder, "**", "*.yaml"), recursive=True
         )
