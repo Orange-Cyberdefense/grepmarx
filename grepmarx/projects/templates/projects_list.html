@@ -149,11 +149,14 @@
                                 </td>
                                 <td class="project-actions">
                                     <div class="btn-group btn-group-sm">
+                                        {% if c_project.status == 0 or c_project.status == 3 %}
+                                        <a class="btn btn-default btn-sm" href="/analysis/scans/new/{{ c_project.id }}">
+                                        {% elif c_project.status == 1 %}
+                                        <a class="btn btn-default btn-sm" href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                        {% elif c_project.status == 2 %}
                                         <a class="btn btn-default btn-sm" href="#">
+                                        {% endif %}
                                             <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a class="btn btn-default btn-sm" href="#">
-                                            <i class="fas fa-pencil-alt"></i>
                                         </a>
                                         <a class="btn btn-default btn-sm" href="#"
                                         onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
