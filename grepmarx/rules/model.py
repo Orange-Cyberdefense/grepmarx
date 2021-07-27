@@ -196,6 +196,15 @@ class RulePack(db.Model):
         back_populates="rule_packs",
     )
 
+class RuleRepository(db.Model):
+
+    __tablename__ = "RuleRepository"
+
+    id = Column("id", Integer, primary_key=True)
+    name = Column(String, unique=True)
+    description = Column(String)
+    uri = Column(String)
+
 
 class SupportedLanguage(db.Model):
 

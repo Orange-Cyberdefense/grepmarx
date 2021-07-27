@@ -16,7 +16,6 @@ from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.model import Project, ProjectLinesCount
 from grepmarx.projects.util import sha256sum, check_zipfile
-from pygount import ProjectSummary, SourceAnalysis
 from werkzeug.utils import secure_filename
 
 
