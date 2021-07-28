@@ -49,7 +49,7 @@ class Analysis(db.Model):
                     + c_rule.category
                     + "."
                     + c_rule.title
-                    + Rule.RULE_EXTENSION[0],
+                    + next(iter(Rule.RULE_EXTENSIONS)),
                 )
                 copyfile(src, dst)
                 current_app.logger.debug(
