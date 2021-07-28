@@ -52,7 +52,7 @@
                         <h4>{{ c_rule_repo.name }}</h4>
                         <b>{{ c_rule_repo.rules | length }} rules</b><br />
                         Last update: {{ c_rule_repo.last_update_on.strftime("%-d %B, %Y %H:%M") }}
-                        <p><a href="#"><i class="fas fa-sync-alt"></i> Pull latest rules now</a></p>
+                        <p><a href="/repos/pull/{{ c_rule_repo.id }}"><i class="fas fa-sync-alt"></i> Pull latest rules now</a></p>
                     </div>
                     <div class="icon">
                         <i class="fab fa-git-square"></i>

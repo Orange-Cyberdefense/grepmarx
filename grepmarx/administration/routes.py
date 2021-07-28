@@ -2,7 +2,6 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from datetime import datetime
 import json
 
 from flask import current_app, flash, redirect, render_template, request, url_for
@@ -187,7 +186,6 @@ def repos_add():
             )
             # Clone the repo
             repo.clone()
-            repo.last_update_on = datetime.now()
             # Save repo in DB
             db.session.add(repo)
             db.session.commit()
@@ -227,7 +225,7 @@ def repos_edit(repo_id):
         repo_form = RepositoryForm()
         # Form is valid
         if repo_form.validate_on_submit():
-            # User can be updated
+            # Repo can be updated
             repo_form.populate_obj(edit_repo)
             db.session.commit()
             current_app.logger.info("Repo updated (repo.id=%i)", repo_form.id.data)
@@ -264,4 +262,14 @@ def repos_remove(repo_id):
     repo.remove()
     current_app.logger.info("Repository removed (repo.id=%i)", repo.id)
     flash("Repository successfully deleted", "success")
+    return redirect(url_for("administration_blueprint.repos_list"))
+
+
+@blueprint.route("/repos/pull/<repo_id>")
+@login_required
+def repos_pull(repo_id):
+    repo = RuleRepository.query.filter_by(id=repo_id).first_or_404()
+    repo.pull()
+    current_app.logger.info("Git pull on repository (repo.id=%i)", repo.id)
+    flash("Latest rules were successfully pulled for the repository", "success")
     return redirect(url_for("administration_blueprint.repos_list"))

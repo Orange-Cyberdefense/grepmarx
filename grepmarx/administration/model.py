@@ -4,11 +4,14 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import os
-import git
-from grepmarx.rules import model
-from grepmarx import db
-from sqlalchemy import Column, Integer, String, DateTime
+from datetime import datetime
 from shutil import rmtree
+
+import git
+from grepmarx import db
+from grepmarx.rules import model
+from sqlalchemy import Column, DateTime, Integer, String
+
 
 class RuleRepository(db.Model):
 
@@ -23,6 +26,14 @@ class RuleRepository(db.Model):
     def clone(self):
         repo_path = os.path.join(model.Rule.RULES_PATH, self.name)
         git.Repo.clone_from(self.uri, repo_path)
+        self.last_update_on = datetime.now()
+        db.session.commit()
+
+    def pull(self):
+        repo_path = os.path.join(model.Rule.RULES_PATH, self.name)
+        git.cmd.Git(repo_path).pull()
+        self.last_update_on = datetime.now()
+        db.session.commit()
 
     def remove(self):
         # Remove repository folder on disk
