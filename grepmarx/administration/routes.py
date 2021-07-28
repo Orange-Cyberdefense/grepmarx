@@ -2,16 +2,18 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from datetime import datetime
 import json
 
-from grepmarx.administration.util import validate_user_form
+from flask import current_app, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.administration import blueprint
-from grepmarx.administration.forms import UserForm
+from grepmarx.administration.forms import RepositoryForm, UserForm
+from grepmarx.administration.model import RuleRepository
+from grepmarx.administration.util import validate_user_form
 from grepmarx.base import util
 from grepmarx.base.models import User
-from flask import current_app, redirect, render_template, request, url_for, flash
-from flask_login import current_user, login_required
 
 
 @blueprint.route("/users")
@@ -145,3 +147,121 @@ def users_remove(user_id):
     current_app.logger.info("User removed (user.id=%i)", user.id)
     flash("User successfully deleted", "success")
     return redirect(url_for("administration_blueprint.users_list"))
+
+
+@blueprint.route("/repos")
+@login_required
+def repos_list():
+    rule_repos = RuleRepository.query.all()
+    return render_template(
+        "repos_list.html",
+        rule_repos=rule_repos,
+        user=current_user,
+        segment="repos",
+    )
+
+
+@blueprint.route("/repos/add", methods=["GET", "POST"])
+@login_required
+def repos_add():
+    repo_form = RepositoryForm()
+    # POST / Form submitted
+    if "save-repo" in request.form:
+        # Form is valid
+        if repo_form.validate_on_submit():
+            # Repo name should be unique
+            if RuleRepository.query.filter_by(name=repo_form.name.data).first() is not None:
+                flash("Name is already registered for another repository", "error")
+                return render_template(
+                    "repos_edit.html",
+                    edit=False,
+                    form=repo_form,
+                    user=current_user,
+                    segment="users",
+                )
+            # We can create the repo
+            repo = RuleRepository(
+                name=repo_form.name.data,
+                description=repo_form.description.data,
+                uri=repo_form.uri.data,
+            )
+            # Clone the repo
+            repo.clone()
+            repo.last_update_on = datetime.now()
+            # Save repo in DB
+            db.session.add(repo)
+            db.session.commit()
+            current_app.logger.info("New repo added (repo.id=%i)", repo.id)
+            flash("New repository successfully added", "success")
+            return redirect(url_for("administration_blueprint.repos_list"))
+        # Form is invalid, form.error is populated
+        else:
+            current_app.logger.warning(
+                "Repository add form invalid entries: %s", json.dumps(repo_form.errors)
+            )
+            flash(str(repo_form.errors), "error")
+            return render_template(
+                "repos_edit.html",
+                edit=False,
+                form=repo_form,
+                user=current_user,
+                segment="repos",
+            )
+    # GET / Display form
+    else:
+        return render_template(
+            "repos_edit.html",
+            edit=False,
+            form=repo_form,
+            user=current_user,
+            segment="repos",
+        )
+
+
+@blueprint.route("/repos/edit/<repo_id>", methods=["GET", "POST"])
+@login_required
+def repos_edit(repo_id):
+    edit_repo = RuleRepository.query.filter_by(id=repo_id).first()
+    # POST / Form submitted
+    if "save-repo" in request.form:
+        repo_form = RepositoryForm()
+        # Form is valid
+        if repo_form.validate_on_submit():
+            # User can be updated
+            repo_form.populate_obj(edit_repo)
+            db.session.commit()
+            current_app.logger.info("Repo updated (repo.id=%i)", repo_form.id.data)
+            flash("Repository successfully updated", "success")
+            return redirect(url_for("administration_blueprint.repos_list"))
+        # Form is invalid, form.error is populated
+        else:
+            current_app.logger.warning(
+                "Repository edit form invalid entries: %s", json.dumps(repo_form.errors)
+            )
+            flash(str(repo_form.errors), "error")
+            return render_template(
+                "repos_edit.html",
+                edit=True,
+                form=RepositoryForm(obj=edit_repo),
+                user=current_user,
+                segment="repos",
+            )
+    # GET / Display form
+    else:
+        return render_template(
+            "repos_edit.html",
+            edit=True,
+            form=RepositoryForm(obj=edit_repo),
+            user=current_user,
+            segment="repos",
+        )
+
+
+@blueprint.route("/repos/remove/<repo_id>")
+@login_required
+def repos_remove(repo_id):
+    repo = RuleRepository.query.filter_by(id=repo_id).first_or_404()
+    repo.remove()
+    current_app.logger.info("Repository removed (repo.id=%i)", repo.id)
+    flash("Repository successfully deleted", "success")
+    return redirect(url_for("administration_blueprint.repos_list"))

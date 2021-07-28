@@ -14,3 +14,4 @@ jsonschema==3.2.0
 pygments==2.9.0
 is_safe_url==1.0
 libsast==1.4.5
+gitpython==3.1.20

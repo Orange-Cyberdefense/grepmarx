@@ -208,3 +208,4 @@ def rules_packs_remove(rule_pack_id):
     current_app.logger.info("Rule pack deleted (rule_pack.id=%i)", rule_pack.id)
     flash("Rule pack has been successfully removed", "success")
     return redirect(url_for("rules_blueprint.rule_packs_list"))
+

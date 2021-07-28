@@ -44,7 +44,7 @@ class Analysis(db.Model):
                 src = os.path.join(Rule.RULES_PATH, c_rule.file_path)
                 dst = os.path.join(
                     rule_folder,
-                    c_rule.repository
+                    c_rule.repository.name
                     + "_"
                     + c_rule.category
                     + "."

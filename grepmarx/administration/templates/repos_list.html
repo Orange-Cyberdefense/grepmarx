@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Rule packs {% endblock %}
+{% block title %} Rule repositories {% endblock %}
 
 {% block stylesheets %}{% endblock stylesheets %}
 
@@ -12,27 +12,27 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Rule packs</h1>
+                    <h1>Rule repositories</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Rule packs</li>
+                        <li class="breadcrumb-item active">Rule repositories</li>
                     </ol>
                 </div>
             </div>
             <div class="row mb-2 ">
                 <div class="col-sm-8">
                     <p class="mb-3">
-                        The following content shows all available rule packs. Pick one to view, edit or delete the rule
-                        pack.
+                        The following content shows all available rule repositories, and allows to pull latest rules for each one. Pick one to view, edit or delete the rule
+                        repository. Rules have to be synced (cf. <a href="/rules">Analysis rules</a>) to be available and to update the rule count of each repository.
                     </p>
                 </div>
                 <div class="col-sm-4">
                     <div class="btn-group float-sm-right">
-                        <a class="btn btn-default" href="/rules/packs/create">
+                        <a class="btn btn-default" href="/repos/add">
                             <span class="fas fa-plus-circle"></span>
-                            New rule pack
+                            Add repository
                         </a>
                     </div>
                 </div>
@@ -45,25 +45,20 @@
         {% include 'messages.html' %}
 
         <div class="row">
-            {% for c_rule_pack in rule_packs %}
+            {% for c_rule_repo in rule_repos %}
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-secondary" title="{{ c_rule_pack.description }}">
+                <div class="small-box bg-secondary" title="{{ c_rule_repo.description }}">
                     <div class="inner">
-                        <h4>{{ c_rule_pack.name }}</h4>
-                        <b>{{ c_rule_pack.rules | length }} rules</b><br />
-                        <p>
-                            Languages:
-                            {% for c_language in c_rule_pack.languages %}
-                            {{ c_language.name }}
-                            {{ ", " if not loop.last }}
-                            {% endfor %}
-                        </p>
+                        <h4>{{ c_rule_repo.name }}</h4>
+                        <b>{{ c_rule_repo.rules | length }} rules</b><br />
+                        Last update: {{ c_rule_repo.last_update_on.strftime("%-d %B, %Y %H:%M") }}
+                        <p><a href="#"><i class="fas fa-sync-alt"></i> Pull latest rules now</a></p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-archive"></i>
+                        <i class="fab fa-git-square"></i>
                     </div>
-                    <a href="/rules/packs/edit/{{ c_rule_pack.id }}" class="small-box-footer">
-                        View / edit rule pack <i class="fas fa-arrow-circle-right"></i>
+                    <a href="/repos/edit/{{ c_rule_repo.id }}" class="small-box-footer">
+                        View / edit repository <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>

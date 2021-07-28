@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from grepmarx.administration.model import RuleRepository
 import os
 from glob import glob
 
@@ -108,12 +109,18 @@ class Rule(db.Model):
 
     id = Column("id", Integer, primary_key=True)
     title = Column(String)
-    repository = Column(String)
     category = Column(String)
     severity = Column(String)
     file_path = Column(String)
     cwe = Column(String)
     owasp = Column(String)
+    repository_id = db.Column(
+        db.Integer, db.ForeignKey("RuleRepository.id"), nullable=False
+    )
+    repository = db.relationship(
+        "RuleRepository",
+        backref=db.backref("rules", lazy=True, cascade="all, delete-orphan"),
+    )
     languages = db.relationship(
         "SupportedLanguage",
         secondary=rule_to_supported_language_association_table,
@@ -147,7 +154,7 @@ class Rule(db.Model):
                                 rule = Rule(
                                     title=c_rule["id"],
                                     file_path=file_path,
-                                    repository=repository,
+                                    repository=RuleRepository.query.filter_by(name=repository).first(),
                                     category=category,
                                 )
                                 db.session.add(rule)
@@ -164,7 +171,7 @@ class Rule(db.Model):
                             rule.severity = generate_severity(rule.cwe)
                             current_app.logger.debug(
                                 "Rule imported in DB: %s",
-                                rule.repository + "/" + rule.category + "/" + rule.title,
+                                rule.repository.name + "/" + rule.category + "/" + rule.title,
                             )
                 except YAMLError as e:
                     db.session.rollback()
@@ -195,15 +202,6 @@ class RulePack(db.Model):
         secondary=rule_to_rule_pack_association_table,
         back_populates="rule_packs",
     )
-
-class RuleRepository(db.Model):
-
-    __tablename__ = "RuleRepository"
-
-    id = Column("id", Integer, primary_key=True)
-    name = Column(String, unique=True)
-    description = Column(String)
-    uri = Column(String)
 
 
 class SupportedLanguage(db.Model):
