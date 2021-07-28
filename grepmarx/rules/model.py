@@ -3,12 +3,12 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.administration.model import RuleRepository
 import os
 from glob import glob
 
 from flask import current_app
 from grepmarx import db
+from grepmarx.administration.model import RuleRepository
 from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from yaml import YAMLError, safe_load
@@ -48,7 +48,7 @@ class Rule(db.Model):
     SEVERITY_MEDIUM = "medium"
     SEVERITY_LOW = "low"
     RULES_PATH = "data/rules/"
-    RULE_EXTENSION = ".yaml"
+    RULE_EXTENSIONS = {".yaml", ".yml"}
     OWASP_TOP10_LINKS = {
         "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",
         "A2": "https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication.html",
@@ -134,10 +134,14 @@ class Rule(db.Model):
 
     @staticmethod
     def sync_db(rules_folder):
-        rules_filenames = glob(
-            pathname=os.path.join(rules_folder, "**", "*.yaml"), recursive=True
-        )
+        # Get all YML files in the folder
+        rules_filenames = list()
+        for c_ext in Rule.RULE_EXTENSIONS:
+            rules_filenames += glob(
+                pathname=os.path.join(rules_folder, "**", "*" + c_ext), recursive=True
+            )
         supported_languages = SupportedLanguage.query.all()
+        # Parse rules in these files
         for c_filename in rules_filenames:
             with open(c_filename, "r") as yml_stream:
                 try:
@@ -154,7 +158,9 @@ class Rule(db.Model):
                                 rule = Rule(
                                     title=c_rule["id"],
                                     file_path=file_path,
-                                    repository=RuleRepository.query.filter_by(name=repository).first(),
+                                    repository=RuleRepository.query.filter_by(
+                                        name=repository
+                                    ).first(),
                                     category=category,
                                 )
                                 db.session.add(rule)
@@ -171,7 +177,11 @@ class Rule(db.Model):
                             rule.severity = generate_severity(rule.cwe)
                             current_app.logger.debug(
                                 "Rule imported in DB: %s",
-                                rule.repository.name + "/" + rule.category + "/" + rule.title,
+                                rule.repository.name
+                                + "/"
+                                + rule.category
+                                + "/"
+                                + rule.title,
                             )
                 except YAMLError as e:
                     db.session.rollback()
