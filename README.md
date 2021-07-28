@@ -128,7 +128,6 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 <br />
 
 ## TODO
-- Rule repository management
 - Dashboard
 - Display handling of WTForms errors
 - Code dependency checking
