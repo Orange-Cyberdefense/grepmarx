@@ -229,6 +229,7 @@ $ cat /etc/nginx/sites-available/grepmarx.conf
 server {
     listen 80;
     server_name grepmarx-dev;
+    client_max_body_size 0;
 
     location / {
         include proxy_params;
