@@ -104,13 +104,18 @@ def rules_packs_create():
             rp_languages = SupportedLanguage.query.filter(
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
             ).all()
-            # Set rules to include
-            r_list = rule_pack_form.rules.data.split(",")
+            # We have a list of comma separated rule ids
+            # Split that into a list, then remove empty and duplicate elemens
+            r_list = list(
+                dict.fromkeys(
+                    filter(None, rule_pack_form.rules.data.split(","))
+                )
+            )
+            # Convert elements to integers
             for i in range(0, len(r_list)):
                 r_list[i] = int(r_list[i])
-            rp_rules = Rule.query.filter(
-                Rule.id.in_(r_list)
-            ).all()
+            # And get corresponding rules from DB
+            rp_rules = Rule.query.filter(Rule.id.in_(r_list)).all()
             # Create the rule pack
             rule_pack = RulePack(
                 name=rule_pack_form.name.data,
@@ -211,4 +216,3 @@ def rules_packs_remove(rule_pack_id):
     current_app.logger.info("Rule pack deleted (rule_pack.id=%i)", rule_pack.id)
     flash("Rule pack has been successfully removed", "success")
     return redirect(url_for("rules_blueprint.rule_packs_list"))
-
