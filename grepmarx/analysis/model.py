@@ -75,9 +75,10 @@ class Analysis(db.Model):
         # Extensions
         ext_str = ""
         for c_rule_pack in self.rule_packs:
-            ext_str = ext_str.join(
-                c_language.extensions + "," for c_language in c_rule_pack.languages
-            )
+            print(c_rule_pack.name)
+            for c_language in c_rule_pack.languages:
+                print(c_language.name)
+                ext_str += c_language.extensions + ","
         options["sgrep_extensions"] = set(
             # Remove duplicates
             dict.fromkeys(
