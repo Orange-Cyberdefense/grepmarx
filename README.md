@@ -34,7 +34,7 @@ Extra
 | ------ | ------ | ------ | ------ | ------ |
 | GNU/Linux | 2.8Ghz | 4-6 | 12GB | IE9+, Edge (latest), Firefox (latest), Safari (latest), Chrome (latest), Opera (latest) |
 
-### How to use it
+## Build from sources
 
 A Redis server is required to queue security scans. Install the `redis` package with your favorite distro package manager, then:
 ```bash
@@ -73,14 +73,14 @@ $ # Access grepmarx in browser: http://127.0.0.1:5000/
 
 **Note: On first launch, call `/init` to initialize the database and create a default user account (user=admin / password=admin). Change the default password immediately.**
 
-### Deployment
+## Execution
 
 Grepmarx is provided with a configuration to be executed in [Docker](https://www.docker.com/) and [Gunicorn](https://gunicorn.org/).
 
 #### [Docker](https://www.docker.com/) execution
 ---
 
-Make sure you have docker-composed installed on the system, and the docker daemon is running.
+Make sure you have docker-composer installed on the system, and the docker daemon is running.
 The application can then be easily executed in a docker container. The steps:
 
 > Get the code
@@ -102,28 +102,164 @@ Visit `http://localhost:5005` in your browser. The app should be up & running.
 #### [Gunicorn](https://gunicorn.org/)
 ---
 
-Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX.
+Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX. A supervisor configuration file is provided to start it along with the required Celery worker (used for security scans queuing).
 
 > Install using pip
 
 ```bash
-$ pip install gunicorn
+$ pip install gunicorn supervisor
 ```
 > Start the app using gunicorn binary
 
 ```bash
-$ gunicorn --bind 0.0.0.0:8001 run:app
-Serving on http://localhost:8001
+$ supervisord -c supervisord.conf
 ```
 
 Visit `http://localhost:8001` in your browser. The app should be up & running.
 
+## Deployment
 
-### Credits & Links
+This quick guide assumes you want to deploy the application on an Ubuntu 20.04.2 LTS server, with gunicorn as the HTTP server, nginx as a reverse proxy and postgresql as the database server. Feel free to change any of that.
+
+### Prepare the system
+
+> Install required packages
+```bash
+$ sudo apt install python3-pip python3-venv postgresql redis-server
+```
+
+### Configure the database
+
+> Create a dedicated postgresql user
+```
+$ sudo su postgres
+$ createuser grepmarx
+$ psql 
+postgres=# ALTER USER grepmarx with encrypted password '<DB_PASSWORD>';
+postgres=# exit
+$ exit
+```
+
+> Edit the file `/etc/postgresql/12/main/pg_hba.conf` to use scram-sha-256 authentication
+```
+local   all         grepmarx                          scram-sha-256
+```
+
+> Restart PostgreSQL
+```bash
+$ sudo systemctl restart postgresql.service
+```
+
+### Prepare the application
+
+> Create a dedicated system user
+```bash
+$ sudo useradd -m grepmarx
+```
+
+> Get the code, create a virtualenv and install the requirements
+```bash
+$ sudo su grepmarx
+$ cd
+$ git clone https://.../grepmarx.git
+$ cd grepmarx
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ (venv) $ pip install -r requirements
+$ (venv) $ deactivate
+```
+
+> Edit the `.env` file to activate production mode, define a secret key and set database configuration
+```bash
+$ cat .env 
+DEBUG=False
+SECRET_KEY=<APP_SECRET_KEY>
+CELERY_BROKER_URL = redis://localhost:6379
+RESULT_BACKEND = redis://localhost:6379
+DB_ENGINE=postgresql
+DB_NAME=grepmarx
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=grepmarx
+DB_PASS=<DB_PASSWORD>
+```
+
+> Bind gunicorn to a system socket rather than a network port, by uncommenting the corresponding line in `supervisord.conf`
+```
+command=gunicorn -w 3 --bind unix:grepmarx.sock run:app 
+```
+
+> Go back to your main user shell
+```bash
+$ exit
+```
+
+### Configure systemd
+
+> Create a service unit file for the application such as
+```bash
+$ cat /etc/systemd/system/grepmarx.service
+[Unit]
+Description=Grepmarx - supervisor launch gunicorn and celery worker
+After=network.target
+
+[Service]
+User=grepmarx
+Group=www-data
+WorkingDirectory=/home/grepmarx/grepmarx
+Environment="PATH=/home/grepmarx/grepmarx/venv/bin:/usr/bin"
+ExecStart=/home/grepmarx/grepmarx/venv/bin/supervisord -n -c /home/grepmarx/grepmarx/supervisord.conf
+
+[Install]
+WantedBy=multi-user.target
+```
+
+> Start and enable the service
+
+```bash
+$ sudo systemctl start grepmarx.service
+$ sudo systemctl start grepmarx.service
+```
+
+### Configure nginx
+
+> Create a nginx congiguration file for the application such as
+```bash
+$ cat /etc/nginx/sites-available/grepmarx.conf
+server {
+    listen 80;
+    server_name grepmarx-dev;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/grepmarx/grepmarx/grepmarx.sock;
+    }
+}
+```
+
+> Enable the configuration and restart nginx
+
+```bash
+$ sudo ln -s /etc/nginx/sites-available/grepmarx.conf /etc/nginx/sites-enabled
+$ sudo rm /etc/nginx/sites-enabled/default
+$ sudo systemctl restart nginx
+```
+
+Grepmarx is now be accessible through http://<server>. 
+
+**Note: On first launch, call `/init` to initialize the database and create a default user account (user=admin / password=admin). Change the default password immediately.**
+
+What you should do next:
+- Get a certificate and activate TLS on nginx: http://nginx.org/en/docs/http/configuring_https_servers.html
+- Harden nginx configuration: https://www.cisecurity.org/benchmark/nginx/
+- Harden postgresql configuration: https://www.cisecurity.org/benchmark/postgresql/
+- Harden system configuration: https://www.cisecurity.org/benchmark/ubuntu_linux/
+
+## Credits & Links
 
 - The web application dashboard is based on [AdminLTE Flask](https://github.com/app-generator/flask-dashboard-adminlte)
 - Code scanning is performed through the [libsast](https://github.com/ajinabraham/libsast) library, which is powered by the [semgrep](https://semgrep.dev/) engine
-- LOC counting is handled by [pygount](https://github.com/roskakori/pygount)
+- LOC counting is handled by [scc](https://github.com/boyter/scc)
 
 <br />
 
