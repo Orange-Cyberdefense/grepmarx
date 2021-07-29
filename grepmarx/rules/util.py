@@ -6,6 +6,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import re
 import grepmarx
 
+
 def validate_languages_rules(form):
     err = None
     # Need at least one language
@@ -35,3 +36,13 @@ def generate_severity(cwe_string):
             else:
                 ret = grepmarx.rules.model.Rule.SEVERITY_MEDIUM
     return ret
+
+
+def comma_separated_to_list(comma_separated):
+    # We have a list of comma separated ids
+    # Split that into a list, then remove empty and duplicate elements
+    r_list = list(dict.fromkeys(filter(None, comma_separated.split(","))))
+    # Convert elements to integers
+    for i in range(0, len(r_list)):
+        r_list[i] = int(r_list[i])
+    return r_list

@@ -5,13 +5,15 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 
-from flask import current_app, flash, redirect, render_template, request, url_for
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.rules import blueprint
 from grepmarx.rules.forms import RulePackForm
 from grepmarx.rules.model import Rule, RulePack, SupportedLanguage
-from grepmarx.rules.util import validate_languages_rules
+from grepmarx.rules.util import (comma_separated_to_list,
+                                 validate_languages_rules)
 
 
 @blueprint.route("/rules")
@@ -104,18 +106,9 @@ def rules_packs_create():
             rp_languages = SupportedLanguage.query.filter(
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
             ).all()
-            # We have a list of comma separated rule ids
-            # Split that into a list, then remove empty and duplicate elemens
-            r_list = list(
-                dict.fromkeys(
-                    filter(None, rule_pack_form.rules.data.split(","))
-                )
-            )
-            # Convert elements to integers
-            for i in range(0, len(r_list)):
-                r_list[i] = int(r_list[i])
-            # And get corresponding rules from DB
-            rp_rules = Rule.query.filter(Rule.id.in_(r_list)).all()
+            # Get associated rules
+            rule_ids = comma_separated_to_list(rule_pack_form.rules.data)
+            rp_rules = Rule.query.filter(Rule.id.in_(rule_ids)).all()
             # Create the rule pack
             rule_pack = RulePack(
                 name=rule_pack_form.name.data,
@@ -166,10 +159,9 @@ def rules_packs_edit(rule_pack_id):
             rp_languages = SupportedLanguage.query.filter(
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
             ).all()
-            # Set rules to include
-            rp_rules = Rule.query.filter(
-                Rule.id.in_(rule_pack_form.rules.data.split(","))
-            ).all()
+            # Get associated rules
+            rule_ids = comma_separated_to_list(rule_pack_form.rules.data)
+            rp_rules = Rule.query.filter(Rule.id.in_(rule_ids)).all()
             # Update rule pack attributes
             edit_rule_pack.name = rule_pack_form.name.data
             edit_rule_pack.description = rule_pack_form.description.data
