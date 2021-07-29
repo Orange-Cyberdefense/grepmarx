@@ -105,8 +105,11 @@ def rules_packs_create():
                 SupportedLanguage.id.in_(rule_pack_form.languages.data)
             ).all()
             # Set rules to include
+            r_list = rule_pack_form.rules.data.split(",")
+            for i in range(0, len(r_list)):
+                r_list[i] = int(r_list[i])
             rp_rules = Rule.query.filter(
-                Rule.id.in_(rule_pack_form.rules.data.split(","))
+                Rule.id.in_(r_list)
             ).all()
             # Create the rule pack
             rule_pack = RulePack(
