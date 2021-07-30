@@ -165,7 +165,7 @@ $ git clone https://.../grepmarx.git
 $ cd grepmarx
 $ python3 -m venv venv
 $ source venv/bin/activate
-$ (venv) $ pip install -r requirements
+$ (venv) $ pip install -r requirements-pgsql.txt
 $ (venv) $ deactivate
 ```
 
@@ -265,6 +265,8 @@ What you should do next:
 <br />
 
 ## TODO
+- Add a PENDING state for when a scan is queued
+- Dynamic refresh of project states
 - Dashboard
 - Display handling of WTForms errors
 - Code dependency checking
