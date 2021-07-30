@@ -71,7 +71,7 @@ $ flask run --host=0.0.0.0 --port=5000
 $ # Access grepmarx in browser: http://127.0.0.1:5000/
 ```
 
-**Note: On first launch, call `/init` to initialize the database and create a default user account (user=admin / password=admin). Change the default password immediately.**
+**Note: A default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 ## Execution
 
@@ -248,7 +248,7 @@ $ sudo systemctl restart nginx
 
 Grepmarx is now be accessible through http://<server>. 
 
-**Note: On first launch, call `/init` to initialize the database and create a default user account (user=admin / password=admin). Change the default password immediately.**
+**Note: A default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 What you should do next:
 - Get a certificate and activate TLS on nginx: http://nginx.org/en/docs/http/configuring_https_servers.html

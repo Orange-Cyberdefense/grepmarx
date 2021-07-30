@@ -17,5 +17,5 @@ DROP TABLE IF EXISTS RuleToSupportedLanguageAssociation;
 DROP TABLE IF EXISTS RulePackToSupportedLanguageAssociation;
 DROP TABLE IF EXISTS AnalysisToRulePackAssociation;
 DROP TABLE IF EXISTS RuleRepository;
-DROP TABLE IF EXISTS alembic_version;
+--DROP TABLE IF EXISTS alembic_version;
 

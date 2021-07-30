@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 """
 Copyright (c) 2019 - present AppSeed.us
+Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from importlib import import_module
@@ -42,7 +43,7 @@ def configure_database(app):
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
-
+        
 
 def create_app(config):
     app = Flask(__name__, static_folder="base/static")
