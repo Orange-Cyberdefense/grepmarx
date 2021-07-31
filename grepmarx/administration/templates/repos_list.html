@@ -47,7 +47,7 @@
         <div class="row">
             {% for c_rule_repo in rule_repos %}
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-secondary" title="{{ c_rule_repo.description }}">
+                <div class="small-box bg-default" title="{{ c_rule_repo.description }}">
                     <div class="inner">
                         <h4>{{ c_rule_repo.name }}</h4>
                         <b>{{ c_rule_repo.rules | length }} rules</b><br />
@@ -55,9 +55,9 @@
                         <p><a href="/repos/pull/{{ c_rule_repo.id }}"><i class="fas fa-sync-alt"></i> Pull latest rules now</a></p>
                     </div>
                     <div class="icon">
-                        <i class="fab fa-git-square"></i>
+                        <i class="fas fa-server"></i>
                     </div>
-                    <a href="/repos/edit/{{ c_rule_repo.id }}" class="small-box-footer">
+                    <a href="/repos/edit/{{ c_rule_repo.id }}" class="small-box-footer text-gray">
                         View / edit repository <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
