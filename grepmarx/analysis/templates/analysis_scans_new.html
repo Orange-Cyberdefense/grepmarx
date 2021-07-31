@@ -2,9 +2,6 @@
 
 {% block title %} Projects {% endblock %}
 
-<!-- Element injected in the BODY element -->
-{% block body_class %} sidebar-mini {% endblock body_class %}
-
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 {% endblock stylesheets %}
@@ -193,7 +190,7 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <!-- ChartJS -->
-<script src="/static/assets/plugins/chart.js/Chart.bundle.min.js"></script>
+<script src="/static/assets/plugins/chart.js/chart.min.js"></script>
 
 <script type="text/javascript">
 
@@ -229,10 +226,13 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 cutoutPercentage: 65,
+                plugins: {
                 legend: {
-                    position: 'right',
+                    position: "right"
                 }
+            },
             }
         });
     });
