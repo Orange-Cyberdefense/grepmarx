@@ -4,15 +4,21 @@ Copyright (c) 2019 - present AppSeed.us
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+
 from datetime import datetime
 
-from flask import current_app, redirect, render_template, request, session, url_for
+from flask import (current_app, redirect, render_template, request, session,
+                   url_for)
 from flask_login import current_user, login_required, login_user, logout_user
 from grepmarx import db, login_manager
 from grepmarx.base import blueprint
 from grepmarx.base.forms import LoginForm
 from grepmarx.base.models import User
-from grepmarx.base.util import verify_pass, init_db
+from grepmarx.base.util import (init_db, last_6_months_analysis_count,
+                                verify_pass)
+from grepmarx.projects.model import Project
+from grepmarx.rules.model import Rule, RulePack
+from grepmarx.administration.model import RuleRepository
 from is_safe_url import is_safe_url
 
 
@@ -68,11 +74,19 @@ def switch_theme():
         ret = redirect(url_for("base_blueprint.route_default"))
     return ret
 
-
 @blueprint.route("/dashboard")
 @login_required
 def index():
-    return render_template("dashboard.html", segment="dashboard")
+    return render_template(
+        "dashboard.html",
+        nb_projects=Project.query.count(),
+        nb_rules=Rule.query.count(),
+        nb_rule_packs=RulePack.query.count(),
+        nb_repos=RuleRepository.query.count(),
+        analysis_per_month=last_6_months_analysis_count(),
+        user=current_user,
+        segment="dashboard",
+    )
 
 
 # Errors

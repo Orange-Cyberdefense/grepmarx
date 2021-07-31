@@ -3,18 +3,18 @@
 {% block title %} Dashboard {% endblock %}
 
 {% block stylesheets %}
-
 {% endblock stylesheets %}
 
 {% block content %}
-<!-- Content Wrapper. Contains page content -->
+
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
+
+    <!-- Content Header -->
+    <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Dashboard</h1>
+                    <h1 class="m-0 text-dark">Dashboard</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -23,20 +23,165 @@
                     </ol>
                 </div>
             </div>
-            <div class="row mb-2 ">
-                <div class="col-sm-8">
-                    <p class="mb-3">
-                        Dashboard...
-                    </p>
-                </div>
-            </div><!-- /.container-fluid -->
-    </section>
+        </div>
+    </div>
+
+
     <!-- Main content -->
     <section class="content">
+        <div class="container-fluid">
 
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-default">
+                        <div class="inner">
+                            <h3>{{ nb_projects }}</h3>
+                            <p>Projects</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <a href="#" class="small-box-footer text-gray">
+                            View all projects
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-default">
+                        <div class="inner">
+                            <h3>{{ nb_rules }}</h3>
+                            <p>Analysis rules</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <a href="#" class="small-box-footer text-gray">
+                            View all rules
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-default">
+                        <div class="inner">
+                            <h3>{{ nb_rule_packs }}</h3>
+                            <p>Rule packs</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <a href="#" class="small-box-footer text-gray">
+                            View all rule packs
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-default">
+                        <div class="inner">
+                            <h3>{{ nb_repos }}</h3>
+                            <p>Rule repositories</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <a href="#" class="small-box-footer text-gray">
+                            View all repositories
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main row -->
+            <div class="row">
+                <section class="col-lg-7">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                Analysis count per month
+                            </h3>
+                            <div class="card-tools">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="analysis-chart-canvas" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </div>
     </section>
+
 </div>
+
 {% endblock content %}
 
+<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<!-- ChartJS -->
+<script src="/static/assets/plugins/chart.js/chart.min.js"></script>
+<script type="text/javascript">
+
+    const labels = [
+        {% for k in analysis_per_month.keys() | reverse %}
+        "{{ k }}",
+        {% endfor %}
+    ];
+
+    const datapoints = [
+        {% for v in analysis_per_month.values() | reverse %}
+        {{ v }},
+        {% endfor %}
+    ];
+
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Analysis',
+                data: datapoints,
+                fill: true,
+                {% if user is defined and user.dark_theme %}
+                backgroundColor: "#454d55",
+                {% else %}
+                backgroundColor: "#f4f6f9",
+                {% endif %}
+                borderColor: "#fd7e14",
+                tension: 0.4
+            }
+        ]
+    };
+
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
+            interaction: {
+                intersect: false,
+            },
+            scales: {
+                x: {
+                    display: true,
+                },
+                y: {
+                    display: false,
+                    suggestedMin: 0,
+                    suggestedMax: 5,
+                    stepSize: 0,
+                }
+            }
+        },
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        new Chart(document.getElementById("analysis-chart-canvas"), config)
+    });
+
+</script>
 {% endblock javascripts %}
