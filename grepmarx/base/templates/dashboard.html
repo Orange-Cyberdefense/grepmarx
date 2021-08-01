@@ -41,7 +41,7 @@
                         <div class="icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <a href="#" class="small-box-footer text-gray">
+                        <a href="/projects" class="small-box-footer text-gray">
                             View all projects
                             <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
@@ -55,7 +55,7 @@
                         <div class="icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <a href="#" class="small-box-footer text-gray">
+                        <a href="/rules" class="small-box-footer text-gray">
                             View all rules
                             <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
@@ -69,7 +69,7 @@
                         <div class="icon">
                             <i class="fas fa-archive"></i>
                         </div>
-                        <a href="#" class="small-box-footer text-gray">
+                        <a href="/rules/packs" class="small-box-footer text-gray">
                             View all rule packs
                             <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
@@ -83,7 +83,7 @@
                         <div class="icon">
                             <i class="fas fa-server"></i>
                         </div>
-                        <a href="#" class="small-box-footer text-gray">
+                        <a href="/repos" class="small-box-footer text-gray">
                             View all repositories
                             <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
@@ -92,7 +92,7 @@
 
             <!-- Main row -->
             <div class="row">
-                <section class="col-lg-7">
+                <section class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
@@ -102,11 +102,11 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="analysis-chart-canvas" style="height: 300px;"></canvas>
+                            <canvas id="analysis-chart-canvas" style="height: 380px;"></canvas>
                         </div>
                     </div>
-
                 </section>
+
             </div>
         </div>
     </section>
@@ -121,39 +121,41 @@
 <script src="/static/assets/plugins/chart.js/chart.min.js"></script>
 <script type="text/javascript">
 
-    const labels = [
+    /* Analysis per month chart */
+
+    const labels1 = [
         {% for k in analysis_per_month.keys() | reverse %}
         "{{ k }}",
         {% endfor %}
     ];
 
-    const datapoints = [
+    const datapoints1 = [
         {% for v in analysis_per_month.values() | reverse %}
         {{ v }},
         {% endfor %}
     ];
 
-    const data = {
-        labels: labels,
+    const data1 = {
+        labels: labels1,
         datasets: [
             {
                 label: 'Analysis',
-                data: datapoints,
+                data: datapoints1,
                 fill: true,
                 {% if user is defined and user.dark_theme %}
-                backgroundColor: "#454d55",
-                {% else %}
-                backgroundColor: "#f4f6f9",
-                {% endif %}
-                borderColor: "#fd7e14",
-                tension: 0.4
+    backgroundColor: "#454d55",
+        {% else %}
+    backgroundColor: "#f4f6f9",
+        {% endif %}
+    borderColor: "#fd7e14",
+        tension: 0.4
             }
         ]
     };
 
-    const config = {
+    const config1 = {
         type: 'line',
-        data: data,
+        data: data1,
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -180,7 +182,7 @@
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        new Chart(document.getElementById("analysis-chart-canvas"), config)
+        new Chart(document.getElementById("analysis-chart-canvas"), config1)
     });
 
 </script>

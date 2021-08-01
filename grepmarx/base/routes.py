@@ -14,7 +14,7 @@ from grepmarx import db, login_manager
 from grepmarx.base import blueprint
 from grepmarx.base.forms import LoginForm
 from grepmarx.base.models import User
-from grepmarx.base.util import (init_db, last_6_months_analysis_count,
+from grepmarx.base.util import (init_db, last_12_months_analysis_count,
                                 verify_pass)
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import Rule, RulePack
@@ -83,7 +83,7 @@ def index():
         nb_rules=Rule.query.count(),
         nb_rule_packs=RulePack.query.count(),
         nb_repos=RuleRepository.query.count(),
-        analysis_per_month=last_6_months_analysis_count(),
+        analysis_per_month=last_12_months_analysis_count(),
         user=current_user,
         segment="dashboard",
     )

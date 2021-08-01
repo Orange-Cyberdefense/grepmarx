@@ -45,7 +45,7 @@ def month_analysis_count(date_in_month):
     start_date = date(year, month, 1)
     end_date = date(year, month, monthrange(year, month)[1])
     return (
-        date_in_month.strftime("%B"),
+        date_in_month.strftime("%b %y"),
         Analysis.query.filter(
             and_(
                 func.date(Analysis.finished_on) >= start_date,
@@ -55,13 +55,13 @@ def month_analysis_count(date_in_month):
     )
 
 
-def last_6_months_analysis_count():
+def last_12_months_analysis_count():
     """Get analysis count for the last 6 months."""
     ret = dict()
     now = datetime.now()
     month, count = month_analysis_count(now)
     ret[month] = count
-    for _ in range(0, 5):
+    for _ in range(0, 11):
         now = now.replace(day=1) - timedelta(days=1)
         month, count = month_analysis_count(now)
         ret[month] = count
