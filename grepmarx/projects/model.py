@@ -3,25 +3,19 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+import json
 import os
 import subprocess
-import json
 from shutil import rmtree
 
-from sqlalchemy.sql.schema import ForeignKey
-
 from grepmarx import db
+from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
+                                STATUS_NEW)
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.sql.schema import ForeignKey
 
 
 class Project(db.Model):
-
-    STATUS_NEW = 0
-    STATUS_FINISHED = 1
-    STATUS_ANALYZING = 2
-    STATUS_ERROR = 3
-    PROJECTS_SRC_PATH = "data/projects/"
-    EXTRACT_FOLDER_NAME = "extract"
 
     __tablename__ = "Project"
 
@@ -47,7 +41,7 @@ class Project(db.Model):
     )
 
     def remove(self):
-        project_path = os.path.join(Project.PROJECTS_SRC_PATH, str(self.id))
+        project_path = os.path.join(PROJECTS_SRC_PATH, str(self.id))
         if os.path.isdir(project_path):
             rmtree(project_path)
         db.session.delete(self)
@@ -55,7 +49,7 @@ class Project(db.Model):
 
     def count_lines(self):
         source_path = os.path.join(
-            Project.PROJECTS_SRC_PATH, str(self.id), Project.EXTRACT_FOLDER_NAME
+            PROJECTS_SRC_PATH, str(self.id), EXTRACT_FOLDER_NAME
         )
         # Call to external binary: scc
         json_result = json.loads(

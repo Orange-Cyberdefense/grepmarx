@@ -9,13 +9,14 @@ import pathlib
 from glob import glob
 from zipfile import ZipFile
 
-from flask import current_app, redirect, render_template, url_for, flash
+from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
+from grepmarx.constants import PROJECTS_SRC_PATH
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
-from grepmarx.projects.model import Project, ProjectLinesCount
-from grepmarx.projects.util import sha256sum, check_zipfile
+from grepmarx.projects.model import Project
+from grepmarx.projects.util import check_zipfile, sha256sum
 from werkzeug.utils import secure_filename
 
 
@@ -61,9 +62,9 @@ def projects_create():
         db.session.add(project)
         db.session.commit()
         # Store the archive on disk
-        if not os.path.isdir(Project.PROJECTS_SRC_PATH):
-            pathlib.Path(Project.PROJECTS_SRC_PATH).mkdir(parents=True, exist_ok=True)
-        project_path = os.path.join(Project.PROJECTS_SRC_PATH, str(project.id))
+        if not os.path.isdir(PROJECTS_SRC_PATH):
+            pathlib.Path(PROJECTS_SRC_PATH).mkdir(parents=True, exist_ok=True)
+        project_path = os.path.join(PROJECTS_SRC_PATH, str(project.id))
         os.mkdir(project_path)
         archive_path = os.path.join(project_path, secure_filename(file.filename))
         file.save(archive_path)

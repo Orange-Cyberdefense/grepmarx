@@ -9,6 +9,7 @@ from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
 from flask_login import current_user, login_required
 from grepmarx import db
+from grepmarx.constants import OWASP_TOP10_LINKS, RULES_PATH
 from grepmarx.rules import blueprint
 from grepmarx.rules.forms import RulePackForm
 from grepmarx.rules.model import Rule, RulePack, SupportedLanguage
@@ -23,7 +24,7 @@ def rules_list():
     return render_template(
         "rules_list.html",
         rules=rules,
-        owasp_links=Rule.OWASP_TOP10_LINKS,
+        owasp_links=OWASP_TOP10_LINKS,
         user=current_user,
         segment="rules",
     )
@@ -33,7 +34,7 @@ def rules_list():
 @login_required
 def rules_sync():
     current_app.logger.info("Started rules sync")
-    Rule.sync_db(Rule.RULES_PATH)
+    Rule.sync_db(RULES_PATH)
     current_app.logger.info("Finished rules sync")
     return "done", 200
 
@@ -50,7 +51,7 @@ def rules_sync_success():
 @login_required
 def rules_details(rule_id):
     rule = Rule.query.filter_by(id=rule_id).first_or_404()
-    file = os.path.join(Rule.RULES_PATH, rule.file_path)
+    file = os.path.join(RULES_PATH, rule.file_path)
     with open(file, "r") as f:
         rule_content = f.read()
     return render_template("rules_details.html", rule=rule, rule_content=rule_content)
@@ -79,7 +80,7 @@ def rule_packs_form_page(edit, rule_pack_form):
         edit=edit,
         rules=rules,
         form=rule_pack_form,
-        owasp_links=Rule.OWASP_TOP10_LINKS,
+        owasp_links=OWASP_TOP10_LINKS,
         user=current_user,
         segment="rule_packs",
     )

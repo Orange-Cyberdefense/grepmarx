@@ -4,7 +4,9 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import re
-import grepmarx
+
+from grepmarx.constants import (SEVERITY_LOW, SEVERITY_MEDIUM,
+                                TOP40_CWE_SEVERITIES)
 
 
 def validate_languages_rules(form):
@@ -26,15 +28,15 @@ def generate_severity(cwe_string):
     Top 40, the severity is MEDIUM by default. If no CWE is set,
     the severity is then LOW.
     """
-    ret = grepmarx.rules.model.Rule.SEVERITY_LOW
+    ret = SEVERITY_LOW
     if cwe_string is not None:
         match = re.search("(CWE-\d+)", cwe_string, re.IGNORECASE)
         if match:
             cwe_id = match.group(1).upper()
-            if cwe_id in grepmarx.rules.model.Rule.TOP40_CWE_SEVERITIES:
-                ret = grepmarx.rules.model.Rule.TOP40_CWE_SEVERITIES[cwe_id]
+            if cwe_id in TOP40_CWE_SEVERITIES:
+                ret = TOP40_CWE_SEVERITIES[cwe_id]
             else:
-                ret = grepmarx.rules.model.Rule.SEVERITY_MEDIUM
+                ret = SEVERITY_MEDIUM
     return ret
 
 

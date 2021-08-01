@@ -9,16 +9,15 @@ from shutil import copyfile, rmtree
 
 from flask import current_app
 from grepmarx import db
-from grepmarx.projects.model import Project
-from grepmarx.rules.model import Rule, analysis_to_rule_pack_association_table
+from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
+                                RULE_EXTENSIONS, RULES_PATH, SEVERITY_HIGH,
+                                SEVERITY_MEDIUM)
+from grepmarx.rules.model import analysis_to_rule_pack_association_table
 from grepmarx.rules.util import generate_severity
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String
 
 
 class Analysis(db.Model):
-
-    IGNORE_EXTENSIONS = {".min.js"}
-    IGNORE_FOLDERS = {"vendor", "test", "Test"}
 
     __tablename__ = "Analysis"
 
@@ -41,7 +40,7 @@ class Analysis(db.Model):
         os.mkdir(rule_folder)
         for c_rule_pack in self.rule_packs:
             for c_rule in c_rule_pack.rules:
-                src = os.path.join(Rule.RULES_PATH, c_rule.file_path)
+                src = os.path.join(RULES_PATH, c_rule.file_path)
                 dst = os.path.join(
                     rule_folder,
                     c_rule.repository.name
@@ -49,7 +48,7 @@ class Analysis(db.Model):
                     + c_rule.category
                     + "."
                     + c_rule.title
-                    + next(iter(Rule.RULE_EXTENSIONS)),
+                    + next(iter(RULE_EXTENSIONS)),
                 )
                 copyfile(src, dst)
                 current_app.logger.debug(
@@ -104,9 +103,9 @@ class Analysis(db.Model):
         r_vulnerabilities = list()
         low_vulnerabilities = list()
         for c_vulnerability in self.vulnerabilities:
-            if c_vulnerability.severity == Rule.SEVERITY_HIGH:
+            if c_vulnerability.severity == SEVERITY_HIGH:
                 r_vulnerabilities.insert(0, c_vulnerability)
-            elif c_vulnerability.severity == Rule.SEVERITY_MEDIUM:
+            elif c_vulnerability.severity == SEVERITY_MEDIUM:
                 r_vulnerabilities.append(c_vulnerability)
             else:
                 low_vulnerabilities.append(c_vulnerability)
@@ -168,9 +167,9 @@ class Occurence(db.Model):
     @staticmethod
     def load_occurence(file_dict):
         pattern = (
-            Project.PROJECTS_SRC_PATH
+            PROJECTS_SRC_PATH
             + "[\\/]?\d+[\\/]"
-            + Project.EXTRACT_FOLDER_NAME
+            + EXTRACT_FOLDER_NAME
             + "[\\/]?"
         )
         clean_path = re.sub(pattern, "", file_dict["file_path"])

@@ -9,6 +9,7 @@ from glob import glob
 from flask import current_app
 from grepmarx import db
 from grepmarx.administration.model import RuleRepository
+from grepmarx.constants import RULE_EXTENSIONS, RULES_PATH
 from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from yaml import YAMLError, safe_load
@@ -44,67 +45,6 @@ rule_pack_to_supported_language_association_table = Table(
 
 class Rule(db.Model):
 
-    SEVERITY_HIGH = "high"
-    SEVERITY_MEDIUM = "medium"
-    SEVERITY_LOW = "low"
-    RULES_PATH = "data/rules/"
-    RULE_EXTENSIONS = {".yaml", ".yml"}
-    OWASP_TOP10_LINKS = {
-        "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",
-        "A2": "https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication.html",
-        "A3": "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html",
-        "A4": "https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE).html",
-        "A5": "https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control.html",
-        "A6": "https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html",
-        "A7": "https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS).html",
-        "A8": "https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization.html",
-        "A9": "https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html",
-        "A10": "https://owasp.org/www-project-top-ten/2017/A10_2017-Insufficient_Logging%2526Monitoring.html",
-    }
-    # https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html#methodology
-    TOP40_CWE_SEVERITIES = {
-        "CWE-79": SEVERITY_MEDIUM,
-        "CWE-787": SEVERITY_HIGH,
-        "CWE-20": SEVERITY_HIGH,
-        "CWE-125": SEVERITY_HIGH,
-        "CWE-119": SEVERITY_HIGH,
-        "CWE-89": SEVERITY_HIGH,
-        "CWE-200": SEVERITY_HIGH,
-        "CWE-416": SEVERITY_HIGH,
-        "CWE-352": SEVERITY_HIGH,
-        "CWE-78": SEVERITY_HIGH,
-        "CWE-190": SEVERITY_HIGH,
-        "CWE-22": SEVERITY_HIGH,
-        "CWE-476": SEVERITY_MEDIUM,
-        "CWE-287": SEVERITY_HIGH,
-        "CWE-434": SEVERITY_HIGH,
-        "CWE-732": SEVERITY_MEDIUM,
-        "CWE-94": SEVERITY_HIGH,
-        "CWE-522": SEVERITY_HIGH,
-        "CWE-611": SEVERITY_HIGH,
-        "CWE-798": SEVERITY_HIGH,
-        "CWE-502": SEVERITY_HIGH,
-        "CWE-269": SEVERITY_HIGH,
-        "CWE-400": SEVERITY_HIGH,
-        "CWE-306": SEVERITY_HIGH,
-        "CWE-862": SEVERITY_MEDIUM,
-        "CWE-426": SEVERITY_HIGH,
-        "CWE-918": SEVERITY_HIGH,
-        "CWE-295": SEVERITY_HIGH,
-        "CWE-863": SEVERITY_MEDIUM,
-        "CWE-284": SEVERITY_HIGH,
-        "CWE-77": SEVERITY_HIGH,
-        "CWE-401": SEVERITY_MEDIUM,
-        "CWE-532": SEVERITY_MEDIUM,
-        "CWE-362": SEVERITY_MEDIUM,
-        "CWE-601": SEVERITY_MEDIUM,
-        "CWE-835": SEVERITY_MEDIUM,
-        "CWE-704": SEVERITY_HIGH,
-        "CWE-415": SEVERITY_HIGH,
-        "CWE-770": SEVERITY_HIGH,
-        "CWE-59": SEVERITY_HIGH,
-    }
-
     __tablename__ = "Rule"
 
     id = Column("id", Integer, primary_key=True)
@@ -136,7 +76,7 @@ class Rule(db.Model):
     def sync_db(rules_folder):
         # Get all YML files in the folder
         rules_filenames = list()
-        for c_ext in Rule.RULE_EXTENSIONS:
+        for c_ext in RULE_EXTENSIONS:
             rules_filenames += glob(
                 pathname=os.path.join(rules_folder, "**", "*" + c_ext), recursive=True
             )
@@ -146,7 +86,7 @@ class Rule(db.Model):
             with open(c_filename, "r") as yml_stream:
                 try:
                     yml_rules = safe_load(yml_stream)
-                    file_path = c_filename.replace(Rule.RULES_PATH, "")
+                    file_path = c_filename.replace(RULES_PATH, "")
                     repository = file_path.split(os.path.sep)[0]
                     category = ".".join(file_path.split(os.path.sep)[1:][:-1])
                     if "rules" in yml_rules:
