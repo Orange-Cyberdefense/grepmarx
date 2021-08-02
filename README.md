@@ -186,7 +186,7 @@ DB_PASS=<DB_PASSWORD>
 
 > Bind gunicorn to a system socket rather than a network port, by uncommenting the corresponding line in `supervisord.conf`
 ```
-command=gunicorn -w 3 --bind unix:grepmarx.sock run:app 
+command=gunicorn -w 3 -t 300 --bind unix:grepmarx.sock run:app 
 ```
 
 > Go back to your main user shell
