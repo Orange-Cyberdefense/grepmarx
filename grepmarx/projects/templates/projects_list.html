@@ -129,9 +129,11 @@
                                     {{ count.value }}
                                 </td>
                                 <td class="text-lg">
-                                    {% for c_lang in c_project.project_lines_count.top_supported_language_lines_counts() %}
-                                    <i class="{{ lang_icons[c_lang.name] }}" title="{{ c_lang.name }}"></i>
-                                    {% endfor %}
+                                    {% if c_project.project_lines_count is defined %}
+                                        {% for c_lang in c_project.project_lines_count.top_supported_language_lines_counts() %}
+                                        <i class="{{ lang_icons[c_lang.name] }}" title="{{ c_lang.name }}"></i>
+                                        {% endfor %}
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {{ c_project.project_lines_count.total_code_count }}
