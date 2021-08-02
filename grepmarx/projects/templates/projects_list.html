@@ -129,7 +129,7 @@
                                     {{ count.value }}
                                 </td>
                                 <td class="text-lg">
-                                    {% if c_project.project_lines_count is defined %}
+                                    {% if c_project.project_lines_count is not none %}
                                         {% for c_lang in c_project.project_lines_count.top_supported_language_lines_counts() %}
                                         <i class="{{ lang_icons[c_lang.name] }}" title="{{ c_lang.name }}"></i>
                                         {% endfor %}
