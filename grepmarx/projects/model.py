@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from grepmarx.rules.model import SupportedLanguage
 import json
 import os
 import subprocess
@@ -40,7 +41,7 @@ class Project(db.Model):
     )
 
     def remove(self):
-        """Delete the project from the database (along with all its analysis), 
+        """Delete the project from the database (along with all its analysis),
         and remove the project folder from disk."""
         project_path = os.path.join(PROJECTS_SRC_PATH, str(self.id))
         if os.path.isdir(project_path):
@@ -49,7 +50,7 @@ class Project(db.Model):
         db.session.commit()
 
     def count_lines(self):
-        """ Count line of code of the project's code archive using third-party tool scc, 
+        """Count line of code of the project's code archive using third-party tool scc,
         and populate the ProjectLinesCount class member."""
         source_path = os.path.join(PROJECTS_SRC_PATH, str(self.id), EXTRACT_FOLDER_NAME)
         # Call to external binary: scc
@@ -78,14 +79,28 @@ class ProjectLinesCount(db.Model):
     project = db.relationship("Project", back_populates="project_lines_count")
 
     def top_language_lines_counts(self, top_number):
-        """ Return the `top_number` most present languages in the project source archive. """
+        """Return the `top_number` most present languages in the project source archive."""
         return sorted(
             self.language_lines_counts, key=lambda x: x.code_count, reverse=True
         )[:top_number]
 
+    def top_supported_language_lines_counts(self):
+        """Return a list of SupportedLanguage objects corresponding to the 
+        supported languages detected in the project source archive."""
+        ret = list()
+        languages = sorted(
+            self.language_lines_counts, key=lambda x: x.code_count, reverse=True
+        )
+        supported_languages = SupportedLanguage.query.all()
+        for c_lang in languages:
+            for c_sl in supported_languages:
+                if c_sl.name.lower() == c_lang.language.lower():
+                    ret.append(c_sl)
+        return ret
+
     @staticmethod
     def load_project_lines_count(scc_result):
-        """ Create a new ProjectLinesCount object and populate it with the given scc results. """
+        """Create a new ProjectLinesCount object and populate it with the given scc results."""
         # Empty ProjectLinesCount
         project_lines_count = ProjectLinesCount(
             total_file_count=0,

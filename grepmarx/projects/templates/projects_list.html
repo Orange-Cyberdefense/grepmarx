@@ -128,9 +128,9 @@
                                     {% endfor %}
                                     {{ count.value }}
                                 </td>
-                                <td>
-                                    {% for c_lang in c_project.project_lines_count.language_lines_counts %}
-                                    {{ c_lang.language }},
+                                <td class="text-lg">
+                                    {% for c_lang in c_project.project_lines_count.top_supported_language_lines_counts() %}
+                                    <i class="{{ lang_icons[c_lang.name] }}" title="{{ c_lang.name }}"></i>
                                     {% endfor %}
                                 </td>
                                 <td>

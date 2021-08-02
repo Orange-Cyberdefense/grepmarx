@@ -80,3 +80,20 @@ TOP40_CWE_SEVERITIES = {
     "CWE-770": SEVERITY_HIGH,
     "CWE-59": SEVERITY_HIGH,
 }
+
+# Language constants
+
+LANGUAGES_DEVICONS = {
+    "Python": "devicon-python-plain",
+    "C": "devicon-c-plain",
+    "JavaScript": "devicon-javascript-plain",
+    "TypeScript": "devicon-typescript-plain",
+    "JSON": "devicon-devicon-plain",
+    "PHP": "devicon-php-plain",
+    "Java": "devicon-java-plain",
+    "Go": "devicon-go-plain",
+    "OCaml": "devicon-ocaml-plain",
+    "Ruby": "devicon-ruby-plain",
+    "Kotlin": "devicon-kotlin-plain",
+    "Generic": "devicon-devicon-plain"
+}

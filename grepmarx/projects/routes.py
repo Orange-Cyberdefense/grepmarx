@@ -12,7 +12,7 @@ from zipfile import ZipFile
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
-from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH
+from grepmarx.constants import EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS, PROJECTS_SRC_PATH
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.model import Project
@@ -30,6 +30,7 @@ def projects_list():
         projects=projects,
         form=project_form,
         user=current_user,
+        lang_icons=LANGUAGES_DEVICONS,
         segment="projects",
     )
 

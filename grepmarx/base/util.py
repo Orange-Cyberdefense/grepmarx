@@ -99,6 +99,6 @@ def init_db():
     db.session.add(
         SupportedLanguage(name="Ruby", extensions=".rb,.rhtml,.rxml,.rjs,.erb")
     )
-    db.session.add(SupportedLanguage(name="Kt", extensions=".kt,.kts"))
+    db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
     db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.commit()
