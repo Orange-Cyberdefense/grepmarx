@@ -91,7 +91,7 @@
                                     <a href="/analysis/scans/new/{{ c_project.id }}">
                                     {% elif c_project.status == 1 %}
                                     <a href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                    {% elif c_project.status == 2 %}
+                                    {% elif c_project.status == 2 or c_project.status == 4 %}
                                     <a href="#">
                                     {% endif %}
                                         {{ c_project.name }}
@@ -145,6 +145,8 @@
                                     </span>    
                                     {% elif c_project.status == 3 %}
                                     <span class="badge badge-lg bg-danger w-100 p-2" title="{{ c_project.error_message }}">Error</span>
+                                    {% elif c_project.status == 4 %}
+                                    <span class="badge badge-lg bg-warning w-100 p-2">Pending</span>
                                     {% endif %}
                                 </td>
                                 <td class="project-actions">
@@ -153,7 +155,7 @@
                                         <a class="btn btn-default btn-sm" href="/analysis/scans/new/{{ c_project.id }}">
                                         {% elif c_project.status == 1 %}
                                         <a class="btn btn-default btn-sm" href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                        {% elif c_project.status == 2 %}
+                                        {% elif c_project.status == 2 or c_project.status == 4 %}
                                         <a class="btn btn-default btn-sm" href="#">
                                         {% endif %}
                                             <i class="fas fa-eye"></i>

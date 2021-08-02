@@ -14,7 +14,7 @@ from grepmarx.analysis.forms import ScanForm
 from grepmarx.analysis.model import Analysis, Occurence, Vulnerability
 from grepmarx.analysis.util import async_scan
 from grepmarx.constants import (EXTRACT_FOLDER_NAME, OWASP_TOP10_LINKS,
-                                PROJECTS_SRC_PATH)
+                                PROJECTS_SRC_PATH, STATUS_PENDING)
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import RulePack
 from pygments.lexers import guess_lexer_for_filename
@@ -128,7 +128,6 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
-        db.session.commit()
         # Set rule folder for the project
         project_rules_path = os.path.join(
             PROJECTS_SRC_PATH, str(project.id), "rules"
@@ -136,7 +135,9 @@ def scans_launch():
         # Copy all applicable rules in a folder under the project's directory
         project.analysis.import_rules(project_rules_path)
         # Start celery asynchronous scan
-        current_app.logger.info("New analysis started (project.id=%i)", project.id)
+        project.status = STATUS_PENDING
+        db.session.commit()
+        current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id)
         # Done
         current_app.logger.info("Analysis completed (project.id=%i)", project.id)

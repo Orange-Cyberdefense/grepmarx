@@ -71,7 +71,7 @@ $ flask run --host=0.0.0.0 --port=5000
 $ # Access grepmarx in browser: http://127.0.0.1:5000/
 ```
 
-**Note: A default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
+**Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 ## Execution
 
@@ -246,9 +246,9 @@ $ sudo rm /etc/nginx/sites-enabled/default
 $ sudo systemctl restart nginx
 ```
 
-Grepmarx is now be accessible through http://<server>. 
+Grepmarx is now be accessible through http://\<server\>. 
 
-**Note: A default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
+**Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 What you should do next:
 - Get a certificate and activate TLS on nginx: http://nginx.org/en/docs/http/configuring_https_servers.html
@@ -265,9 +265,7 @@ What you should do next:
 <br />
 
 ## TODO
-- Add a PENDING state for when a scan is queued
 - Dynamic refresh of project states
-- Dashboard
 - Display handling of WTForms errors
 - Code dependency checking
 - Application inspection features
