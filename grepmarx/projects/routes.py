@@ -12,7 +12,7 @@ from zipfile import ZipFile
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
-from grepmarx.constants import PROJECTS_SRC_PATH
+from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.model import Project
@@ -78,7 +78,7 @@ def projects_create():
             return msg, 403
         # Extract archive on disk
         project.archive_sha256sum = sha256sum(archive_path)
-        source_path = os.path.join(project_path, Project.EXTRACT_FOLDER_NAME)
+        source_path = os.path.join(project_path, EXTRACT_FOLDER_NAME)
         with ZipFile(archive_path, "r") as zip_ref:
             # TODO try/catch BadZipFile + error msg + rollback / delete project
             zip_ref.extractall(source_path)
