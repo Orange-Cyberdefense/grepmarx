@@ -3,13 +3,13 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from grepmarx.analysis.model import Analysis
 from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, STATUS_ANALYZING, STATUS_ERROR, STATUS_FINISHED
 import os
 from datetime import datetime
 
 from flask import current_app
 from grepmarx import celery, db
-from grepmarx.analysis import model
 from libsast import Scanner
 from semgrep.error import SemgrepError
 
@@ -18,7 +18,7 @@ from semgrep.error import SemgrepError
 def async_scan(analysis_id):
 
     current_app.logger.debug("Entering async scan for analysis with id=%i", analysis_id)
-    analysis = model.Analysis.query.filter_by(id=analysis_id).first()
+    analysis = Analysis.query.filter_by(id=analysis_id).first()
 
     # Status in now Analysing
     analysis.started_on = datetime.now()
