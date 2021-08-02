@@ -89,6 +89,7 @@ class Rule(db.Model):
                     file_path = c_filename.replace(RULES_PATH, "")
                     repository = file_path.split(os.path.sep)[0]
                     category = ".".join(file_path.split(os.path.sep)[1:][:-1])
+                    # Extract rules from the file, if any
                     if "rules" in yml_rules:
                         for c_rule in yml_rules["rules"]:
                             rule = Rule.query.filter_by(file_path=file_path).first()
@@ -104,16 +105,19 @@ class Rule(db.Model):
                                     category=category,
                                 )
                                 db.session.add(rule)
+                            # Associate the rule with a known, supported language
                             if "languages" in c_rule:
                                 for c_language in c_rule["languages"]:
                                     for c_sl in supported_languages:
                                         if c_sl.name.lower() == c_language.lower():
                                             rule.languages.append(c_sl)
+                            # Add metadata: OWASP and CWE ids
                             if "metadata" in c_rule:
                                 if "cwe" in c_rule["metadata"]:
                                     rule.cwe = c_rule["metadata"]["cwe"]
                                 if "owasp" in c_rule["metadata"]:
                                     rule.owasp = c_rule["metadata"]["owasp"]
+                            # Replace rule level/severity by a calculated one
                             rule.severity = generate_severity(rule.cwe)
                             current_app.logger.debug(
                                 "Rule imported in DB: %s",
