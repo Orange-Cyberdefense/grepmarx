@@ -129,7 +129,9 @@
                                     {{ count.value }}
                                 </td>
                                 <td>
-                                    TODO
+                                    {% for c_lang in c_project.project_lines_count.language_lines_counts %}
+                                    {{ c_lang.language }},
+                                    {% endfor %}
                                 </td>
                                 <td>
                                     {{ c_project.project_lines_count.total_code_count }}

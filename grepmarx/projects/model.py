@@ -9,8 +9,7 @@ import subprocess
 from shutil import rmtree
 
 from grepmarx import db
-from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
-                                STATUS_NEW)
+from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, STATUS_NEW
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql.schema import ForeignKey
 
@@ -41,6 +40,8 @@ class Project(db.Model):
     )
 
     def remove(self):
+        """Delete the project from the database (along with all its analysis), 
+        and remove the project folder from disk."""
         project_path = os.path.join(PROJECTS_SRC_PATH, str(self.id))
         if os.path.isdir(project_path):
             rmtree(project_path)
@@ -48,9 +49,9 @@ class Project(db.Model):
         db.session.commit()
 
     def count_lines(self):
-        source_path = os.path.join(
-            PROJECTS_SRC_PATH, str(self.id), EXTRACT_FOLDER_NAME
-        )
+        """ Count line of code of the project's code archive using third-party tool scc, 
+        and populate the ProjectLinesCount class member."""
+        source_path = os.path.join(PROJECTS_SRC_PATH, str(self.id), EXTRACT_FOLDER_NAME)
         # Call to external binary: scc
         json_result = json.loads(
             subprocess.run(
@@ -77,12 +78,14 @@ class ProjectLinesCount(db.Model):
     project = db.relationship("Project", back_populates="project_lines_count")
 
     def top_language_lines_counts(self, top_number):
+        """ Return the `top_number` most present languages in the project source archive. """
         return sorted(
             self.language_lines_counts, key=lambda x: x.code_count, reverse=True
         )[:top_number]
 
     @staticmethod
     def load_project_lines_count(scc_result):
+        """ Create a new ProjectLinesCount object and populate it with the given scc results. """
         # Empty ProjectLinesCount
         project_lines_count = ProjectLinesCount(
             total_file_count=0,
@@ -90,7 +93,7 @@ class ProjectLinesCount(db.Model):
             total_blank_count=0,
             total_comment_count=0,
             total_code_count=0,
-            total_complexity_count=0
+            total_complexity_count=0,
         )
         for c in scc_result:
             # Create a LanguageLineCount
