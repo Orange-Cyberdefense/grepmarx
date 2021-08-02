@@ -271,4 +271,4 @@ What you should do next:
 - Application inspection features
 
 ---
-Grepmarx - Provided by **[Orange Cyberdefense](https://orangecyebrdefense.com)**.
+Grepmarx - Provided by **[Orange Cyberdefense](https://orangecyberdefense.com)**.
