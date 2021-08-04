@@ -7,12 +7,16 @@ import json
 import os
 import pathlib
 from glob import glob
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
-from grepmarx.constants import EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS, PROJECTS_SRC_PATH
+from grepmarx.constants import (
+    EXTRACT_FOLDER_NAME,
+    LANGUAGES_DEVICONS,
+    PROJECTS_SRC_PATH,
+)
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.model import Project
@@ -34,11 +38,13 @@ def projects_list():
         segment="projects",
     )
 
+
 @blueprint.route("/projects/<project_id>/status")
 @login_required
 def projects_status(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
     return str(project.status), 200
+
 
 @blueprint.route("/projects/remove/<project_id>")
 @login_required
@@ -80,22 +86,20 @@ def projects_create():
             current_app.logger.warning(
                 "Invalid archive file uploaded (archive path was '%s')", archive_path
             )
-            # TODO : rollback / delete project
+            project.remove()
             return msg, 403
         # Extract archive on disk
         project.archive_sha256sum = sha256sum(archive_path)
         source_path = os.path.join(project_path, EXTRACT_FOLDER_NAME)
         with ZipFile(archive_path, "r") as zip_ref:
-            # TODO try/catch BadZipFile + error msg + rollback / delete project
-            zip_ref.extractall(source_path)
-
-
-        # Start counting lines of code
+            try:
+                zip_ref.extractall(source_path)
+            except BadZipFile as e:
+                current_app.logger.error("Bad zip file: %s", str(e))
+                project.remove()
+                return "Bad zip file", 403
+        # Count lines of code and save project
         project.count_lines()
-        #project.project_lines_count = ProjectLinesCount.load_project_lines_count(
-        #    project_summary
-        #)
-
         db.session.commit()
         current_app.logger.info("New project created (project.id=%i)", project.id)
         return str(project.id), 200
