@@ -102,7 +102,7 @@ def generate_options(analysis, rule_folder):
     """Generate libsast/semgrep options depending on the attributes of an analysis.
 
     Args:
-        rule_folder (string): path to be used as the rule folder for the scanner
+        rule_folder (str): path to be used as the rule folder for the scanner
     Returns:
         dict: options ready to be passed to a libsast.Scanner object
     """
@@ -141,7 +141,7 @@ def import_rules(analysis, rule_folder):
 
     Args:
         analysis (Analysis): analysis object of the project in whose folder rules should be imported
-        rule_folder ([type]): destination folder (usually data/projects/<project_id>/rules/)
+        rule_folder (str): destination folder (usually data/projects/<project_id>/rules/)
     """
     if os.path.isdir(rule_folder):
         rmtree(rule_folder)
@@ -279,7 +279,7 @@ def load_analysis_error_span(span_dict):
     """Create an analysis error span object from an 'error/span' element of libsast/semgrep results.
 
     Args:
-        span_dict ([type]): span elements with its properties
+        span_dict (dict): span elements with its properties
 
     Returns:
         AnalysisErrorSpan: fully populated analysis error span
