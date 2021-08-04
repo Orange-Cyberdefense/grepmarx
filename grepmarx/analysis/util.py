@@ -9,7 +9,8 @@ from shutil import copyfile, rmtree
 
 from flask import current_app
 from grepmarx import celery, db
-from grepmarx.analysis.models import Analysis, AnalysisError, Vulnerability
+from grepmarx.rules.util import generate_severity
+from grepmarx.analysis.models import Analysis, AnalysisError, Occurence, Vulnerability
 from grepmarx.constants import (
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
@@ -23,6 +24,10 @@ from grepmarx.constants import (
 )
 from libsast import Scanner
 from semgrep.error import SemgrepError
+
+##
+## Analysis utils
+##
 
 
 @celery.task(name="grepmarx-scan")
@@ -78,7 +83,7 @@ def load_scan_results(analysis, libsast_result):
             matches = libsast_result["semantic_grep"]["matches"]
             for c_match in matches:
                 analysis.vulnerabilities.append(
-                    Vulnerability.load_vulnerability(c_match, matches[c_match])
+                    load_vulnerability(c_match, matches[c_match])
                 )
             errors = libsast_result["semantic_grep"]["errors"]
             for c_error in errors:
@@ -173,3 +178,32 @@ def vulnerabilities_sorted_by_severity(analysis):
             low_vulns.append(c_vulns)
     r_vulns.extend(low_vulns)
     return r_vulns
+
+##
+## Vulnerability utils
+##
+
+def load_vulnerability(match_title, match_dict):
+    """Create a vulnerability object from a 'match' element of libsast/semgrep results.
+
+    Args:
+        match_title (string): match title
+        match_dict (dict): match element with its properties
+
+    Returns:
+        Vulnerability: fully populated vulnerability
+    """
+    vuln = Vulnerability(title=match_title)
+    for c_occurence in match_dict["files"]:
+        vuln.occurences.append(Occurence.load_occurence(c_occurence))
+    metadata = match_dict["metadata"]
+    if "description" in metadata:
+        vuln.description = metadata["description"]
+    if "cwe" in metadata:
+        vuln.cwe = metadata["cwe"]
+    if "owasp" in metadata:
+        vuln.owasp = metadata["owasp"]
+    if "references" in metadata:
+        vuln.references = " ".join(metadata["references"])
+    vuln.severity = generate_severity(vuln.cwe)
+    return vuln

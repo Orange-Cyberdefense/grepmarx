@@ -8,7 +8,6 @@ import re
 from grepmarx import db
 from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH)
 from grepmarx.rules.models import analysis_to_rule_pack_association_table
-from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, Integer, String
 
 
@@ -46,23 +45,6 @@ class Vulnerability(db.Model):
     cwe = Column(String)
     owasp = Column(String)
     references = Column(String)
-
-    @staticmethod
-    def load_vulnerability(match_title, match_dict):
-        vulnerability = Vulnerability(title=match_title)
-        for c_occurence in match_dict["files"]:
-            vulnerability.occurences.append(Occurence.load_occurence(c_occurence))
-        metadata = match_dict["metadata"]
-        if "description" in metadata:
-            vulnerability.description = metadata["description"]
-        if "cwe" in metadata:
-            vulnerability.cwe = metadata["cwe"]
-        if "owasp" in metadata:
-            vulnerability.owasp = metadata["owasp"]
-        if "references" in metadata:
-            vulnerability.references = " ".join(metadata["references"])
-        vulnerability.severity = generate_severity(vulnerability.cwe)
-        return vulnerability
 
 
 class Occurence(db.Model):
