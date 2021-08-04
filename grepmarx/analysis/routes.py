@@ -23,12 +23,12 @@ from grepmarx.constants import (
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import RulePack
 from pygments.lexers import guess_lexer_for_filename
+from pygments.util import ClassNotFound
 
 
 @blueprint.route("/analysis/workbench/<analysis_id>")
 @login_required
 def analysis_workbench(analysis_id):
-    # TODO LFI via vulnerability location !
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
     if len(analysis.vulnerabilities) <= 0:
         flash(
@@ -47,17 +47,25 @@ def analysis_workbench(analysis_id):
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required
 def analysis_codeview(occurence_id):
+    # Get occurence infos
     occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
     project_id = occurence.vulnerability.analysis.project.id
-    file = os.path.join(
-        PROJECTS_SRC_PATH,
-        str(project_id),
-        EXTRACT_FOLDER_NAME,
-        occurence.file_path,
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
+    file = os.path.join(source_path, occurence.file_path)
+    # Mitigate path traversal risk
+    common_prefix = os.path.commonprefix(
+        (os.path.realpath(file), os.path.realpath(source_path))
     )
+    if common_prefix != os.path.realpath(source_path):
+        return "", 403
     with open(file, "r") as f:
         code = f.read()
-    language = guess_lexer_for_filename(file, code).name
+    # Try to guess file language for syntax highlighting
+    try:
+        language = guess_lexer_for_filename(file, code).name
+    except ClassNotFound as e:
+        language = "generic"
+    # Define lines to be highlighted
     hl_lines = (
         str(occurence.position.line_start) + "-" + str(occurence.position.line_end)
         if occurence.position.line_end > occurence.position.line_start
