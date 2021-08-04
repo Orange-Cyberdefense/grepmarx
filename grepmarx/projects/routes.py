@@ -34,6 +34,11 @@ def projects_list():
         segment="projects",
     )
 
+@blueprint.route("/projects/<project_id>/status")
+@login_required
+def projects_status(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    return str(project.status), 200
 
 @blueprint.route("/projects/remove/<project_id>")
 @login_required

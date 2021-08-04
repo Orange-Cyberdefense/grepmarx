@@ -60,6 +60,26 @@ function showSelectedFile(el) {
     document.getElementById("source-archive-text").innerText = el.files[0].name;
 }
 
+// ------------ Projects auto-refresh
+
+async function ajaxRefreshStatus(projectId) {
+    while(true) {
+        // https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+        await new Promise(r => setTimeout(r, 5000));
+        reqProjectStatus = new XMLHttpRequest();
+        reqProjectStatus.onreadystatechange = function () {
+            if (reqProjectStatus.readyState === XMLHttpRequest.DONE) {
+                status = reqProjectStatus.responseText;
+                if (status != 2) {
+                    document.location = '/projects';
+                }
+            }
+        };
+        reqProjectStatus.open('GET', '/projects/' + projectId + '/status');
+        reqProjectStatus.send();
+    }
+}
+
 // ------------ Asynchronous rule detail loading
 
 function ajaxRuleDetails(el, ruleId) {
@@ -87,6 +107,21 @@ function ajaxSyncRules() {
     };
     reqRuleSync.open('GET', '/rules/sync');
     reqRuleSync.send();
+}
+
+// ------------ Modals for remove confirmation
+
+/**
+ * Sets a location to redirect the user when a specific button is clicked.
+ * 
+ * @param {*} buttonId Identifier of the button
+ * @param {*} location URL to redirect when the button is clicked
+ */
+ function setConfirmAction(buttonId, location) {
+    btn = document.getElementById(buttonId);
+    btn.onclick = function () {
+        document.location = location;
+    };
 }
 
 // ------------ Datatables with checkboxes
@@ -215,17 +250,4 @@ function refreshSelectedLines() {
             checkbox.checked = false;
         }
     }
-}
-
-/**
- * Sets a location to redirect the user when a specific button is clicked.
- * 
- * @param {*} buttonId Identifier of the button
- * @param {*} location URL to redirect when the button is clicked
- */
-function setConfirmAction(buttonId, location) {
-    btn = document.getElementById(buttonId);
-    btn.onclick = function () {
-        document.location = location;
-    };
 }

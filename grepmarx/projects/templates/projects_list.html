@@ -82,6 +82,10 @@
                         </thead>
                         <tbody>
                             {% for c_project in projects %}
+                            {% if c_project.status == 2 or c_project.status == 4 %}
+                            <!-- Trigger auto-refresh -->
+                            <div id="{{ c_project.id}}" class="check-status"></div>
+                            {% endif %}
                             <tr>
                                 <td>
                                     {{ c_project.id }}
@@ -284,5 +288,12 @@
             ]
         });
     });
+
+    /* Activate auto-refresh if a project is being analyzed */
+    analyzing = document.getElementsByClassName("check-status");
+    if(analyzing.length > 0) {
+        ajaxRefreshStatus(analyzing[0].id);
+    }
+
 </script>
 {% endblock javascripts %}

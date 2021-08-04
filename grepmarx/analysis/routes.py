@@ -5,6 +5,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import json
 import os
+import time
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
@@ -13,8 +14,12 @@ from grepmarx.analysis import blueprint
 from grepmarx.analysis.forms import ScanForm
 from grepmarx.analysis.model import Analysis, Occurence, Vulnerability
 from grepmarx.analysis.util import async_scan
-from grepmarx.constants import (EXTRACT_FOLDER_NAME, OWASP_TOP10_LINKS,
-                                PROJECTS_SRC_PATH, STATUS_PENDING)
+from grepmarx.constants import (
+    EXTRACT_FOLDER_NAME,
+    OWASP_TOP10_LINKS,
+    PROJECTS_SRC_PATH,
+    STATUS_PENDING,
+)
 from grepmarx.projects.model import Project
 from grepmarx.rules.model import RulePack
 from pygments.lexers import guess_lexer_for_filename
@@ -26,7 +31,9 @@ def analysis_workbench(analysis_id):
     # TODO LFI via vulnerability location !
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
     if len(analysis.vulnerabilities) <= 0:
-        flash("No findings were found for this project during the last analysis", "error")
+        flash(
+            "No findings were found for this project during the last analysis", "error"
+        )
         return redirect(url_for("projects_blueprint.projects_list"))
     vulnerabilities = analysis.vulnerabilities_sorted_by_severity()
     return render_template(
@@ -129,9 +136,7 @@ def scans_launch():
             ignore_filenames=scan_form.ignore_filenames.data,
         )
         # Set rule folder for the project
-        project_rules_path = os.path.join(
-            PROJECTS_SRC_PATH, str(project.id), "rules"
-        )
+        project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
         project.analysis.import_rules(project_rules_path)
         # Start celery asynchronous scan
@@ -139,6 +144,8 @@ def scans_launch():
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id)
+        # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
+        time.sleep(0.5)
         # Done
         current_app.logger.info("Analysis completed (project.id=%i)", project.id)
         flash("Analysis successfully launched", "success")
