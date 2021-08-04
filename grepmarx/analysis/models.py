@@ -3,10 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-import re
-
 from grepmarx import db
-from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH)
 from grepmarx.rules.models import analysis_to_rule_pack_association_table
 from sqlalchemy import Column, Integer, String
 
@@ -63,26 +60,6 @@ class Occurence(db.Model):
     file_path = Column(String, nullable=False)
     position = db.relationship("Position", uselist=False, back_populates="occurence")
 
-    @staticmethod
-    def load_occurence(file_dict):
-        pattern = (
-            PROJECTS_SRC_PATH
-            + "[\\/]?\d+[\\/]"
-            + EXTRACT_FOLDER_NAME
-            + "[\\/]?"
-        )
-        clean_path = re.sub(pattern, "", file_dict["file_path"])
-        occurence = Occurence(
-            file_path=clean_path, match_string=file_dict["match_string"]
-        )
-        occurence.position = Position(
-            line_start=file_dict["match_lines"][0],
-            line_end=file_dict["match_lines"][1],
-            column_start=file_dict["match_position"][0],
-            column_end=file_dict["match_position"][1],
-        )
-        return occurence
-
 
 class Position(db.Model):
 
@@ -119,18 +96,6 @@ class AnalysisError(db.Model):
     long_msg = Column(String)
     short_msg = Column(String)
 
-    @staticmethod
-    def load_error(error_dict):
-        error = AnalysisError(code=error_dict["code"], error_type=error_dict["type"])
-        if "path" in error_dict:
-            error.path = error_dict["path"]
-        if "rule_id" in error_dict:
-            error.rule_id = error_dict["rule_id"]
-        if "spans" in error_dict:
-            for c_span in error_dict["spans"]:
-                error.spans.append(AnalysisErrorSpan.load_span(c_span))
-        return error
-
 
 class AnalysisErrorSpan(db.Model):
 
@@ -149,19 +114,3 @@ class AnalysisErrorSpan(db.Model):
     context_start = Column(String)
     context_end = Column(String)
     position = db.relationship("Position", uselist=False, back_populates="span")
-
-    @staticmethod
-    def load_span(span_dict):
-        span = AnalysisErrorSpan(
-            file=span_dict["file"],
-            source_hash=span_dict["source_hash"],
-            context_start=span_dict["context_start"],
-            context_end=span_dict["context_end"],
-        )
-        span.position = Position(
-            line_start=span_dict["start"]["line"],
-            line_end=span_dict["end"]["line"],
-            column_start=span_dict["start"]["col"],
-            column_end=span_dict["end"]["col"],
-        )
-        return span

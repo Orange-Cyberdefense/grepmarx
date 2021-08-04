@@ -4,13 +4,20 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import os
+import re
 from datetime import datetime
 from shutil import copyfile, rmtree
 
 from flask import current_app
 from grepmarx import celery, db
-from grepmarx.rules.util import generate_severity
-from grepmarx.analysis.models import Analysis, AnalysisError, Occurence, Vulnerability
+from grepmarx.analysis.models import (
+    Analysis,
+    AnalysisError,
+    AnalysisErrorSpan,
+    Occurence,
+    Position,
+    Vulnerability,
+)
 from grepmarx.constants import (
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
@@ -22,6 +29,7 @@ from grepmarx.constants import (
     STATUS_ERROR,
     STATUS_FINISHED,
 )
+from grepmarx.rules.util import generate_severity
 from libsast import Scanner
 from semgrep.error import SemgrepError
 
@@ -87,7 +95,7 @@ def load_scan_results(analysis, libsast_result):
                 )
             errors = libsast_result["semantic_grep"]["errors"]
             for c_error in errors:
-                analysis.errors.append(AnalysisError.load_error(c_error))
+                analysis.errors.append(load_analysis_error(c_error))
 
 
 def generate_options(analysis, rule_folder):
@@ -179,9 +187,11 @@ def vulnerabilities_sorted_by_severity(analysis):
     r_vulns.extend(low_vulns)
     return r_vulns
 
+
 ##
 ## Vulnerability utils
 ##
+
 
 def load_vulnerability(match_title, match_dict):
     """Create a vulnerability object from a 'match' element of libsast/semgrep results.
@@ -195,7 +205,7 @@ def load_vulnerability(match_title, match_dict):
     """
     vuln = Vulnerability(title=match_title)
     for c_occurence in match_dict["files"]:
-        vuln.occurences.append(Occurence.load_occurence(c_occurence))
+        vuln.occurences.append(load_occurence(c_occurence))
     metadata = match_dict["metadata"]
     if "description" in metadata:
         vuln.description = metadata["description"]
@@ -207,3 +217,83 @@ def load_vulnerability(match_title, match_dict):
         vuln.references = " ".join(metadata["references"])
     vuln.severity = generate_severity(vuln.cwe)
     return vuln
+
+
+##
+## Occurence utils
+##
+
+
+def load_occurence(file_dict):
+    """Create an occurence object from a 'match/files' element of libsast/semgrep results.
+
+    Args:
+        file_dict (dict): file elements with its properties
+
+    Returns:
+        Occurence: fully populated occurence
+    """
+    pattern = PROJECTS_SRC_PATH + "[\\/]?\d+[\\/]" + EXTRACT_FOLDER_NAME + "[\\/]?"
+    clean_path = re.sub(pattern, "", file_dict["file_path"])
+    occurence = Occurence(file_path=clean_path, match_string=file_dict["match_string"])
+    occurence.position = Position(
+        line_start=file_dict["match_lines"][0],
+        line_end=file_dict["match_lines"][1],
+        column_start=file_dict["match_position"][0],
+        column_end=file_dict["match_position"][1],
+    )
+    return occurence
+
+
+##
+## AnalysisError utils
+##
+
+
+def load_analysis_error(error_dict):
+    """ "Create an analysis error object from an 'error' element of libsast/semgrep results.
+
+    Args:
+        error_dict (dict): error elements with its properties
+
+    Returns:
+        AnalysisError: fully populated analysis error
+    """
+    error = AnalysisError(code=error_dict["code"], error_type=error_dict["type"])
+    if "path" in error_dict:
+        error.path = error_dict["path"]
+    if "rule_id" in error_dict:
+        error.rule_id = error_dict["rule_id"]
+    if "spans" in error_dict:
+        for c_span in error_dict["spans"]:
+            error.spans.append(load_analysis_error_span(c_span))
+    return error
+
+
+##
+## AnalysisErrorSpan utils
+##
+
+
+def load_analysis_error_span(span_dict):
+    """Create an analysis error span object from an 'error/span' element of libsast/semgrep results.
+
+    Args:
+        span_dict ([type]): span elements with its properties
+
+    Returns:
+        AnalysisErrorSpan: fully populated analysis error span
+    """
+    span = AnalysisErrorSpan(
+        file=span_dict["file"],
+        source_hash=span_dict["source_hash"],
+        context_start=span_dict["context_start"],
+        context_end=span_dict["context_end"],
+    )
+    span.position = Position(
+        line_start=span_dict["start"]["line"],
+        line_end=span_dict["end"]["line"],
+        column_start=span_dict["start"]["col"],
+        column_end=span_dict["end"]["col"],
+    )
+    return span
