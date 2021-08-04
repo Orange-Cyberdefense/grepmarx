@@ -17,8 +17,7 @@ from grepmarx.base.models import User
 from grepmarx.base.util import (init_db, last_12_months_analysis_count,
                                 verify_pass)
 from grepmarx.projects.model import Project
-from grepmarx.rules.model import Rule, RulePack
-from grepmarx.administration.model import RuleRepository
+from grepmarx.rules.model import Rule, RulePack, RuleRepository
 from is_safe_url import is_safe_url
 
 

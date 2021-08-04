@@ -4,14 +4,17 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import os
+from datetime import datetime
 from glob import glob
+from shutil import rmtree
 
+import git
 from flask import current_app
 from grepmarx import db
-from grepmarx.administration.model import RuleRepository
 from grepmarx.constants import RULE_EXTENSIONS, RULES_PATH
 from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy.sql.sqltypes import DateTime
 from yaml import YAMLError, safe_load
 
 rule_to_supported_language_association_table = Table(
@@ -156,6 +159,37 @@ class RulePack(db.Model):
         secondary=rule_to_rule_pack_association_table,
         back_populates="rule_packs",
     )
+
+
+class RuleRepository(db.Model):
+
+    __tablename__ = "RuleRepository"
+
+    id = Column("id", Integer, primary_key=True)
+    name = Column(String, unique=True)
+    description = Column(String)
+    uri = Column(String)
+    last_update_on = Column(DateTime())
+
+    def clone(self):
+        repo_path = os.path.join(RULES_PATH, self.name)
+        git.Repo.clone_from(self.uri, repo_path)
+        self.last_update_on = datetime.now()
+        db.session.commit()
+
+    def pull(self):
+        repo_path = os.path.join(RULES_PATH, self.name)
+        git.cmd.Git(repo_path).pull()
+        self.last_update_on = datetime.now()
+        db.session.commit()
+
+    def remove(self):
+        # Remove repository folder on disk
+        repo_path = os.path.join(RULES_PATH, self.name)
+        if os.path.isdir(repo_path):
+            rmtree(repo_path)
+        db.session.delete(self)
+        db.session.commit()
 
 
 class SupportedLanguage(db.Model):
