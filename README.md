@@ -264,11 +264,5 @@ What you should do next:
 
 <br />
 
-## TODO
-- Dynamic refresh of project states
-- Display handling of WTForms errors
-- Code dependency checking
-- Application inspection features
-
 ---
 Grepmarx - Provided by **[Orange Cyberdefense](https://orangecyberdefense.com)**.
