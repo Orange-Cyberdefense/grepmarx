@@ -12,7 +12,8 @@ from zipfile import ZipFile, is_zipfile
 
 from grepmarx import db
 from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC_PATH
-from grepmarx.projects.models import ProjectLinesCount
+from grepmarx.projects.models import LanguageLinesCount, ProjectLinesCount
+from grepmarx.rules.models import SupportedLanguage
 
 ##
 ## Project utils
@@ -20,7 +21,8 @@ from grepmarx.projects.models import ProjectLinesCount
 
 
 def remove_project(project):
-    """Delete the project from the database (along with all its analysis), and remove the project folder from disk.
+    """Delete the project from the database (along with all its analysis), and
+    remove the project folder from disk.
 
     Args:
         project (Project): project to remove
@@ -33,7 +35,8 @@ def remove_project(project):
 
 
 def count_lines(project):
-    """Count line of code of the project's code archive using third-party tool scc, and populate the ProjectLinesCount class member.
+    """Count line of code of the project's code archive using third-party tool
+    scc, and populate the ProjectLinesCount class member.
 
     Args:
         project (project): project with an already extracted source archive
@@ -45,9 +48,7 @@ def count_lines(project):
             [SCC_PATH, source_path, "-f", "json"], capture_output=True
         ).stdout
     )
-    project.project_lines_count = ProjectLinesCount.load_project_lines_count(
-        json_result
-    )
+    project.project_lines_count = load_project_lines_count(json_result)
 
 
 def sha256sum(file_path):
@@ -89,3 +90,91 @@ def check_zipfile(zip_path):
                 msg = "encrypted zip file"
                 break
     return error, msg
+
+
+##
+## ProjectLinesCount util
+##
+
+
+def top_language_lines_counts(project_lc, top_number):
+    """Return the `top_number` most present languages in the project source archive,
+    sorted by their lines counts.
+
+    Args:
+        project_lc (ProjectLinesCount): project lines count object populated with
+        LanguageLinesCount
+        top_number (int): number defining how many LanguageLinesCount to return
+
+    Returns:
+        list: LanguageLinesCount objects corresponding to the `top_number` most
+        present languages
+    """
+    return sorted(
+        project_lc.language_lines_counts, key=lambda x: x.code_count, reverse=True
+    )[:top_number]
+
+
+def top_supported_language_lines_counts(project_lc):
+    """Return a list of SupportedLanguage objects corresponding to the supported
+    languages detected in the project source archive, sorted by their lines counts.
+
+    Args:
+        project_lc (ProjectLinesCount): project lines count object populated with
+        LanguageLinesCount
+
+    Returns:
+        list: LanguageLinesCount objects corresponding to supported languages
+        detected in the project source archive, sorted by their lines counts
+    """
+    ret = list()
+    languages = sorted(
+        project_lc.language_lines_counts, key=lambda x: x.code_count, reverse=True
+    )
+    supported_languages = SupportedLanguage.query.all()
+    for c_lang in languages:
+        for c_sl in supported_languages:
+            if c_sl.name.lower() == c_lang.language.lower():
+                ret.append(c_sl)
+    return ret
+
+
+def load_project_lines_count(scc_result):
+    """Create a new ProjectLinesCount object and populate it with the given scc
+    results.
+
+    Args:
+        scc_result (list): deserialized (json.dumps) scc results
+
+    Returns:
+        ProjectLinesCount: fully populated project lines count object
+    """
+    # Empty ProjectLinesCount
+    project_lc = ProjectLinesCount(
+        total_file_count=0,
+        total_line_count=0,
+        total_blank_count=0,
+        total_comment_count=0,
+        total_code_count=0,
+        total_complexity_count=0,
+    )
+    for c in scc_result:
+        # Create a LanguageLineCount
+        language_lines_count = LanguageLinesCount(
+            language=c["Name"],
+            file_count=c["Count"],
+            line_count=c["Lines"],
+            blank_count=c["Blank"],
+            comment_count=c["Comment"],
+            code_count=c["Code"],
+            complexity_count=c["Complexity"],
+        )
+        project_lc.language_lines_counts.append(language_lines_count)
+        # Update ProjectLineCount counters
+        project_lc.total_file_count += c["Count"]
+        project_lc.total_line_count += c["Lines"]
+        project_lc.total_blank_count += c["Blank"]
+        project_lc.total_comment_count += c["Comment"]
+        project_lc.total_code_count += c["Code"]
+        project_lc.total_complexity_count += c["Complexity"]
+    return project_lc

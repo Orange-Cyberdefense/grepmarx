@@ -25,6 +25,7 @@ from grepmarx.constants import (
     STATUS_PENDING,
 )
 from grepmarx.projects.models import Project
+from grepmarx.projects.util import top_language_lines_counts
 from grepmarx.rules.models import RulePack
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
@@ -124,6 +125,7 @@ def scans_new(project_id, scan_form=None):
         project=project,
         form=scan_form,
         user=current_user,
+        top_language_lines_counts=top_language_lines_counts,
         segment="projects",
     )
 

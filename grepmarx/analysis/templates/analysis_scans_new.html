@@ -195,13 +195,13 @@
 <script type="text/javascript">
 
     var data_labels = [
-        {% for c_top5 in project.project_lines_count.top_language_lines_counts(5) %}
+        {% for c_top5 in top_language_lines_counts(project.project_lines_count, 5) %}
         "{{ c_top5.language }}",
         {% endfor %}
     ];
 
     var data_values = [
-        {% for c_top5 in project.project_lines_count.top_language_lines_counts(5) %}
+        {% for c_top5 in top_language_lines_counts(project.project_lines_count, 5) %}
         {{ (c_top5.code_count / project.project_lines_count.total_code_count * 100) | round | int }},
         {% endfor %}
     ];

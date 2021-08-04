@@ -3,14 +3,8 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.rules.models import SupportedLanguage
-import json
-import os
-import subprocess
-from shutil import rmtree
-
 from grepmarx import db
-from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, STATUS_NEW
+from grepmarx.constants import STATUS_NEW
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql.schema import ForeignKey
 
@@ -54,59 +48,6 @@ class ProjectLinesCount(db.Model):
     total_complexity_count = Column(Integer)
     project_id = Column(Integer, ForeignKey("Project.id"), nullable=False)
     project = db.relationship("Project", back_populates="project_lines_count")
-
-    def top_language_lines_counts(self, top_number):
-        """Return the `top_number` most present languages in the project source archive."""
-        return sorted(
-            self.language_lines_counts, key=lambda x: x.code_count, reverse=True
-        )[:top_number]
-
-    def top_supported_language_lines_counts(self):
-        """Return a list of SupportedLanguage objects corresponding to the 
-        supported languages detected in the project source archive."""
-        ret = list()
-        languages = sorted(
-            self.language_lines_counts, key=lambda x: x.code_count, reverse=True
-        )
-        supported_languages = SupportedLanguage.query.all()
-        for c_lang in languages:
-            for c_sl in supported_languages:
-                if c_sl.name.lower() == c_lang.language.lower():
-                    ret.append(c_sl)
-        return ret
-
-    @staticmethod
-    def load_project_lines_count(scc_result):
-        """Create a new ProjectLinesCount object and populate it with the given scc results."""
-        # Empty ProjectLinesCount
-        project_lines_count = ProjectLinesCount(
-            total_file_count=0,
-            total_line_count=0,
-            total_blank_count=0,
-            total_comment_count=0,
-            total_code_count=0,
-            total_complexity_count=0,
-        )
-        for c in scc_result:
-            # Create a LanguageLineCount
-            language_lines_count = LanguageLinesCount(
-                language=c["Name"],
-                file_count=c["Count"],
-                line_count=c["Lines"],
-                blank_count=c["Blank"],
-                comment_count=c["Comment"],
-                code_count=c["Code"],
-                complexity_count=c["Complexity"],
-            )
-            project_lines_count.language_lines_counts.append(language_lines_count)
-            # Update ProjectLineCount counters
-            project_lines_count.total_file_count += c["Count"]
-            project_lines_count.total_line_count += c["Lines"]
-            project_lines_count.total_blank_count += c["Blank"]
-            project_lines_count.total_comment_count += c["Comment"]
-            project_lines_count.total_code_count += c["Code"]
-            project_lines_count.total_complexity_count += c["Complexity"]
-        return project_lines_count
 
 
 class LanguageLinesCount(db.Model):

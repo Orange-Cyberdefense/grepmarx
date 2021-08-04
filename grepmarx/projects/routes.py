@@ -20,7 +20,13 @@ from grepmarx.constants import (
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.models import Project
-from grepmarx.projects.util import check_zipfile, count_lines, remove_project, sha256sum
+from grepmarx.projects.util import (
+    check_zipfile,
+    count_lines,
+    remove_project,
+    sha256sum,
+    top_supported_language_lines_counts,
+)
 from werkzeug.utils import secure_filename
 
 
@@ -34,6 +40,7 @@ def projects_list():
         projects=projects,
         form=project_form,
         user=current_user,
+        top_supported_language_lines_counts=top_supported_language_lines_counts,
         lang_icons=LANGUAGES_DEVICONS,
         segment="projects",
     )
