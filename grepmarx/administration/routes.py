@@ -2,6 +2,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from grepmarx.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 import json
 
 from flask import current_app, flash, redirect, render_template, request, url_for
@@ -185,7 +186,7 @@ def repos_add():
                 uri=repo_form.uri.data,
             )
             # Clone the repo
-            repo.clone()
+            clone_rule_repo(repo)
             # Save repo in DB
             db.session.add(repo)
             db.session.commit()
@@ -259,7 +260,7 @@ def repos_edit(repo_id):
 @login_required
 def repos_remove(repo_id):
     repo = RuleRepository.query.filter_by(id=repo_id).first_or_404()
-    repo.remove()
+    remove_rule_repo(repo)
     current_app.logger.info("Repository removed (repo.id=%i)", repo.id)
     flash("Repository successfully deleted", "success")
     return redirect(url_for("administration_blueprint.repos_list"))
@@ -269,7 +270,7 @@ def repos_remove(repo_id):
 @login_required
 def repos_pull(repo_id):
     repo = RuleRepository.query.filter_by(id=repo_id).first_or_404()
-    repo.pull()
+    pull_rule_repo(repo)
     current_app.logger.info("Git pull on repository (repo.id=%i)", repo.id)
     flash("Latest rules were successfully pulled for the repository", "success")
     return redirect(url_for("administration_blueprint.repos_list"))

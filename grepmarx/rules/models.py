@@ -3,19 +3,10 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-import os
-from datetime import datetime
-from glob import glob
-from shutil import rmtree
-
-import git
-from flask import current_app
 from grepmarx import db
-from grepmarx.constants import RULE_EXTENSIONS, RULES_PATH
-from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.sql.sqltypes import DateTime
-from yaml import YAMLError, safe_load
+
 
 rule_to_supported_language_association_table = Table(
     "RuleToSupportedLanguageAssociation",
@@ -75,67 +66,6 @@ class Rule(db.Model):
         back_populates="rules",
     )
 
-    @staticmethod
-    def sync_db(rules_folder):
-        # Get all YML files in the folder
-        rules_filenames = list()
-        for c_ext in RULE_EXTENSIONS:
-            rules_filenames += glob(
-                pathname=os.path.join(rules_folder, "**", "*" + c_ext), recursive=True
-            )
-        supported_languages = SupportedLanguage.query.all()
-        # Parse rules in these files
-        for c_filename in rules_filenames:
-            with open(c_filename, "r") as yml_stream:
-                try:
-                    yml_rules = safe_load(yml_stream)
-                    file_path = c_filename.replace(RULES_PATH, "")
-                    repository = file_path.split(os.path.sep)[0]
-                    category = ".".join(file_path.split(os.path.sep)[1:][:-1])
-                    # Extract rules from the file, if any
-                    if "rules" in yml_rules:
-                        for c_rule in yml_rules["rules"]:
-                            rule = Rule.query.filter_by(file_path=file_path).first()
-                            # Create a new rule only if the file doesn't corresponds to an existing
-                            # rule, in order to keep ids and not break RulePacks
-                            if rule is None:
-                                rule = Rule(
-                                    title=c_rule["id"],
-                                    file_path=file_path,
-                                    repository=RuleRepository.query.filter_by(
-                                        name=repository
-                                    ).first(),
-                                    category=category,
-                                )
-                                db.session.add(rule)
-                            # Associate the rule with a known, supported language
-                            if "languages" in c_rule:
-                                for c_language in c_rule["languages"]:
-                                    for c_sl in supported_languages:
-                                        if c_sl.name.lower() == c_language.lower():
-                                            rule.languages.append(c_sl)
-                            # Add metadata: OWASP and CWE ids
-                            if "metadata" in c_rule:
-                                if "cwe" in c_rule["metadata"]:
-                                    rule.cwe = c_rule["metadata"]["cwe"]
-                                if "owasp" in c_rule["metadata"]:
-                                    rule.owasp = c_rule["metadata"]["owasp"]
-                            # Replace rule level/severity by a calculated one
-                            rule.severity = generate_severity(rule.cwe)
-                            current_app.logger.debug(
-                                "Rule imported in DB: %s",
-                                rule.repository.name
-                                + "/"
-                                + rule.category
-                                + "/"
-                                + rule.title,
-                            )
-                except YAMLError as e:
-                    db.session.rollback()
-                    raise (e)
-                else:
-                    db.session.commit()
-
 
 class RulePack(db.Model):
 
@@ -170,26 +100,6 @@ class RuleRepository(db.Model):
     description = Column(String)
     uri = Column(String)
     last_update_on = Column(DateTime())
-
-    def clone(self):
-        repo_path = os.path.join(RULES_PATH, self.name)
-        git.Repo.clone_from(self.uri, repo_path)
-        self.last_update_on = datetime.now()
-        db.session.commit()
-
-    def pull(self):
-        repo_path = os.path.join(RULES_PATH, self.name)
-        git.cmd.Git(repo_path).pull()
-        self.last_update_on = datetime.now()
-        db.session.commit()
-
-    def remove(self):
-        # Remove repository folder on disk
-        repo_path = os.path.join(RULES_PATH, self.name)
-        if os.path.isdir(repo_path):
-            rmtree(repo_path)
-        db.session.delete(self)
-        db.session.commit()
 
 
 class SupportedLanguage(db.Model):
