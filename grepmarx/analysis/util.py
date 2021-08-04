@@ -3,7 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.analysis.model import Analysis
+from grepmarx.analysis.models import Analysis
 from grepmarx.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, STATUS_ANALYZING, STATUS_ERROR, STATUS_FINISHED
 import os
 from datetime import datetime

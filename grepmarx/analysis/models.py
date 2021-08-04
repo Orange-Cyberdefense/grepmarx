@@ -12,7 +12,7 @@ from grepmarx import db
 from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
                                 RULE_EXTENSIONS, RULES_PATH, SEVERITY_HIGH,
                                 SEVERITY_MEDIUM)
-from grepmarx.rules.model import analysis_to_rule_pack_association_table
+from grepmarx.rules.models import analysis_to_rule_pack_association_table
 from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, Integer, String
 

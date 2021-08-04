@@ -3,7 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.rules.model import SupportedLanguage
+from grepmarx.rules.models import SupportedLanguage
 import json
 import os
 import subprocess

@@ -11,9 +11,9 @@ from calendar import monthrange
 from datetime import date, datetime, timedelta
 
 from grepmarx import db
-from grepmarx.analysis.model import Analysis
+from grepmarx.analysis.models import Analysis
 from grepmarx.base import models
-from grepmarx.rules.model import SupportedLanguage
+from grepmarx.rules.models import SupportedLanguage
 from sqlalchemy import and_, func
 
 

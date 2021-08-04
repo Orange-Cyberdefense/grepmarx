@@ -12,7 +12,7 @@ from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.analysis import blueprint
 from grepmarx.analysis.forms import ScanForm
-from grepmarx.analysis.model import Analysis, Occurence, Vulnerability
+from grepmarx.analysis.models import Analysis, Occurence, Vulnerability
 from grepmarx.analysis.util import async_scan
 from grepmarx.constants import (
     EXTRACT_FOLDER_NAME,
@@ -20,8 +20,8 @@ from grepmarx.constants import (
     PROJECTS_SRC_PATH,
     STATUS_PENDING,
 )
-from grepmarx.projects.model import Project
-from grepmarx.rules.model import RulePack
+from grepmarx.projects.models import Project
+from grepmarx.rules.models import RulePack
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
 

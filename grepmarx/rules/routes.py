@@ -12,7 +12,7 @@ from grepmarx import db
 from grepmarx.constants import OWASP_TOP10_LINKS, RULES_PATH
 from grepmarx.rules import blueprint
 from grepmarx.rules.forms import RulePackForm
-from grepmarx.rules.model import Rule, RulePack, SupportedLanguage
+from grepmarx.rules.models import Rule, RulePack, SupportedLanguage
 from grepmarx.rules.util import (comma_separated_to_list,
                                  validate_languages_rules)
 

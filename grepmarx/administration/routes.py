@@ -9,7 +9,7 @@ from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.administration import blueprint
 from grepmarx.administration.forms import RepositoryForm, UserForm
-from grepmarx.rules.model import RuleRepository
+from grepmarx.rules.models import RuleRepository
 from grepmarx.administration.util import validate_user_form
 from grepmarx.base import util
 from grepmarx.base.models import User

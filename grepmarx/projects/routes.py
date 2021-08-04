@@ -19,7 +19,7 @@ from grepmarx.constants import (
 )
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
-from grepmarx.projects.model import Project
+from grepmarx.projects.models import Project
 from grepmarx.projects.util import check_zipfile, sha256sum
 from werkzeug.utils import secure_filename
 
