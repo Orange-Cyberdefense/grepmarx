@@ -4,9 +4,11 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from grepmarx.base.models import User
-import re
 
-def validate_user_form(form, skip_username=False, skip_email=False, skip_password=False):
+
+def validate_user_form(
+    form, skip_username=False, skip_email=False, skip_password=False
+):
     err = None
     if not skip_username:
         # Check username exists

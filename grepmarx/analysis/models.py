@@ -3,15 +3,10 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-import os
 import re
-from shutil import copyfile, rmtree
 
-from flask import current_app
 from grepmarx import db
-from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
-                                RULE_EXTENSIONS, RULES_PATH, SEVERITY_HIGH,
-                                SEVERITY_MEDIUM)
+from grepmarx.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH)
 from grepmarx.rules.models import analysis_to_rule_pack_association_table
 from grepmarx.rules.util import generate_severity
 from sqlalchemy import Column, Integer, String
@@ -33,84 +28,6 @@ class Analysis(db.Model):
     )
     ignore_paths = Column(String)
     ignore_filenames = Column(String)
-
-    def import_rules(self, rule_folder):
-        if os.path.isdir(rule_folder):
-            rmtree(rule_folder)
-        os.mkdir(rule_folder)
-        for c_rule_pack in self.rule_packs:
-            for c_rule in c_rule_pack.rules:
-                src = os.path.join(RULES_PATH, c_rule.file_path)
-                dst = os.path.join(
-                    rule_folder,
-                    c_rule.repository.name
-                    + "_"
-                    + c_rule.category
-                    + "."
-                    + c_rule.title
-                    + next(iter(RULE_EXTENSIONS)),
-                )
-                copyfile(src, dst)
-                current_app.logger.debug(
-                    "Imported rule for project with id=%i: %s",
-                    self.project.id,
-                    dst,
-                )
-
-    def generate_options(self, rule_folder):
-        options = dict()
-        # Rule path
-        options["sgrep_rules"] = rule_folder
-        # Ignore filenames
-        options["ignore_filenames"] = set(
-            # Remove empty elements
-            filter(None, self.ignore_filenames.split(","))
-        )
-        # Ignore paths
-        options["ignore_paths"] = set(
-            # Remove empty elements
-            filter(None, self.ignore_paths.split(","))
-        )
-        # Extensions
-        ext_str = ""
-        for c_rule_pack in self.rule_packs:
-            print(c_rule_pack.name)
-            for c_language in c_rule_pack.languages:
-                print(c_language.name)
-                ext_str += c_language.extensions + ","
-        options["sgrep_extensions"] = set(
-            # Remove duplicates
-            dict.fromkeys(
-                # Remove empty elements
-                filter(None, ext_str.split(","))
-            )
-        )
-        return options
-
-    def load_scan_results(self, libsast_result):
-        if libsast_result is not None:
-            if "semantic_grep" in libsast_result:
-                matches = libsast_result["semantic_grep"]["matches"]
-                for c_match in matches:
-                    self.vulnerabilities.append(
-                        Vulnerability.load_vulnerability(c_match, matches[c_match])
-                    )
-                errors = libsast_result["semantic_grep"]["errors"]
-                for c_error in errors:
-                    self.errors.append(AnalysisError.load_error(c_error))
-
-    def vulnerabilities_sorted_by_severity(self):
-        r_vulnerabilities = list()
-        low_vulnerabilities = list()
-        for c_vulnerability in self.vulnerabilities:
-            if c_vulnerability.severity == SEVERITY_HIGH:
-                r_vulnerabilities.insert(0, c_vulnerability)
-            elif c_vulnerability.severity == SEVERITY_MEDIUM:
-                r_vulnerabilities.append(c_vulnerability)
-            else:
-                low_vulnerabilities.append(c_vulnerability)
-        r_vulnerabilities.extend(low_vulnerabilities)
-        return r_vulnerabilities
 
 
 class Vulnerability(db.Model):

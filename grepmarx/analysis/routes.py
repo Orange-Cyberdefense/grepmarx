@@ -13,7 +13,11 @@ from grepmarx import db
 from grepmarx.analysis import blueprint
 from grepmarx.analysis.forms import ScanForm
 from grepmarx.analysis.models import Analysis, Occurence, Vulnerability
-from grepmarx.analysis.util import async_scan
+from grepmarx.analysis.util import (
+    async_scan,
+    import_rules,
+    vulnerabilities_sorted_by_severity,
+)
 from grepmarx.constants import (
     EXTRACT_FOLDER_NAME,
     OWASP_TOP10_LINKS,
@@ -25,6 +29,10 @@ from grepmarx.rules.models import RulePack
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
 
+##
+## Analysis utils
+##
+
 
 @blueprint.route("/analysis/workbench/<analysis_id>")
 @login_required
@@ -35,7 +43,7 @@ def analysis_workbench(analysis_id):
             "No findings were found for this project during the last analysis", "error"
         )
         return redirect(url_for("projects_blueprint.projects_list"))
-    vulnerabilities = analysis.vulnerabilities_sorted_by_severity()
+    vulnerabilities = vulnerabilities_sorted_by_severity(analysis)
     return render_template(
         "analysis_workbench.html",
         user=current_user,
@@ -146,7 +154,7 @@ def scans_launch():
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
-        project.analysis.import_rules(project_rules_path)
+        import_rules(project.analysis, project_rules_path)
         # Start celery asynchronous scan
         project.status = STATUS_PENDING
         db.session.commit()
