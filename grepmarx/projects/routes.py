@@ -20,7 +20,7 @@ from grepmarx.constants import (
 from grepmarx.projects import blueprint
 from grepmarx.projects.forms import ProjectForm
 from grepmarx.projects.models import Project
-from grepmarx.projects.util import check_zipfile, sha256sum
+from grepmarx.projects.util import check_zipfile, count_lines, remove_project, sha256sum
 from werkzeug.utils import secure_filename
 
 
@@ -50,7 +50,7 @@ def projects_status(project_id):
 @login_required
 def projects_remove(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
-    project.remove()
+    remove_project(project)
     current_app.logger.info("Project deleted (project.id=%i)", project.id)
     flash("Project successfully deleted", "success")
     return redirect(url_for("projects_blueprint.projects_list"))
@@ -99,7 +99,7 @@ def projects_create():
                 project.remove()
                 return "Bad zip file", 403
         # Count lines of code and save project
-        project.count_lines()
+        count_lines(project)
         db.session.commit()
         current_app.logger.info("New project created (project.id=%i)", project.id)
         return str(project.id), 200

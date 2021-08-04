@@ -40,29 +40,6 @@ class Project(db.Model):
         cascade="all, delete-orphan",
     )
 
-    def remove(self):
-        """Delete the project from the database (along with all its analysis),
-        and remove the project folder from disk."""
-        project_path = os.path.join(PROJECTS_SRC_PATH, str(self.id))
-        if os.path.isdir(project_path):
-            rmtree(project_path)
-        db.session.delete(self)
-        db.session.commit()
-
-    def count_lines(self):
-        """Count line of code of the project's code archive using third-party tool scc,
-        and populate the ProjectLinesCount class member."""
-        source_path = os.path.join(PROJECTS_SRC_PATH, str(self.id), EXTRACT_FOLDER_NAME)
-        # Call to external binary: scc
-        json_result = json.loads(
-            subprocess.run(
-                ["third-party/scc/scc", source_path, "-f", "json"], capture_output=True
-            ).stdout
-        )
-        self.project_lines_count = ProjectLinesCount.load_project_lines_count(
-            json_result
-        )
-
 
 class ProjectLinesCount(db.Model):
 
