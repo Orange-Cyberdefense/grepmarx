@@ -73,6 +73,7 @@
                                 <th>Name</th>
                                 <th>Creator</th>
                                 <th>Analysis duration</th>
+                                <th>Risk level</th>
                                 <th>Findings</th>
                                 <th>Languages</th>
                                 <th>Lines of code</th>
@@ -82,8 +83,22 @@
                         </thead>
                         <tbody>
                             {% for c_project in projects %}
+
+                            {# Count occurences #}
+                            {% set occurences_count = namespace(value=0) %}
+                            {% for c_vulnerability in c_project.analysis.vulnerabilities %}
+                            {% set occurences_count.value = occurences_count.value + c_vulnerability.occurences|length %}
+                            {% endfor %}
+
+                            {# Calculate risk level % #}
+                            {% set risk_level = namespace(value=((occurences_count.value /
+                            c_project.project_lines_count.total_code_count) * 50000) | round | int ) %}
+                            {% if risk_level.value > 100 %}
+                            {% set risk_level.value = 100 %}
+                            {% endif %}
+
+                            {# Trigger auto-refresh if state is STATE_ANALYSING % #}
                             {% if c_project.status == 2 or c_project.status == 4 %}
-                            <!-- Trigger auto-refresh -->
                             <div id="{{ c_project.id}}" class="check-status"></div>
                             {% endif %}
                             <tr>
@@ -93,23 +108,24 @@
                                 <td>
                                     {% if c_project.status == 0 or c_project.status == 3 %}
                                     <a href="/analysis/scans/new/{{ c_project.id }}">
-                                    {% elif c_project.status == 1 %}
-                                    <a href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                    {% elif c_project.status == 2 or c_project.status == 4 %}
-                                    <a href="#">
-                                    {% endif %}
-                                        {{ c_project.name }}
-                                    </a>
-                                    <br />
-                                    <small>
-                                        {% if c_project.analysis is not none and c_project.analysis.finished_on is not
-                                        none
-                                        %}
-                                        {{ c_project.analysis.finished_on.strftime("%-d %B, %Y %H:%M") }}
-                                        {% else %}
-                                        Not yet analyzed
-                                        {% endif %}
-                                    </small>
+                                        {% elif c_project.status == 1 %}
+                                        <a href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                            {% elif c_project.status == 2 or c_project.status == 4 %}
+                                            <a href="#">
+                                                {% endif %}
+                                                {{ c_project.name }}
+                                            </a>
+                                            <br />
+                                            <small>
+                                                {% if c_project.analysis is not none and c_project.analysis.finished_on
+                                                is not
+                                                none
+                                                %}
+                                                {{ c_project.analysis.finished_on.strftime("%-d %B, %Y %H:%M") }}
+                                                {% else %}
+                                                Not yet analyzed
+                                                {% endif %}
+                                            </small>
                                 </td>
                                 <td>
                                     {{ c_project.creator.username }}
@@ -125,19 +141,28 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {# TODO: put the vulnerability count / risk level as an attribute of Analysis #}
-                                    {% set count = namespace(value=0) %}
-                                    {% for c_vulnerability in c_project.analysis.vulnerabilities %}
-                                    {% set count.value = count.value + c_vulnerability.occurences|length %}
-                                    {% endfor %}
-                                    {{ count.value }}
+                                    <div class="progress progress-sm progress-striped active">
+                                        {% if risk_level.value > 70 %}
+                                        <div class="progress-bar bg-danger" style="width: {{ risk_level.value }}%"></div>
+                                        {% elif risk_level.value > 30 %}
+                                        <div class="progress-bar bg-warning" style="width: {{ risk_level.value }}%"></div>
+                                        {% else %}
+                                        <div class="progress-bar bg-info" style="width: {{ risk_level.value }}%"></div>
+                                        {% endif %}
+                                    </div>
+                                    <small>{{ risk_level.value }}%</small>
+                                </td>
+                                <td>
+                                    {{ occurences_count.value }}
                                 </td>
                                 <td class="text-lg text-left">
                                     {% if c_project.project_lines_count is not none %}
-                                        {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count) %}
-                                        <i class="{{ lang_icons[c_lang.name] }} text-secondary" title="{{ c_lang.name }}"></i>
-                                        &nbsp;
-                                        {% endfor %}
+                                    {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count)
+                                    %}
+                                    <i class="{{ lang_icons[c_lang.name] }} text-secondary"
+                                        title="{{ c_lang.name }}"></i>
+                                    &nbsp;
+                                    {% endfor %}
                                     {% endif %}
                                 </td>
                                 <td>
@@ -149,11 +174,13 @@
                                     {% elif c_project.status == 1 %}
                                     <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Ready</span>
                                     {% elif c_project.status == 2 %}
-                                    <span class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
+                                    <span
+                                        class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
                                         Analyzing
-                                    </span>    
+                                    </span>
                                     {% elif c_project.status == 3 %}
-                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3" title="{{ c_project.error_message }}">Error</span>
+                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3"
+                                        title="{{ c_project.error_message }}">Error</span>
                                     {% elif c_project.status == 4 %}
                                     <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
                                     {% endif %}
@@ -162,18 +189,19 @@
                                     <div class="btn-group btn-group-sm">
                                         {% if c_project.status == 0 or c_project.status == 3 %}
                                         <a class="btn btn-default btn-sm" href="/analysis/scans/new/{{ c_project.id }}">
-                                        {% elif c_project.status == 1 %}
-                                        <a class="btn btn-default btn-sm" href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                        {% elif c_project.status == 2 or c_project.status == 4 %}
-                                        <a class="btn btn-default btn-sm" href="#">
-                                        {% endif %}
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a class="btn btn-default btn-sm" href="#"
-                                        onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
-                                        data-toggle="modal" data-target="#confirm-removal">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                            {% elif c_project.status == 1 %}
+                                            <a class="btn btn-default btn-sm"
+                                                href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                                {% elif c_project.status == 2 or c_project.status == 4 %}
+                                                <a class="btn btn-default btn-sm" href="#">
+                                                    {% endif %}
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a class="btn btn-default btn-sm" href="#"
+                                                    onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
+                                                    data-toggle="modal" data-target="#confirm-removal">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
                                     </div>
                                 </td>
                             </tr>
@@ -216,7 +244,8 @@
                             <div class="form-group mb-4">
                                 <label for="source-archive">Source code archive</label>
                                 <div class="custom-file">
-                                    {{ form.source_archive(placeholder="", class="custom-file-input", onchange="showSelectedFile(this)") }}
+                                    {{ form.source_archive(placeholder="", class="custom-file-input",
+                                    onchange="showSelectedFile(this)") }}
                                     <label class="custom-file-label" for="source-archive"
                                         id="source-archive-text">Choose file</label>
                                 </div>
@@ -252,8 +281,8 @@
             </div>
             <div class="modal-body m-3">
                 <p class="mb-0">
-                    You are about to delete a project. 
-                    All related analysis and files are going to be permanently removed. 
+                    You are about to delete a project.
+                    All related analysis and files are going to be permanently removed.
                     This operation is irreversible.
                 </p>
             </div>
@@ -284,15 +313,15 @@
                 targets: 0
             }],*/
             "order": [
-                [ 7, "asc" ],
-                [ 0, "desc"]
+                [7, "asc"],
+                [0, "desc"]
             ]
         });
     });
 
     /* Activate auto-refresh if a project is being analyzed */
     analyzing = document.getElementsByClassName("check-status");
-    if(analyzing.length > 0) {
+    if (analyzing.length > 0) {
         ajaxRefreshStatus(analyzing[0].id);
     }
 
