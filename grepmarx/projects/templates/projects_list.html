@@ -145,17 +145,17 @@
                                 </td>
                                 <td>
                                     {% if c_project.status == 0 %}
-                                    <span class="badge badge-lg bg-primary w-100 p-2">New</span>
+                                    <span class="badge badge-lg bg-primary p-2 pl-3 pr-3">New</span>
                                     {% elif c_project.status == 1 %}
-                                    <span class="badge badge-lg bg-success w-100 p-2">Ready</span>
+                                    <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Ready</span>
                                     {% elif c_project.status == 2 %}
-                                    <span class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated w-100 p-2">
+                                    <span class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
                                         Analyzing
                                     </span>    
                                     {% elif c_project.status == 3 %}
-                                    <span class="badge badge-lg bg-danger w-100 p-2" title="{{ c_project.error_message }}">Error</span>
+                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3" title="{{ c_project.error_message }}">Error</span>
                                     {% elif c_project.status == 4 %}
-                                    <span class="badge badge-lg bg-warning w-100 p-2">Pending</span>
+                                    <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
                                     {% endif %}
                                 </td>
                                 <td class="project-actions">

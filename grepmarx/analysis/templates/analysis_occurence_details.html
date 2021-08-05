@@ -3,13 +3,13 @@
         <div class="modal-header">
             <div class="h5">
                 {% if occurence.vulnerability.severity == "high" %}
-                <span class="badge badge-sm bg-danger p-2">HIGH</span>
+                <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">HIGH</span>
                 {% endif %}
                 {% if occurence.vulnerability.severity == "medium" %}
-                <span class="badge badge-lg bg-warning p-2">MEDIUM</span>
+                <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">MEDIUM</span>
                 {% endif %}
                 {% if occurence.vulnerability.severity == "low" %}
-                <span class="badge badge-sm bg-info p-2">LOW</span>
+                <span class="badge badge-lg bg-info p-2 pl-3 pr-3">LOW</span>
                 {% endif %}
                 &nbsp;
             </div>

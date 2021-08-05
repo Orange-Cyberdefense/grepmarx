@@ -165,13 +165,13 @@
                                                     </td>
                                                     <td class="align-middle">
                                                         {% if c_rule.severity == "high" %}
-                                                        <span class="badge badge-sm bg-danger p-2 w-100">HIGH</span>
+                                                        <span class="badge badge-sm bg-danger p-2 pl-3 pr-3">HIGH</span>
                                                         {% endif %}
                                                         {% if c_rule.severity == "medium" %}
-                                                        <span class="badge badge-sm bg-warning p-2 w-100">MEDIUM</span>
+                                                        <span class="badge badge-sm bg-warning p-2 pl-3 pr-3">MEDIUM</span>
                                                         {% endif %}
                                                         {% if c_rule.severity == "low" %}
-                                                        <span class="badge badge-sm bg-info p-2 w-100">LOW</span>
+                                                        <span class="badge badge-sm bg-info p-2 pl-3 pr-3">LOW</span>
                                                         {% endif %}
                                                     </td>
                                                     <td class="align-middle">
@@ -193,7 +193,7 @@
                                                         {% if c_rule.owasp is not none %}
                                                         {% set owasp_id = c_rule.owasp[:3].split(':')[0] %}
                                                         <a href="{{ owasp_links[owasp_id ]}}" target="_blank">
-                                                            <span class="badge badge-sm bg-success p-2 w-100">
+                                                            <span class="badge badge-sm bg-success p-2 pl-3 pr-3">
                                                                 {{ owasp_id }}
                                                             </span>
                                                         </a>
@@ -207,7 +207,7 @@
                                                         {% set cwe_id = c_rule.cwe[:8].split(':')[0] %}
                                                         <a href="https://cwe.mitre.org/data/definitions/{{ cwe_id.split('-')[1] }}.html"
                                                             target="_blank">
-                                                            <span class="badge badge-sm bg-info p-2 w-100">
+                                                            <span class="badge badge-sm bg-info p-2 pl-3 pr-3">
                                                                 {{ cwe_id }}
                                                             </span>
                                                         </a>
