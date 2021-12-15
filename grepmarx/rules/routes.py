@@ -5,16 +5,18 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 
-from flask import (current_app, flash, redirect, render_template, request,
-                   url_for)
+from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from grepmarx import db
 from grepmarx.constants import OWASP_TOP10_LINKS, RULES_PATH
 from grepmarx.rules import blueprint
 from grepmarx.rules.forms import RulePackForm
 from grepmarx.rules.models import Rule, RulePack, SupportedLanguage
-from grepmarx.rules.util import (comma_separated_to_list,
-                                 validate_languages_rules)
+from grepmarx.rules.util import (
+    comma_separated_to_list,
+    validate_languages_rules,
+    sync_db,
+)
 
 
 @blueprint.route("/rules")
@@ -34,7 +36,7 @@ def rules_list():
 @login_required
 def rules_sync():
     current_app.logger.info("Started rules sync")
-    Rule.sync_db(RULES_PATH)
+    sync_db(RULES_PATH)
     current_app.logger.info("Finished rules sync")
     return "done", 200
 

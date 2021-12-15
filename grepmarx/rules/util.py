@@ -3,9 +3,9 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-import glob
 import os
 import re
+from glob import glob
 from datetime import datetime
 from shutil import rmtree
 
