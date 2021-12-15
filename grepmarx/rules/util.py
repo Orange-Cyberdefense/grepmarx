@@ -77,7 +77,11 @@ def sync_db(rules_folder):
                             if "cwe" in c_rule["metadata"]:
                                 rule.cwe = c_rule["metadata"]["cwe"]
                             if "owasp" in c_rule["metadata"]:
-                                rule.owasp = c_rule["metadata"]["owasp"]
+                                # There may be multiple OWASP ids (eg. 2017, 2021...)
+                                if type(c_rule["metadata"]["owasp"]) is list:
+                                    rule.owasp = c_rule["metadata"]["owasp"][0]
+                                else:
+                                    rule.owasp = c_rule["metadata"]["owasp"]
                         # Replace rule level/severity by a calculated one
                         rule.severity = generate_severity(rule.cwe)
                         current_app.logger.debug(
