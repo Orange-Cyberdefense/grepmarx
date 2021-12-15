@@ -1,7 +1,5 @@
 - BUG: Scan launch crash when a rule in the DB has no corresponding file
 
-- BUG: On the scan launch screen, can't select a rule pack by clicking on the radio button (work only on the label)
-
 - IMPROVEMENT: Default order is inconsistent on the project list page
 
 - IMPROVEMENT: Get rid of libsast, use semgrep JSON output

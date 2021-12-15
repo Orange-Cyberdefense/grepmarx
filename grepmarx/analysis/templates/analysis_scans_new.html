@@ -125,8 +125,8 @@
                                 {% for rp_choice in form.rule_packs %}
                                 <div class="col-md-3 mb-3">
                                     <div class="custom-control custom-switch">
-                                        {{ rp_choice(class="custom-control-input") }}
-                                        <label class="custom-control-label" for="{{ rp_choice[0] }}">
+                                        <input type="checkbox" class="custom-control-input" id="{{ rp_choice.id }}" />
+                                        <label class="custom-control-label" for="{{ rp_choice.id }}">
                                             {{ rp_choice.label }}
                                         </label>
                                     </div>
