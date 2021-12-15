@@ -104,8 +104,8 @@
                                         {% for lang_choice in form.languages %}
                                         <div class="col-md-3 mb-3">
                                             <div class="custom-control custom-switch">
-                                                {{ lang_choice(class="custom-control-input") }}
-                                                <label class="custom-control-label" for="{{ lang_choice[0] }}">
+                                                {{ lang_choice(class="custom-control-input", id=lang_choice.id) }}
+                                                <label class="custom-control-label" for="{{ lang_choice.id }}">
                                                     {{ lang_choice.label }}
                                                 </label>
                                             </div>
