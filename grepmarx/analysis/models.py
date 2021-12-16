@@ -68,49 +68,7 @@ class Position(db.Model):
     id = Column(Integer, primary_key=True)
     occurence_id = db.Column(db.Integer, db.ForeignKey("Occurence.id"), nullable=True)
     occurence = db.relationship("Occurence", back_populates="position")
-    span_id = db.Column(
-        db.Integer, db.ForeignKey("AnalysisErrorSpan.id"), nullable=True
-    )
-    span = db.relationship("AnalysisErrorSpan", back_populates="position")
     line_start = Column(Integer)
     line_end = Column(Integer)
     column_start = Column(Integer)
     column_end = Column(Integer)
-
-
-class AnalysisError(db.Model):
-
-    __tablename__ = "AnalysisError"
-
-    id = Column(Integer, primary_key=True)
-    analysis_id = db.Column(db.Integer, db.ForeignKey("Analysis.id"), nullable=False)
-    analysis = db.relationship(
-        "Analysis",
-        backref=db.backref("errors", lazy=True, cascade="all, delete-orphan"),
-    )
-    code = Column(Integer, nullable=False)
-    path = Column(String)
-    rule_id = Column(String)
-    error_type = Column(String)
-    help_msg = Column(String)
-    long_msg = Column(String)
-    short_msg = Column(String)
-
-
-class AnalysisErrorSpan(db.Model):
-
-    __tablename__ = "AnalysisErrorSpan"
-
-    id = Column(Integer, primary_key=True)
-    analysis_error_id = db.Column(
-        db.Integer, db.ForeignKey("AnalysisError.id"), nullable=False
-    )
-    analysis_error = db.relationship(
-        "AnalysisError",
-        backref=db.backref("spans", lazy=True, cascade="all, delete-orphan"),
-    )
-    file = Column(String, nullable=False)
-    source_hash = Column(String)
-    context_start = Column(String)
-    context_end = Column(String)
-    position = db.relationship("Position", uselist=False, back_populates="span")

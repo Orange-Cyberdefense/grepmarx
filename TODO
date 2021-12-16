@@ -2,8 +2,6 @@
 
 - IMPROVEMENT: Change vulnerability object structure - description => occurence.message, multiple owasp ids, multiple refs, multiple cwe, add technology
 
-- IMPROVEMENT: Change analysis object structure - remove error and corresponding objects
-
 - IMPROVEMENT: Change supportedlanguage object structure - extensions as a list
 
 - IMPROVEMENT: Default order is inconsistent on the project list page

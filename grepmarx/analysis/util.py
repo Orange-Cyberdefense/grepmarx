@@ -16,8 +16,6 @@ from flask import current_app
 from grepmarx import celery, db
 from grepmarx.analysis.models import (
     Analysis,
-    AnalysisError,
-    AnalysisErrorSpan,
     Occurence,
     Position,
     Vulnerability,
