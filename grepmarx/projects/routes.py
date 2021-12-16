@@ -93,7 +93,7 @@ def projects_create():
             current_app.logger.warning(
                 "Invalid archive file uploaded (archive path was '%s')", archive_path
             )
-            project.remove()
+            remove_project(project)
             return msg, 403
         # Extract archive on disk
         project.archive_sha256sum = sha256sum(archive_path)
@@ -103,7 +103,7 @@ def projects_create():
                 zip_ref.extractall(source_path)
             except BadZipFile as e:
                 current_app.logger.error("Bad zip file: %s", str(e))
-                project.remove()
+                remove_project(project)
                 return "Bad zip file", 403
         # Count lines of code and save project
         count_lines(project)
