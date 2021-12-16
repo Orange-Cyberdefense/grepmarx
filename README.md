@@ -259,7 +259,7 @@ What you should do next:
 ## Credits & Links
 
 - The web application dashboard is based on [AdminLTE Flask](https://github.com/app-generator/flask-dashboard-adminlte)
-- Code scanning is performed through the [libsast](https://github.com/ajinabraham/libsast) library, which is powered by the [semgrep](https://semgrep.dev/) engine
+- Code scanning is powered by the [semgrep](https://semgrep.dev/) engine
 - LOC counting is handled by [scc](https://github.com/boyter/scc)
 
 <br />

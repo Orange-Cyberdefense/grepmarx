@@ -1,11 +1,25 @@
 - BUG: Scan launch crash when a rule in the DB has no corresponding file
 
-- IMPROVEMENT: Default order is inconsistent on the project list page
-
 - IMPROVEMENT: Get rid of libsast, use semgrep JSON output
+
+- IMPROVEMENT: Change vulnerability object structure - description => occurence.message, multiple owasp ids, multiple refs, multiple cwe, add technology
+
+- IMPROVEMENT: Change analysis object structure - remove error and corresponding objects
+
+- IMPROVEMENT: Change supportedlanguage object structure - extensions as a list
+
+- IMPROVEMENT: Default order is inconsistent on the project list page
 
 - IMPROVEMENT: LDAP authentication
 
 - IMPROVEMENT: Application Inspector integration
 
 - IMPROVEMENT: Dependencycheck integration
+
+- IMPROVEMENT: Admin page to configure semgrep options
+
+- IMPROVEMENT: Admin page to configure supported languages and extensions (for extensions remove last comma ',' if not needed!)
+
+- IMPROVEMENT: Scan progress percentage (by calling semgrep file by file)
+
+- IMPROVEMENT: Add ability to download semgrep JSON output

@@ -163,7 +163,7 @@ def scans_launch():
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id)
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
-        time.sleep(0.5)
+        time.sleep(1.0)
         # Done
         current_app.logger.info("Analysis completed (project.id=%i)", project.id)
         flash("Analysis successfully launched", "success")

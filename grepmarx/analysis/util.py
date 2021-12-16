@@ -3,9 +3,13 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+import json
+import multiprocessing
 import os
 import re
 from datetime import datetime
+from glob import glob
+from io import StringIO
 from shutil import copyfile, rmtree
 
 from flask import current_app
@@ -30,8 +34,11 @@ from grepmarx.constants import (
     STATUS_FINISHED,
 )
 from grepmarx.rules.util import generate_severity
-from libsast import Scanner
+from semgrep import semgrep_main, util
+from semgrep.constants import OutputFormat
+
 from semgrep.error import SemgrepError
+from semgrep.output import OutputHandler, OutputSettings
 
 ##
 ## Analysis utils
@@ -40,7 +47,7 @@ from semgrep.error import SemgrepError
 
 @celery.task(name="grepmarx-scan")
 def async_scan(analysis_id):
-    """Launch the actual libsast/semgrep scan, asynchronously through celery.
+    """Launch a new code scan on the project corresponding to the given analysis ID, asynchronously through celery.
 
     Args:
         analysis_id (int): ID of the analysis to populate with the results
@@ -51,23 +58,13 @@ def async_scan(analysis_id):
     analysis.started_on = datetime.now()
     analysis.project.status = STATUS_ANALYZING
     db.session.commit()
-    # Define the scan path
-    scan_path = os.path.join(
-        PROJECTS_SRC_PATH, str(analysis.project.id), EXTRACT_FOLDER_NAME
-    )
-    # Set scanner options
-    project_rules_path = os.path.join(
-        PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
-    )
-    options = generate_options(analysis, project_rules_path)
-    current_app.logger.debug(
-        "Scanner options for project with id=%i: %s", analysis.project.id, str(options)
-    )
-    # Start scan
-    scanner = Scanner(options, [scan_path])
+    # Prepare semgrep options
+    files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
+    # Invoke semgrep
     try:
-        result = scanner.scan()
-        load_scan_results(analysis, result)
+        semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
+        save_result(analysis, semgrep_result)
+        load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED
     except SemgrepError as e:
         analysis.project.error_message = repr(e)
@@ -80,60 +77,177 @@ def async_scan(analysis_id):
     db.session.commit()
 
 
-def load_scan_results(analysis, libsast_result):
-    """Populate an Analysis object with the result of libsast/semgrep scan.
+def semgrep_scan(files_to_scan, project_rules_path, ignore):
+    """Launch the actual semgrep scan.
 
     Args:
-        libsast_result (dict): return value of libsast.Scanner.scan()
-    """
-    if libsast_result is not None:
-        if "semantic_grep" in libsast_result:
-            matches = libsast_result["semantic_grep"]["matches"]
-            for c_match in matches:
-                analysis.vulnerabilities.append(
-                    load_vulnerability(c_match, matches[c_match])
-                )
-            errors = libsast_result["semantic_grep"]["errors"]
-            for c_error in errors:
-                analysis.errors.append(load_analysis_error(c_error))
+        files_to_scan (list): files' paths to be scanned
+        project_rules_path (str): path to the folder with semgrep YML rules
+        ignore (list): patterns of paths / filenames to skip
 
-
-def generate_options(analysis, rule_folder):
-    """Generate libsast/semgrep options depending on the attributes of an analysis.
-
-    Args:
-        rule_folder (str): path to be used as the rule folder for the scanner
     Returns:
-        dict: options ready to be passed to a libsast.Scanner object
+        [str]: Semgrep JSON output
     """
-    options = dict()
-    # Rule path
-    options["sgrep_rules"] = rule_folder
-    # Ignore filenames
-    options["ignore_filenames"] = set(
+    cpu_count = multiprocessing.cpu_count()
+    util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
+    semgrep_output = StringIO()
+    output_handler = OutputHandler(
+        OutputSettings(
+            output_format=OutputFormat.JSON,
+            output_destination=None,
+            error_on_findings=False,
+            verbose_errors=False,
+            strict=False,
+            timeout_threshold=3,
+            json_stats=False,
+            output_per_finding_max_lines_limit=None,
+        ),
+        stdout=semgrep_output,
+    )
+    semgrep_main.main(
+        output_handler=output_handler,
+        target=files_to_scan,
+        jobs=cpu_count,
+        pattern=None,
+        lang=None,
+        configs=[project_rules_path],
+        timeout=5,
+        timeout_threshold=3,
+        exclude=ignore,
+    )
+    output_handler.close()
+    return semgrep_output.getvalue()
+
+
+def save_result(analysis, semgrep_result):
+    """Save Semgrep JSON results as a file in the project's directory.
+
+    Args:
+        analysis (Analysis): corresponding analysis
+        semgrep_result (str): Semgrep JSON results as string
+    """    
+    filename = os.path.join(
+        PROJECTS_SRC_PATH,
+        str(analysis.project.id),
+        "analysis_" + str(analysis.id) + ".json",
+    )
+    f = open(filename, "a")
+    f.write(semgrep_result)
+    f.close()
+
+
+def load_scan_results(analysis, semgrep_output):
+    """Populate an Analysis object with the result of a Semgrep scan.
+
+    Args:
+        semgrep_output (str): Semgrep JSON output as string
+    """
+    vulns = list()
+    json_result = json.loads(semgrep_output)
+    if json_result is not None:
+        # Ignore errors, focus on results
+        if "results" in json_result:
+            results = json_result["results"]
+            for c_result in results:
+                title = c_result["check_id"].split(".")[-1]
+                # Is it a new vulnerability or another occurence of a known one?
+                e_vulns = [v for v in vulns if v.title == title]
+                if len(e_vulns) == 0:
+                    # Create a new vulnerability
+                    n_vuln = load_vulnerability(title, c_result)
+                    n_vuln.occurences.append(load_occurence(c_result))
+                    vulns.append(n_vuln)
+                else:
+                    # Add an occurence to an existing vulnerability
+                    e_vuln = e_vulns[0]
+                    e_vuln.occurences.append(load_occurence(c_result))
+    analysis.vulnerabilities = vulns
+
+
+def load_vulnerability(title, semgrep_result):
+    """Create a vulnerability object from a 'result' element of semgrep JSON results.
+
+    Args:
+        title (string): finding's title
+        match_dict (dict): match element with its properties
+
+    Returns:
+        Vulnerability: fully populated vulnerability
+    """
+    vuln = Vulnerability(title=title)
+    extra = semgrep_result["extra"]
+    if "message" in extra:
+        vuln.description = extra["message"]
+    if "metadata" in extra:
+        metadata = extra["metadata"]
+        if "cwe" in metadata:
+            vuln.cwe = metadata["cwe"]
+        if "owasp" in metadata:
+            vuln.owasp = metadata["owasp"]
+        if "references" in metadata:
+            vuln.references = " ".join(metadata["references"])
+        vuln.severity = generate_severity(vuln.cwe)
+    return vuln
+
+
+def load_occurence(semgrep_result):
+    """Create an occurence object from a 'result' element of semgrep JSON results.
+
+    Args:
+        semgrep_result (dict): 'result' elements with its properties
+
+    Returns:
+        Occurence: fully populated occurence
+    """
+    pattern = PROJECTS_SRC_PATH + "[\\/]?\d+[\\/]" + EXTRACT_FOLDER_NAME + "[\\/]?"
+    clean_path = re.sub(pattern, "", semgrep_result["path"])
+    occurence = Occurence(
+        file_path=clean_path, match_string=semgrep_result["extra"]["lines"]
+    )
+    occurence.position = Position(
+        line_start=semgrep_result["start"]["line"],
+        line_end=semgrep_result["end"]["line"],
+        column_start=semgrep_result["start"]["col"],
+        column_end=semgrep_result["end"]["col"],
+    )
+    return occurence
+
+
+def generate_semgrep_options(analysis):
+    """Generate semgrep options depending on the attributes of an analysis.
+
+    Args:
+        analysis (Analysis): generate options for this analysis and parent project
+
+    Returns:
+        files_to_scan (list): files' paths to be scanned
+        project_rules_path (str): path to the folder with semgrep YML rules
+        ignore (list): patterns of paths / filenames to skip
+    """
+    # Define the scan path
+    scan_path = os.path.join(
+        PROJECTS_SRC_PATH, str(analysis.project.id), EXTRACT_FOLDER_NAME
+    )
+    # Define rules path
+    project_rules_path = os.path.join(
+        PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
+    )
+    # Consolidate ignore list
+    ignore = set(
         # Remove empty elements
         filter(None, analysis.ignore_filenames.split(","))
     )
-    # Ignore paths
-    options["ignore_paths"] = set(
-        # Remove empty elements
-        filter(None, analysis.ignore_paths.split(","))
-    )
-    # Extensions
-    ext_str = ""
+    # Get all files corresponding to target extensions in project's source
+    files_to_scan = list()
     for c_rule_pack in analysis.rule_packs:
-        print(c_rule_pack.name)
         for c_language in c_rule_pack.languages:
-            print(c_language.name)
-            ext_str += c_language.extensions + ","
-    options["sgrep_extensions"] = set(
-        # Remove duplicates
-        dict.fromkeys(
             # Remove empty elements
-            filter(None, ext_str.split(","))
-        )
-    )
-    return options
+            extensions = filter(None, c_language.extensions.split(","))
+            for c_ext in extensions:
+                files_to_scan += glob(
+                    pathname=os.path.join(scan_path, "**", "*" + c_ext), recursive=True
+                )
+    return (files_to_scan, project_rules_path, ignore)
 
 
 def import_rules(analysis, rule_folder):
@@ -186,114 +300,3 @@ def vulnerabilities_sorted_by_severity(analysis):
             low_vulns.append(c_vulns)
     r_vulns.extend(low_vulns)
     return r_vulns
-
-
-##
-## Vulnerability utils
-##
-
-
-def load_vulnerability(match_title, match_dict):
-    """Create a vulnerability object from a 'match' element of libsast/semgrep results.
-
-    Args:
-        match_title (string): match title
-        match_dict (dict): match element with its properties
-
-    Returns:
-        Vulnerability: fully populated vulnerability
-    """
-    vuln = Vulnerability(title=match_title)
-    for c_occurence in match_dict["files"]:
-        vuln.occurences.append(load_occurence(c_occurence))
-    metadata = match_dict["metadata"]
-    if "description" in metadata:
-        vuln.description = metadata["description"]
-    if "cwe" in metadata:
-        vuln.cwe = metadata["cwe"]
-    if "owasp" in metadata:
-        vuln.owasp = metadata["owasp"]
-    if "references" in metadata:
-        vuln.references = " ".join(metadata["references"])
-    vuln.severity = generate_severity(vuln.cwe)
-    return vuln
-
-
-##
-## Occurence utils
-##
-
-
-def load_occurence(file_dict):
-    """Create an occurence object from a 'match/files' element of libsast/semgrep results.
-
-    Args:
-        file_dict (dict): file elements with its properties
-
-    Returns:
-        Occurence: fully populated occurence
-    """
-    pattern = PROJECTS_SRC_PATH + "[\\/]?\d+[\\/]" + EXTRACT_FOLDER_NAME + "[\\/]?"
-    clean_path = re.sub(pattern, "", file_dict["file_path"])
-    occurence = Occurence(file_path=clean_path, match_string=file_dict["match_string"])
-    occurence.position = Position(
-        line_start=file_dict["match_lines"][0],
-        line_end=file_dict["match_lines"][1],
-        column_start=file_dict["match_position"][0],
-        column_end=file_dict["match_position"][1],
-    )
-    return occurence
-
-
-##
-## AnalysisError utils
-##
-
-
-def load_analysis_error(error_dict):
-    """ "Create an analysis error object from an 'error' element of libsast/semgrep results.
-
-    Args:
-        error_dict (dict): error elements with its properties
-
-    Returns:
-        AnalysisError: fully populated analysis error
-    """
-    error = AnalysisError(code=error_dict["code"], error_type=error_dict["type"])
-    if "path" in error_dict:
-        error.path = error_dict["path"]
-    if "rule_id" in error_dict:
-        error.rule_id = error_dict["rule_id"]
-    if "spans" in error_dict:
-        for c_span in error_dict["spans"]:
-            error.spans.append(load_analysis_error_span(c_span))
-    return error
-
-
-##
-## AnalysisErrorSpan utils
-##
-
-
-def load_analysis_error_span(span_dict):
-    """Create an analysis error span object from an 'error/span' element of libsast/semgrep results.
-
-    Args:
-        span_dict (dict): span elements with its properties
-
-    Returns:
-        AnalysisErrorSpan: fully populated analysis error span
-    """
-    span = AnalysisErrorSpan(
-        file=span_dict["file"],
-        source_hash=span_dict["source_hash"],
-        context_start=span_dict["context_start"],
-        context_end=span_dict["context_end"],
-    )
-    span.position = Position(
-        line_start=span_dict["start"]["line"],
-        line_end=span_dict["end"]["line"],
-        column_start=span_dict["start"]["col"],
-        column_end=span_dict["end"]["col"],
-    )
-    return span
