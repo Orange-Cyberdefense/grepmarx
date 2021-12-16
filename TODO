@@ -1,7 +1,5 @@
 - BUG: Scan launch crash when a rule in the DB has no corresponding file
 
-- IMPROVEMENT: Get rid of libsast, use semgrep JSON output
-
 - IMPROVEMENT: Change vulnerability object structure - description => occurence.message, multiple owasp ids, multiple refs, multiple cwe, add technology
 
 - IMPROVEMENT: Change analysis object structure - remove error and corresponding objects
