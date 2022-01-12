@@ -21,3 +21,5 @@
 - IMPROVEMENT: Add ability to download semgrep JSON output
 
 - IMPROVEMENT: Migrate to WTForms 3.x
+
+- IMPROVEMENT: Use PostgreSQL instead of SQLite in docker-compose configuration

@@ -3,23 +3,23 @@ services:
 
   redis:
     image: redis:latest
-
-  celery:
-    build: .
-    volumes:
-      - celery-data:/data/celery-data/
-    command: ['celery', '-A', 'celery_worker.celery', 'worker', '-l', 'info']
-    links:
-      - redis
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - web_network
 
   grepmarx:
     restart: always
-    env_file: .env
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=***REMOVED***
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - RESULT_BACKEND=redis://redis:6379/0
     build: .
     ports:
       - "5005:5005"
     networks:
-      - db_network
       - web_network
     links:
       - redis
@@ -30,7 +30,7 @@ services:
     restart: always
     image: "nginx:latest"
     ports:
-      - "85:85"
+      - "5000:5000"
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:
@@ -39,10 +39,5 @@ services:
       - grepmarx
 
 networks:
-  db_network:
-    driver: bridge
   web_network:
     driver: bridge
-
-volumes: 
-  celery-data:

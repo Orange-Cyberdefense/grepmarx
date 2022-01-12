@@ -17,11 +17,7 @@ login_manager = LoginManager()
 migrate = Migrate()
 
 # Instantiate Celery
-celery = Celery(
-    __name__,
-    broker="redis://localhost:6379/0",
-    result_backend="redis://localhost:6379/0",
-)
+celery = Celery(__name__)
 
 
 def register_extensions(app):

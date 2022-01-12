@@ -96,7 +96,7 @@ $ cd grepmarx
 $ sudo docker-compose pull && sudo docker-compose build && sudo docker-compose up -d
 ```
 
-Visit `http://localhost:5005` in your browser. The app should be up & running.
+Visit `http://localhost:5000` in your browser. The app should be up & running.
 
 
 #### [Gunicorn](https://gunicorn.org/)
