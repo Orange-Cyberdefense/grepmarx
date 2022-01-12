@@ -19,3 +19,5 @@
 - IMPROVEMENT: Scan progress percentage (by calling semgrep file by file)
 
 - IMPROVEMENT: Add ability to download semgrep JSON output
+
+- IMPROVEMENT: Migrate to WTForms 3.x

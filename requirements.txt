@@ -16,3 +16,5 @@ python-decouple==3.4
 redis==3.5.3
 sqlalchemy==1.4.22
 supervisor==4.2.2
+wtforms==2.3.3
+pyyaml==6.0
