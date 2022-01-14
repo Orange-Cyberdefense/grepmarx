@@ -11,16 +11,16 @@ from zipfile import BadZipFile, ZipFile
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
-from grepmarx import db
-from grepmarx.constants import (
+from app import db
+from app.constants import (
     EXTRACT_FOLDER_NAME,
     LANGUAGES_DEVICONS,
     PROJECTS_SRC_PATH,
 )
-from grepmarx.projects import blueprint
-from grepmarx.projects.forms import ProjectForm
-from grepmarx.projects.models import Project
-from grepmarx.projects.util import (
+from app.projects import blueprint
+from app.projects.forms import ProjectForm
+from app.projects.models import Project
+from app.projects.util import (
     check_zipfile,
     count_lines,
     remove_project,

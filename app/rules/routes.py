@@ -7,12 +7,12 @@ import os
 
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from grepmarx import db
-from grepmarx.constants import OWASP_TOP10_LINKS, RULES_PATH
-from grepmarx.rules import blueprint
-from grepmarx.rules.forms import RulePackForm
-from grepmarx.rules.models import Rule, RulePack, SupportedLanguage
-from grepmarx.rules.util import (
+from app import db
+from app.constants import OWASP_TOP10_LINKS, RULES_PATH
+from app.rules import blueprint
+from app.rules.forms import RulePackForm
+from app.rules.models import Rule, RulePack, SupportedLanguage
+from app.rules.util import (
     comma_separated_to_list,
     validate_languages_rules,
     sync_db,

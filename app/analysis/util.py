@@ -13,14 +13,14 @@ from io import StringIO
 from shutil import copyfile, rmtree
 
 from flask import current_app
-from grepmarx import celery, db
-from grepmarx.analysis.models import (
+from app import celery, db
+from app.analysis.models import (
     Analysis,
     Occurence,
     Position,
     Vulnerability,
 )
-from grepmarx.constants import (
+from app.constants import (
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
@@ -31,7 +31,7 @@ from grepmarx.constants import (
     STATUS_ERROR,
     STATUS_FINISHED,
 )
-from grepmarx.rules.util import generate_severity
+from app.rules.util import generate_severity
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 

@@ -2,18 +2,18 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
+from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 import json
 
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from grepmarx import db
-from grepmarx.administration import blueprint
-from grepmarx.administration.forms import RepositoryForm, UserForm
-from grepmarx.rules.models import RuleRepository
-from grepmarx.administration.util import validate_user_form
-from grepmarx.base import util
-from grepmarx.base.models import User
+from app import db
+from app.administration import blueprint
+from app.administration.forms import RepositoryForm, UserForm
+from app.rules.models import RuleRepository
+from app.administration.util import validate_user_form
+from app.base import util
+from app.base.models import User
 
 
 @blueprint.route("/users")

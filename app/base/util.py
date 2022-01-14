@@ -10,10 +10,10 @@ import os
 from calendar import monthrange
 from datetime import date, datetime, timedelta
 
-from grepmarx import db
-from grepmarx.analysis.models import Analysis
-from grepmarx.base import models
-from grepmarx.rules.models import SupportedLanguage
+from app import db
+from app.analysis.models import Analysis
+from app.base import models
+from app.rules.models import SupportedLanguage
 from sqlalchemy import and_, func
 
 

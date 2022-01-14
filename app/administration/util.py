@@ -3,7 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx.base.models import User
+from app.base.models import User
 
 
 def validate_user_form(

@@ -8,8 +8,8 @@ from flask_migrate import Migrate
 from sys import exit
 from decouple import config
 
-from config import config_dict
-from grepmarx import create_app, db
+from app.config import config_dict
+from app import create_app, db
 
 # WARNING: Don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)

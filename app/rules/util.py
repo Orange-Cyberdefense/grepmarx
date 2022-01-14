@@ -11,15 +11,15 @@ from shutil import rmtree
 
 import git
 from flask import current_app
-from grepmarx import db
-from grepmarx.constants import (
+from app import db
+from app.constants import (
     RULE_EXTENSIONS,
     RULES_PATH,
     SEVERITY_LOW,
     SEVERITY_MEDIUM,
     TOP40_CWE_SEVERITIES,
 )
-from grepmarx.rules.models import Rule, RuleRepository, SupportedLanguage
+from app.rules.models import Rule, RuleRepository, SupportedLanguage
 from yaml import YAMLError, safe_load
 
 ##

@@ -9,24 +9,24 @@ import time
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
-from grepmarx import db
-from grepmarx.analysis import blueprint
-from grepmarx.analysis.forms import ScanForm
-from grepmarx.analysis.models import Analysis, Occurence, Vulnerability
-from grepmarx.analysis.util import (
+from app import db
+from app.analysis import blueprint
+from app.analysis.forms import ScanForm
+from app.analysis.models import Analysis, Occurence, Vulnerability
+from app.analysis.util import (
     async_scan,
     import_rules,
     vulnerabilities_sorted_by_severity,
 )
-from grepmarx.constants import (
+from app.constants import (
     EXTRACT_FOLDER_NAME,
     OWASP_TOP10_LINKS,
     PROJECTS_SRC_PATH,
     STATUS_PENDING,
 )
-from grepmarx.projects.models import Project
-from grepmarx.projects.util import top_language_lines_counts
-from grepmarx.rules.models import RulePack
+from app.projects.models import Project
+from app.projects.util import top_language_lines_counts
+from app.rules.models import RulePack
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
 
@@ -114,7 +114,7 @@ def analysis_occurences_table(vulnerability_id):
 @blueprint.route("/analysis/scans/new/<project_id>")
 @login_required
 def scans_new(project_id, scan_form=None):
-    # Asscociate corresponding project
+    # Associate corresponding project
     project = Project.query.filter_by(id=project_id).first_or_404()
     if scan_form is None:
         scan_form = ScanForm(project_id=project.id)

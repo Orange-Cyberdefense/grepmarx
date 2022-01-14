@@ -10,14 +10,14 @@ from datetime import datetime
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
 from flask_login import current_user, login_required, login_user, logout_user
-from grepmarx import db, login_manager
-from grepmarx.base import blueprint
-from grepmarx.base.forms import LoginForm
-from grepmarx.base.models import User
-from grepmarx.base.util import (init_db, last_12_months_analysis_count,
+from app import db, login_manager
+from app.base import blueprint
+from app.base.forms import LoginForm
+from app.base.models import User
+from app.base.util import (init_db, last_12_months_analysis_count,
                                 verify_pass)
-from grepmarx.projects.models import Project
-from grepmarx.rules.models import Rule, RulePack, RuleRepository
+from app.projects.models import Project
+from app.rules.models import Rule, RulePack, RuleRepository
 from is_safe_url import is_safe_url
 
 

@@ -17,7 +17,7 @@ STATUS_ERROR = 3
 STATUS_PENDING = 4
 PROJECTS_SRC_PATH = "data/projects/"
 EXTRACT_FOLDER_NAME = "extract"
-SCC_PATH = "third-party/scc/scc"
+SCC_PATH = "app/third-party/scc/scc"
 
 # Rule constants
 

@@ -3,8 +3,8 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx import db
-from grepmarx.constants import STATUS_NEW
+from app import db
+from app.constants import STATUS_NEW
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql.schema import ForeignKey
 

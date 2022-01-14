@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor
 COPY supervisord-docker.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY run.py celery_worker.py nginx gunicorn-cfg.py requirements.txt config.py .env ./
-COPY grepmarx grepmarx
-COPY third-party third-party
+COPY run.py nginx gunicorn-cfg.py requirements.txt .env ./
+COPY app app
+RUN rm -fr app/db.sqlite3 # just in case
 
 RUN pip install -r requirements.txt
 
 EXPOSE 5000
-CMD ["/usr/bin/supervisord"]
+CMD /usr/bin/supervisord

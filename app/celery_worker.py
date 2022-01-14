@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-from grepmarx import create_app
+from app import create_app
 from sys import exit
 from decouple import config
-from config import config_dict
+from app.config import config_dict
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 get_config_mode = 'Debug' if DEBUG else 'Production'
@@ -14,4 +14,4 @@ except KeyError:
 app = create_app(app_config)
 app.app_context().push()
 
-from grepmarx import celery
+from app import celery

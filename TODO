@@ -1,5 +1,7 @@
 - BUG: Scan launch crash when a rule in the DB has no corresponding file
 
+- BUG: Crash when regitering a new vuln with multiple OWASP ids (reproduce: scan DVPWA with python rule md5-used-as-password)
+
 - IMPROVEMENT: Change vulnerability object structure - description => occurence.message, multiple owasp ids, multiple refs, multiple cwe, add technology
 
 - IMPROVEMENT: Change supportedlanguage object structure - extensions as a list
@@ -23,3 +25,11 @@
 - IMPROVEMENT: Migrate to WTForms 3.x
 
 - IMPROVEMENT: Use PostgreSQL instead of SQLite in docker-compose configuration
+
+- IMPROVEMENT: Auto refresh rules after a repo was added/pulled
+
+- IMPROVEMENT: Auto select rule packs on the new scan launch screen depending on detected languages
+
+- IMPROVEMENT: Better risk level calculation, stored as a member of the Analysis or Project class
+
+- IMPROVEMENT: Display data flow in the workbench

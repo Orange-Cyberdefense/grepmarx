@@ -92,7 +92,7 @@
 
                             {# Calculate risk level % #}
                             {% set risk_level = namespace(value=0) %}
-                            {% if c_project.project_lines_count.total_code_count > 0 %} 
+                            {% if c_project.project_lines_count is not none and c_project.project_lines_count.total_code_count > 0 %} 
                             {% set risk_level = namespace(value=((occurences_count.value /
                             c_project.project_lines_count.total_code_count) * 50000) | round | int ) %}
                             {% if risk_level.value > 100 %}

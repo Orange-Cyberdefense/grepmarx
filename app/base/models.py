@@ -7,9 +7,9 @@ Copyright (c) 2021 - present Orange Cyberdefense
 from flask_login import UserMixin
 from sqlalchemy import LargeBinary, Column, Integer, String, Boolean, DateTime
 
-from grepmarx import db, login_manager
+from app import db, login_manager
 
-from grepmarx.base.util import hash_pass
+from app.base.util import hash_pass
 
 class User(db.Model, UserMixin):
 

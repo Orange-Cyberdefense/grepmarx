@@ -27,7 +27,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-A",
-                "celery_worker.celery",
+                "app.celery_worker.celery",
                 "worker",
                 "-l",
                 "info",

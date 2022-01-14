@@ -3,7 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from grepmarx import db
+from app import db
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.sql.sqltypes import DateTime
 
