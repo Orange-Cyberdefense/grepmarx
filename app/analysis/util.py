@@ -181,7 +181,11 @@ def load_vulnerability(title, semgrep_result):
         if "cwe" in metadata:
             vuln.cwe = metadata["cwe"]
         if "owasp" in metadata:
-            vuln.owasp = metadata["owasp"]
+            # There may be multiple OWASP ids (eg. 2017, 2021...)
+            if type(metadata["owasp"]) is list:
+                vuln.owasp = metadata["owasp"][0]
+            else:
+                vuln.owasp = metadata["owasp"]
         if "references" in metadata:
             vuln.references = " ".join(metadata["references"])
         vuln.severity = generate_severity(vuln.cwe)
