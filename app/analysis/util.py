@@ -138,6 +138,7 @@ def load_scan_results(analysis, semgrep_output):
     """Populate an Analysis object with the result of a Semgrep scan.
 
     Args:
+        analysis (Analysis): corresponding analysis
         semgrep_output (str): Semgrep JSON output as string
     """
     vulns = list()
@@ -167,7 +168,7 @@ def load_vulnerability(title, semgrep_result):
 
     Args:
         title (string): finding's title
-        match_dict (dict): match element with its properties
+        semgrep_result (dict): 'result' elements with its properties
 
     Returns:
         Vulnerability: fully populated vulnerability
