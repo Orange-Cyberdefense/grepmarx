@@ -35,7 +35,6 @@ from app.rules.util import generate_severity
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
-from semgrep.error import SemgrepError
 from semgrep.output import OutputHandler, OutputSettings
 
 ##
@@ -64,19 +63,22 @@ def async_scan(analysis_id):
         save_result(analysis, semgrep_result)
         load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED
-    except SemgrepError as e:
+    except Exception as e:
         analysis.project.error_message = repr(e)
         analysis.project.status = STATUS_ERROR
         current_app.logger.error(
             "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
         )
+        # Uncomment for debugging purposes
+        # raise 
     # Done
     analysis.finished_on = datetime.now()
     db.session.commit()
 
 
 def semgrep_scan(files_to_scan, project_rules_path, ignore):
-    """Launch the actual semgrep scan.
+    """Launch the actual semgrep scan. Credits to libsast:
+    https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
 
     Args:
         files_to_scan (list): files' paths to be scanned
@@ -88,21 +90,25 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
     """
     cpu_count = multiprocessing.cpu_count()
     util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
-    semgrep_output = StringIO()
-    output_handler = OutputHandler(
-        OutputSettings(
-            output_format=OutputFormat.JSON,
-            output_destination=None,
-            error_on_findings=False,
-            verbose_errors=False,
-            strict=False,
-            timeout_threshold=3,
-            json_stats=False,
-            output_per_finding_max_lines_limit=None,
-        ),
-        stdout=semgrep_output,
+    output_settings = OutputSettings(
+        output_format=OutputFormat.JSON,
+        output_destination=None,
+        error_on_findings=False,
+        verbose_errors=False,
+        strict=False,
+        timeout_threshold=3,
+        json_stats=False,
+        output_per_finding_max_lines_limit=None,
     )
-    semgrep_main.main(
+    output_handler = OutputHandler(output_settings)
+    (
+        filtered_matches_by_rule,
+        _all_targets,
+        _filtered_rules,
+        _profiler,
+        _profiling_data,
+        _shown_severities,
+    ) = semgrep_main.main(
         output_handler=output_handler,
         target=files_to_scan,
         jobs=cpu_count,
@@ -113,7 +119,10 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         timeout_threshold=3,
         exclude=ignore,
     )
-    return semgrep_output.getvalue()
+    output_handler.rule_matches = [
+        m for ms in filtered_matches_by_rule.values() for m in ms
+    ]
+    return output_handler._build_output()
 
 
 def save_result(analysis, semgrep_result):
@@ -141,7 +150,7 @@ def load_scan_results(analysis, semgrep_output):
         semgrep_output (str): Semgrep JSON output as string
     """
     vulns = list()
-    if semgrep_output is not "":
+    if semgrep_output != "":
         json_result = json.loads(semgrep_output)
         if json_result is not None:
             # Ignore errors, focus on results
