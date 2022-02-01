@@ -113,7 +113,6 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         timeout_threshold=3,
         exclude=ignore,
     )
-    output_handler.close()
     return semgrep_output.getvalue()
 
 
@@ -123,7 +122,7 @@ def save_result(analysis, semgrep_result):
     Args:
         analysis (Analysis): corresponding analysis
         semgrep_result (str): Semgrep JSON results as string
-    """    
+    """
     filename = os.path.join(
         PROJECTS_SRC_PATH,
         str(analysis.project.id),
@@ -142,24 +141,25 @@ def load_scan_results(analysis, semgrep_output):
         semgrep_output (str): Semgrep JSON output as string
     """
     vulns = list()
-    json_result = json.loads(semgrep_output)
-    if json_result is not None:
-        # Ignore errors, focus on results
-        if "results" in json_result:
-            results = json_result["results"]
-            for c_result in results:
-                title = c_result["check_id"].split(".")[-1]
-                # Is it a new vulnerability or another occurence of a known one?
-                e_vulns = [v for v in vulns if v.title == title]
-                if len(e_vulns) == 0:
-                    # Create a new vulnerability
-                    n_vuln = load_vulnerability(title, c_result)
-                    n_vuln.occurences.append(load_occurence(c_result))
-                    vulns.append(n_vuln)
-                else:
-                    # Add an occurence to an existing vulnerability
-                    e_vuln = e_vulns[0]
-                    e_vuln.occurences.append(load_occurence(c_result))
+    if semgrep_output is not "":
+        json_result = json.loads(semgrep_output)
+        if json_result is not None:
+            # Ignore errors, focus on results
+            if "results" in json_result:
+                results = json_result["results"]
+                for c_result in results:
+                    title = c_result["check_id"].split(".")[-1]
+                    # Is it a new vulnerability or another occurence of a known one?
+                    e_vulns = [v for v in vulns if v.title == title]
+                    if len(e_vulns) == 0:
+                        # Create a new vulnerability
+                        n_vuln = load_vulnerability(title, c_result)
+                        n_vuln.occurences.append(load_occurence(c_result))
+                        vulns.append(n_vuln)
+                    else:
+                        # Add an occurence to an existing vulnerability
+                        e_vuln = e_vulns[0]
+                        e_vuln.occurences.append(load_occurence(c_result))
     analysis.vulnerabilities = vulns
 
 
