@@ -33,3 +33,5 @@
 - IMPROVEMENT: Better risk level calculation, stored as a member of the Analysis or Project class
 
 - IMPROVEMENT: Display data flow in the workbench
+
+- IMPROVEMENT: Replace pygments usage by simple extension-based recognition
