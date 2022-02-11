@@ -92,6 +92,54 @@ def check_zipfile(zip_path):
     return error, msg
 
 
+def count_occurences(project):
+    """Count the total number of vulnerability occurences for a project.
+    An analysis must be associated to this project.
+
+    Args:
+        project (Project): Project for which occurences must be counted
+
+    Returns:
+        int: Total vulnerability occurences for the project
+    """
+    occurences_count = 0
+    # We need an analysis to count occurences
+    if project.analysis is not None:
+        # Count the total number of vulnerability occurences
+        for c_vulnerability in project.analysis.vulnerabilities:
+            occurences_count = occurences_count + len(c_vulnerability.occurences)
+    return occurences_count
+
+
+def calculate_risk_level(project):
+    """Calculate the risk level for a project. An analysis must be associated
+    to this project. The risk level is calculated from a ratio between the
+    number of findings and the number of lines of code.
+
+    Args:
+        project (Project): Project for which the risk level has to be calculated
+
+    Returns:
+        int: Calculated risk level (0 - 100)
+    """
+    risk_level = 0
+    # We need an analysis to calculate a risk level
+    if project.analysis is not None:
+        # Make sure LOC count is > 0
+        if (
+            project.project_lines_count is not None
+            and project.project_lines_count.total_code_count > 0
+        ):
+            # Calculate the actual risk level (to be improved)
+            risk_level = (
+                project.occurences_count / project.project_lines_count.total_code_count
+            ) * 50000
+            risk_level = int(round(risk_level))
+            if risk_level > 100:
+                risk_level = 100
+    return risk_level
+
+
 ##
 ## ProjectLinesCount util
 ##

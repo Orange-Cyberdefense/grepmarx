@@ -83,23 +83,6 @@
                         </thead>
                         <tbody>
                             {% for c_project in projects %}
-
-                            {# Count occurences #}
-                            {% set occurences_count = namespace(value=0) %}
-                            {% for c_vulnerability in c_project.analysis.vulnerabilities %}
-                            {% set occurences_count.value = occurences_count.value + c_vulnerability.occurences|length %}
-                            {% endfor %}
-
-                            {# Calculate risk level % #}
-                            {% set risk_level = namespace(value=0) %}
-                            {% if c_project.project_lines_count is not none and c_project.project_lines_count.total_code_count > 0 %} 
-                            {% set risk_level = namespace(value=((occurences_count.value /
-                            c_project.project_lines_count.total_code_count) * 50000) | round | int ) %}
-                            {% if risk_level.value > 100 %}
-                            {% set risk_level.value = 100 %}
-                            {% endif %}
-                            {% endif %}
-
                             {# Trigger auto-refresh if state is STATE_ANALYSING % #}
                             {% if c_project.status == 2 or c_project.status == 4 %}
                             <div id="{{ c_project.id}}" class="check-status"></div>
@@ -145,18 +128,18 @@
                                 </td>
                                 <td>
                                     <div class="progress progress-sm progress-striped active">
-                                        {% if risk_level.value > 70 %}
-                                        <div class="progress-bar bg-danger" style="width: {{ risk_level.value }}%"></div>
-                                        {% elif risk_level.value > 30 %}
-                                        <div class="progress-bar bg-warning" style="width: {{ risk_level.value }}%"></div>
+                                        {% if c_project.risk_level > 70 %}
+                                        <div class="progress-bar bg-danger" style="width: {{ c_project.risk_level }}%"></div>
+                                        {% elif c_project.risk_level > 30 %}
+                                        <div class="progress-bar bg-warning" style="width: {{ c_project.risk_level }}%"></div>
                                         {% else %}
-                                        <div class="progress-bar bg-info" style="width: {{ risk_level.value }}%"></div>
+                                        <div class="progress-bar bg-info" style="width: {{ c_project.risk_level }}%"></div>
                                         {% endif %}
                                     </div>
-                                    <small>{{ risk_level.value }}%</small>
+                                    <small>{{ c_project.risk_level }}%</small>
                                 </td>
                                 <td>
-                                    {{ occurences_count.value }}
+                                    {{ c_project.occurences_count }}
                                 </td>
                                 <td class="text-lg text-left">
                                     {% if c_project.project_lines_count is not none %}

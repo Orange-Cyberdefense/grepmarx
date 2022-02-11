@@ -18,6 +18,8 @@ class Project(db.Model):
     archive_filename = Column(String)
     archive_sha256sum = Column(String)
     status = Column(Integer, nullable=False, default=STATUS_NEW)
+    occurences_count = Column(Integer, default=0)
+    risk_level = Column(Integer, default=0)
     error_message = Column(String)
     creator_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     creator = db.relationship("User", backref=db.backref("projects", lazy=True))

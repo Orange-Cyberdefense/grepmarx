@@ -9,7 +9,6 @@ import os
 import re
 from datetime import datetime
 from glob import glob
-from io import StringIO
 from shutil import copyfile, rmtree
 
 from flask import current_app
@@ -32,6 +31,7 @@ from app.constants import (
     STATUS_FINISHED,
 )
 from app.rules.util import generate_severity
+from app.projects.util import calculate_risk_level, count_occurences
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
@@ -73,6 +73,9 @@ def async_scan(analysis_id):
         # raise 
     # Done
     analysis.finished_on = datetime.now()
+    # Update project properties
+    analysis.project.occurences_count = count_occurences(analysis.project)
+    analysis.project.risk_level = calculate_risk_level(analysis.project)
     db.session.commit()
 
 

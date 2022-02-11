@@ -30,7 +30,7 @@
 
 - IMPROVEMENT: Auto select rule packs on the new scan launch screen depending on detected languages
 
-- IMPROVEMENT: Better risk level calculation, stored as a member of the Analysis or Project class
+- IMPROVEMENT: Better risk level calculation
 
 - IMPROVEMENT: Display data flow in the workbench
 
