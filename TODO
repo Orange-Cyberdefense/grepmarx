@@ -35,3 +35,5 @@
 - IMPROVEMENT: Display data flow in the workbench
 
 - IMPROVEMENT: Replace pygments usage by simple extension-based recognition
+
+- IMPROVEMENT: Use monaco-editor for code view
