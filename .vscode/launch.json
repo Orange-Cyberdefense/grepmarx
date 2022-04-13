@@ -9,6 +9,7 @@
             "type": "python",
             "request": "launch",
             "module": "flask",
+            "justMyCode": false,
             "env": {
                 "FLASK_APP": "run.py",
                 "FLASK_ENV": "development"
@@ -25,6 +26,7 @@
             "request": "launch",
             "module": "celery",
             "console": "integratedTerminal",
+            "justMyCode": false,
             "args": [
                 "-A",
                 "app.celery_worker.celery",

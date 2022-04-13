@@ -118,7 +118,7 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         pattern=None,
         lang=None,
         configs=[project_rules_path],
-        timeout=5,
+        timeout=0,
         timeout_threshold=3,
         exclude=ignore,
     )
