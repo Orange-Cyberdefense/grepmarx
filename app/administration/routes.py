@@ -185,8 +185,11 @@ def repos_add():
                 description=repo_form.description.data,
                 uri=repo_form.uri.data,
             )
+            username = repo_form.git_username.data
+            token= repo_form.git_token.data
+           
             # Clone the repo
-            clone_rule_repo(repo)
+            clone_rule_repo(repo, username, token)
             # Save repo in DB
             db.session.add(repo)
             db.session.commit()

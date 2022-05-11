@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <source_groups>
+        <source_group_fb17bfc8-64b7-4998-b3e5-6b9edcce950b>
+            <custom_command>&#x0A;%{SOURCE_FILE_PATH}</custom_command>
+            <name>grepmarx</name>
+            <run_in_parallel>0</run_in_parallel>
+            <status>enabled</status>
+            <type>Custom Command Source Group</type>
+        </source_group_fb17bfc8-64b7-4998-b3e5-6b9edcce950b>
+    </source_groups>
+    <version>8</version>
+</config>

@@ -173,15 +173,30 @@ def comma_separated_to_list(comma_separated):
 ##
 
 
-def clone_rule_repo(repo):
+def clone_rule_repo(repo, username, token):
     """Perform a 'clone' operation on the rule repository.
     The rule repository's 'last_update_on' attribute will be updated.
 
     Args:
         repo (RuleRepository): rule repository to clone
     """
+    print("username = " + username + "password =" + token +"repo= "+ repo.uri[0:18] )
     repo_path = os.path.join(RULES_PATH, repo.name)
-    git.Repo.clone_from(repo.uri, repo_path)
+    if username == "" and token == "" or username != "" and token == "" or username == "" and token != "":
+        git.Repo.clone_from(repo.uri, repo_path)
+        print("phase1\n")
+
+    elif username != "" and token != "":
+        if (repo.uri[0:18] == "https://github.com"):
+            print("phase2\n")
+            remote = f"https://{username}:{token}@github.com/" + repo.uri[19:]
+            git.Repo.clone_from(remote, repo_path)
+            
+        elif (repo.uri[0:18] == "https://git.pentes"):
+            remote = f"https://{username}:{token}@git.pentest.itm.lan/"+ repo.uri[28:]
+            git.Repo.clone_from(remote, repo_path)
+            print("phase3\n")
+    
     repo.last_update_on = datetime.now()
     db.session.commit()
 

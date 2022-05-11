@@ -61,7 +61,7 @@ $ # Set up the DEBUG environment
 $ # export FLASK_ENV=development
 
 $ # Start the celery worker process
-$ celery -A celery_worker.celery worker --pool=solo --loglevel=info --detach
+$ celery -A app.celery_worker.celery worker --pool=solo --loglevel=info --detach
 
 $ # Start the application (development mode)
 $ # --host=0.0.0.0 - expose the app on all network interfaces (default 127.0.0.1)

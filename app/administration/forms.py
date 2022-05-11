@@ -23,3 +23,5 @@ class RepositoryForm(FlaskForm):
     name = TextField("Repository name", id="repo-name", validators=[DataRequired(), Regexp('^[a-zA-Z0-9-_]+$', message="Repository name must contain only letters, numbers, dash (-) or underscore (_) characters"),])
     description = TextAreaField("Repository description", id="repo-description")
     uri = TextField("Repository URI", id="repo-uri", validators=[DataRequired()])
+    git_username = TextField("Git username", id="repo-username")
+    git_token = TextField("Git Acess Token", id="repo-token")

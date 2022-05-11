@@ -65,6 +65,7 @@
                         </button>
                     </div>
                 </div>
+                
                 <div class="card-body">
                     <div class="form-group row">
                         <label for="repo-name" class="col-sm-2 col-form-label">Repository name</label>
@@ -84,6 +85,34 @@
                             {{ form.uri(placeholder="URI (eg. https://example.com/repo.git)", class="form-control") }}
                         </div>
                     </div>
+                    <p>
+                        <br>
+
+                        <a class="btn btn-secondary" data-toggle="collapse" href="#private_git" role="button" aria-expanded="false" aria-controls="collapseExample">
+                          Private Repositories
+                        </a>
+                    </p>                       
+                        <div class="collapse" id="private_git">
+                        <div class="form-group row">
+                            
+                            <label for="repo-username" class="col-sm-2 col-form-label">Git username </label>
+                            <div class="col-sm-10">
+                                {{ form.git_username(placeholder="Git Username ", class="form-control") }}                                
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="repo-token" class="col-sm-2 col-form-label">Git Access Token </label>
+                            <div class="col-sm-10">
+                                {{ form.git_token(placeholder=" Acces Token ", class="form-control") }}
+                            </div>
+                            
+                            <a class="col-sm-2" href="https://docs-github-com.translate.goog/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token?_x_tr_sl=auto&_x_tr_tl=fr&_x_tr_hl=en" >
+                                <br>How to generate your Acces token
+                            </a>
+                        </div>
+                        </div>
+                        
+     
                 </div>
             </div>
 
