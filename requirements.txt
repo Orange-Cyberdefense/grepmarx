@@ -18,3 +18,4 @@ flask_wtf==1.0.0
 wtforms==2.3.3
 redis==3.5.3
 semgrep==0.80.0
+flaskcode==0.0.8

@@ -25,6 +25,7 @@ SEVERITY_HIGH = "high"
 SEVERITY_MEDIUM = "medium"
 SEVERITY_LOW = "low"
 RULES_PATH = "data/rules/"
+RULES_ADMIN_PATH ="data/rules/AdminRules/"
 RULE_EXTENSIONS = {".yaml", ".yml"}
 OWASP_TOP10_LINKS = {
     "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",
