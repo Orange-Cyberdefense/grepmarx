@@ -71,7 +71,7 @@
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>E-mail address</th>
-                                        <th>Last login</th>
+                                        <th>Role</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -94,10 +94,12 @@
                                             {{ c_user.email }}
                                         </td>
                                         <td>
-                                            {% if c_user.last_login_on is not none %}
-                                            {{ c_user.last_login_on.strftime("%-d %B, %Y %H:%M") }}
+
+                                            
+                                            {% if c_user.role == '0'  %}
+                                            User
                                             {% else %}
-                                            Never
+                                            Admin
                                             {% endif %}
                                         </td>
                                         <td class="text-right py-0 align-middle">

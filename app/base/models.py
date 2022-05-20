@@ -18,10 +18,10 @@ class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True)
     first_name = Column(String)
-    last_name = Column(String,)
+    last_name = Column(String)
+    role = Column(String, default='0')
     email = Column(String, unique=True)
     password = Column(LargeBinary)
-    last_login_on = Column(DateTime())
     dark_theme = Column(Boolean, default=False)
 
     def __init__(self, **kwargs):

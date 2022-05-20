@@ -3,8 +3,13 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from email.policy import default
+from multiprocessing.sharedctypes import Value
+from pickle import FALSE
+from tkinter.tix import Select
+from xmlrpc.client import Boolean
 from flask_wtf import FlaskForm
-from wtforms import TextField, PasswordField, HiddenField
+from wtforms import TextField, PasswordField, HiddenField, SelectField
 from wtforms.fields.simple import TextAreaField
 from wtforms.validators import Email, DataRequired, Regexp
 
@@ -17,6 +22,8 @@ class UserForm(FlaskForm):
     email = TextField("Email", id="user-email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", id="user-password")
     password_confirm = PasswordField("Confirm password", id="user-confirm-password")
+    roles = [(int(0), 'user'),(int(1),'admin')]
+    role = SelectField(choices=roles, validators=[DataRequired()])
 
 class RepositoryForm(FlaskForm):
     id = HiddenField("Repository id")
