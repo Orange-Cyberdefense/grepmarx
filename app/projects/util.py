@@ -38,20 +38,38 @@ def remove_project(project):
 
 def application_inspector_scan(project_id):
 
+    """Microsoft Application Inspector is a software source code characterization tool 
+    that helps identify coding features of first or third party software components based 
+    on well-known library/API calls and is helpful in security and non-security use cases.
+
+    Args:
+        project_id (Project): project.id 
+    """
+
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
-    # Call to external binary: scc
+    # Call to external binary: ApplicationInspector.CLI
+    cwd = os.getcwd()
+
 
     
-    json_cmdline= subprocess.run(
-            [APP_INSP_PATH,"analyze", "-s",source_path, "-f", "json"], capture_output=True
-        ).stdout
-    json_split = json_cmdline.replace(b'\n',b'')
-    json_convert = json_split.decode('utf-8')
-    json_regex= re.match(r"(\{[^}]+\}\})", json_convert, re.MULTILINE)
-    json_match=json_regex.group(1)
-    print(json_match)
-    json_result= json.loads(json_match)
-    print(json_result)
+    subprocess.run(
+            [APP_INSP_PATH,"analyze", "-s",source_path, "-f","json","-o",f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json"], capture_output=True
+        )
+    
+    # #Excute App inspector binary and format json 
+    # json_split = json_cmdline.replace(b'\n',b'')
+    # #Replace \n by ""
+    # json_convert = json_split.decode('utf-8')
+    # #Convert bytes to String
+    # json_regex= re.match(r"(\{[^}]+\}\}{1-9})", json_convert, re.MULTILINE)
+    # #Use regular expression to exact match json part to use json.loads function 
+    # json_match=json_regex.group(1)
+    f= open(f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json")
+    json_result= json.load(f)
+    f.close()
+    subprocess.run(
+            ["rm", f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json"], capture_output=True
+        )
     return json_result
 
 
