@@ -31,7 +31,7 @@ from app.constants import (
     STATUS_FINISHED,
 )
 from app.rules.util import generate_severity
-from app.projects.util import calculate_risk_level, count_occurences
+from app.projects.util import application_inspector_scan, calculate_risk_level, count_occurences
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
@@ -60,6 +60,8 @@ def async_scan(analysis_id):
     # Invoke semgrep
     try:
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
+        app_inspector_result = application_inspector_scan(analysis.project.id)
+        print(app_inspector_result)
         save_result(analysis, semgrep_result)
         load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED

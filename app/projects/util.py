@@ -5,13 +5,16 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import json
 import os
+import re
 import subprocess
 from hashlib import sha256
 from shutil import rmtree
 from zipfile import ZipFile, is_zipfile
 
+from pyparsing import Regex
+
 from app import db
-from app.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC_PATH
+from app.constants import APP_INSP_PATH, EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC_PATH
 from app.projects.models import LanguageLinesCount, ProjectLinesCount
 from app.rules.models import SupportedLanguage
 
@@ -32,6 +35,25 @@ def remove_project(project):
         rmtree(project_path)
     db.session.delete(project)
     db.session.commit()
+
+def application_inspector_scan(project_id):
+
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
+    # Call to external binary: scc
+
+    
+    json_cmdline= subprocess.run(
+            [APP_INSP_PATH,"analyze", "-s",source_path, "-f", "json"], capture_output=True
+        ).stdout
+    json_split = json_cmdline.replace(b'\n',b'')
+    json_convert = json_split.decode('utf-8')
+    json_regex= re.match(r"(\{[^}]+\}\})", json_convert, re.MULTILINE)
+    json_match=json_regex.group(1)
+    print(json_match)
+    json_result= json.loads(json_match)
+    print(json_result)
+    return json_result
+
 
 
 def count_lines(project):

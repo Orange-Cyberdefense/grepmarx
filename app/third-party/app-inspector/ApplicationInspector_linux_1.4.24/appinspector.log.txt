@@ -1,0 +1,16 @@
+2022-05-24 12:04:47 1 ERROR - AppInsLog - No pattern matches were detected for files in source path
+2022-05-24 14:16:56 1 ERROR - AppInsLog - Invalid -f argument value
+2022-05-24 14:17:35 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:47 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:49 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:51 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:53 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:55 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:42:57 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:43:09 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:44:30 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:45:25 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:47:07 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:49:06 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:51:58 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-24 14:53:13 1 ERROR - AppInsLog - No file types found in source path that are supported

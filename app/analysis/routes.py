@@ -52,6 +52,11 @@ def analysis_workbench(analysis_id):
         segment="",
     )
 
+@blueprint.route("/analysis/project_inspector/<analysis_id>")
+@login_required
+def analysis_app_inspector(analysis_id):
+    return render_template("app_inspector.html")
+
 
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required
