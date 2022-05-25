@@ -31,7 +31,7 @@ from app.constants import (
     STATUS_FINISHED,
 )
 from app.rules.util import generate_severity
-from app.projects.util import application_inspector_scan, calculate_risk_level, count_occurences
+from app.projects.util import application_inspector_scan,calculate_risk_level, count_occurences
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
@@ -62,6 +62,7 @@ def async_scan(analysis_id):
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
         app_inspector_result = application_inspector_scan(analysis.project.id)
         save_result(analysis, semgrep_result)
+        load_scan_app_inspector(analysis, app_inspector_result)
         load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
@@ -173,7 +174,15 @@ def load_scan_results(analysis, semgrep_output):
                         # Add an occurence to an existing vulnerability
                         e_vuln = e_vulns[0]
                         e_vuln.occurences.append(load_occurence(c_result))
-    analysis.vulnerabilities = vulns
+                        analysis.vulnerabilities = vulns
+
+
+def load_scan_app_inspector(analysis, app_inspector_result):
+    vulns = list()
+    if app_inspector_result != "" and app_inspector_result is not None:
+        print(app_inspector_result)
+        print("this is for tomorrow")
+
 
 
 def load_vulnerability(title, semgrep_result):

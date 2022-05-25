@@ -36,6 +36,9 @@ def remove_project(project):
     db.session.delete(project)
     db.session.commit()
 
+
+
+
 def application_inspector_scan(project_id):
 
     """Microsoft Application Inspector is a software source code characterization tool 
@@ -52,10 +55,10 @@ def application_inspector_scan(project_id):
 
 
     
-    subprocess.run(
-            [APP_INSP_PATH,"analyze", "-s",source_path, "-f","json","-o",f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json"], capture_output=True
-        )
-    
+    cmdline=subprocess.run(
+            [APP_INSP_PATH,"analyze", "-s",f"{source_path}/", "-f","json","-o",f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json"], capture_output=True
+        ).stdout
+    print(cmdline)
     # #Excute App inspector binary and format json 
     # json_split = json_cmdline.replace(b'\n',b'')
     # #Replace \n by ""
@@ -64,12 +67,9 @@ def application_inspector_scan(project_id):
     # json_regex= re.match(r"(\{[^}]+\}\}{1-9})", json_convert, re.MULTILINE)
     # #Use regular expression to exact match json part to use json.loads function 
     # json_match=json_regex.group(1)
-    f= open(f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json")
+    f= open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
     json_result= json.load(f)
     f.close()
-    subprocess.run(
-            ["rm", f"{cwd}/data/projects/{EXTRACT_FOLDER_NAME}.json"], capture_output=True
-        )
     return json_result
 
 
