@@ -20,3 +20,17 @@
 2022-05-25 11:48:14 1 ERROR - AppInsLog - Invalid file or directory /home/dirbuster/Grepmarx/grepmarx/data/project/5/extract_5.html
 2022-05-25 11:50:03 1 ERROR - AppInsLog - Invalid file or directory /home/dirbuster/Grepmarx/grepmarx/data/project/4/extract_4.html
 2022-05-25 11:51:08 1 ERROR - AppInsLog - Invalid file or directory /home/dirbuster/Grepmarx/grepmarx/data/project/4/extract_4.html
+2022-05-30 09:29:34 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:31:18 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:32:23 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:32:49 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:33:37 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:38:07 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:42:19 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:43:17 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:45:46 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 09:46:56 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 13:45:11 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-30 14:19:59 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-31 10:02:54 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-05-31 10:32:17 1 ERROR - AppInsLog - No file types found in source path that are supported

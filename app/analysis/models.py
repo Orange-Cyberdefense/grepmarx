@@ -80,43 +80,45 @@ class AppInspector(db.Model):
 
     id = Column(Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("Project.id"))
-    name = Column(String)
-    filenames = Column(String)
+    project = db.relationship("Project", back_populates="appinspector")
 
 
 
-class Matches(db.Model):
+class Match(db.Model):
 
-    __tablename__ = "Matches"
-
+    __tablename__ = "Match"
     id = Column(Integer, primary_key=True)
     app_inspector_id = db.Column(db.Integer, db.ForeignKey("AppInspector.id"), nullable=False)
-    analysis = db.relationship(
+    appinspector = db.relationship(
         "AppInspector",
-        backref=db.backref("matches", lazy=True, cascade="all, delete-orphan"),
+        backref=db.backref("match", lazy=True, cascade="all, delete-orphan"),
     )
-    title_rule = Column(String, nullable=False)
+    title = Column(String, nullable=False)
     severity = Column(String, nullable=False)
     description = Column(String)
     pattern = Column(String)
     language = Column(String)
     filename = Column(String)
 
-class Tag(db.Model):
+class InspectorTag(db.Model):
 
-    __tablename__ = "Tag"
+    __tablename__ = "InspectorTag"
 
     id = Column(Integer, primary_key=True)
-    matches_id = db.Column(
-        db.Integer, db.ForeignKey("Matches.id"), nullable=False
+    match_id = db.Column(
+        db.Integer, db.ForeignKey("Match.id"), nullable=False
     )
-    matches = db.relationship(
-        "Matches",
+    match = db.relationship(
+        "Match",
         backref=db.backref("tag", lazy=True, cascade="all, delete-orphan"),
     )
     unique_tag = Column(String)
-    start_column = Column(String)
-    start_line = Column(String)
-    end_column = Column(String)
-    end_line = Column(String)
+    excerpt = Column(String)
+    start_column = Column(Integer)
+    start_line = Column(Integer)
+    end_column = Column(Integer)
+    end_line = Column(Integer)
+
+
+
     

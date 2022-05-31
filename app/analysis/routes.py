@@ -12,7 +12,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
-from app.analysis.models import Analysis, Occurence, Vulnerability
+from app.analysis.models import Analysis, AppInspector, Occurence, Vulnerability, Match
 from app.analysis.util import (
     async_scan,
     import_rules,
@@ -158,6 +158,8 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
+        #create a new app inspector
+        project.appinspector = AppInspector()
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
@@ -166,7 +168,7 @@ def scans_launch():
         project.status = STATUS_PENDING
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
-        async_scan.delay(project.analysis.id)
+        async_scan.delay(project.analysis.id, project.appinspector.id)
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
         time.sleep(1.0)
         # Done

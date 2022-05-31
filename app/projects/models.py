@@ -29,6 +29,12 @@ class Project(db.Model):
         back_populates="project",
         cascade="all, delete-orphan",
     )
+    appinspector = db.relationship(
+        "AppInspector",
+        uselist=False,
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
     project_lines_count = db.relationship(
         "ProjectLinesCount",
         uselist=False,
