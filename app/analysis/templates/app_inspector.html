@@ -1,14 +1,604 @@
 {% extends "base.html" %}
 
-{% block title %} Analysis Workbench {% endblock %}
+{% block title %}  Application Inspector Analysis {% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" href="/static/assets/plugins/enlighterjs/css/enlighterjs.min.css" />
 <link rel="stylesheet" href="/static/assets/css/grepmarx-workbench.css" />
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.css" /> -->
+
+
+
+
 {% endblock stylesheets %}
+
 
 {% block content %}
 
+  <!-- Content Header (Page header) -->
+
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="row mb-4">
+      <div class="col-sm-8">
+  <h2>Application Features </h2>
+  <div>
+    View key characteristics organized by Feature Groups. <b>Click any active icon</b> below or expand a feature group to view 
+    additional details. A disabled icon indicates a 'not found' status.  Click a Rule name on the right to view 
+    where a specific feature was found in code.  The <b>full set</b> of identified features can be found under the Summary menu.
+    To see all <i>occurences</i> of each feature, choose a different report format and use the -d option.
+  </div>
+  </div>
+  </div>
+  <br>
+    <div class="container-fluid ">
+      <div class="row" >
+        <div class="col" >
+          <h3>Feature Groups</h3>
+          <table class="table table-sm" style="margin: 0;" >
+              <tr>
+                <td style="width:160px;line-height:30px;vertical-align:top">
+                  <i>Select Features</i> 
+                </td>
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="<i>Select Features</i> -summary" style="display:inline-block; ">
+                    <a href="#" class="feature_icon" title="Authentication" data-target="Authentication">
+                      <i class="fas fa-user-shield"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Authorization" data-target="Authorization">
+                      <i class="fas fa-user-lock"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Cryptography" data-target="Cryptography">
+                      <i class="fas fa-key"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Object deserialization" data-target="Deserialization">
+                      <i class="far fa-object-ungroup"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="AV media parsing" data-target="Data.Parsing.Media">
+                      <i class="fas fa-photo-video"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Dynamic command execution" data-target="DynamicExecution">
+                      <i class="fab fa-audible"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <table class="table table-sm" style="margin: 0;" >
+              <tr>
+                <td style="width:160px;line-height:30px;vertical-align:top">
+                  <i>Cloud Services</i> 
+                </td>  
+                <td style="line-height:30px;;vertical-align:top">   
+                <div id="Cloud Services-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="Hosting" data-target="CloudServices.Hosting">
+                      <i class="fab fa-microsoft"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Cloud application" data-target="CloudServices.Application">
+                      <i class="fas fa-globe"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Cloud data storage" data-target="CloudServices.DataStorage">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Big data" data-target="CloudServices.BigData">
+                      <i class="fas fa-warehouse"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Social media" data-target="CloudServices.SocialMedia">
+                      <i class="fab fa-facebook-square"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="eCommerce" data-target="CloudServices.Finance.eCommerce">
+                      <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Web Analytics" data-target="Web.Analytics">
+                      <i class="fas fa-flag-checkered"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Advertising network" data-target=".AdvertisingNetwork">
+                      <i class="fas fa-ad"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i>Cookie Attributes</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Cookie Attributes-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="HttpOnly attribute" data-target="Cookies.Attr.HttpOnly">
+                      <i class="fab fa-js"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Secure attribute" data-target="Cookies.Attr.Secure">
+                      <i class="fas fa-shield-alt"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Lifetime attribute" data-target="Cookies.Attr.Lifetime">
+                      <i class="fas fa-heartbeat"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Strict attribute" data-target="Cookies.Attr.Strict">
+                      <i class="fas fa-gavel"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="SameSite attribute" data-target="Cookies.Attr.SameSite">
+                      <i class="far fa-object-group"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Expires attribute" data-target="Cookies.Attr.Expires">
+                      <i class="far fa-calendar-times"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Domain attribute" data-target="Cookies.Attr.Domain">
+                      <i class="fas fa-hotel"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> Databases</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Databases-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="SQLite database" data-target="DBMS.SQLite">
+                      <i class="fas fa-table"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="SQL database" data-target="DBMS.SQL">
+                      <i class="fas fa-database"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="NOSQL database" data-target="DBMS.NOSQL">
+                      <i class="fab fa-mdb"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="PostgreSQL Database" data-target="DBMS.PostgreSQL">
+                      <i class="fas fa-archive"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Database ORM" data-target="DBMS.Oracle">
+                      <i class="fas fa-map"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="General database" data-target="DBMS.General">
+                      <i class="fas fa-save"></i>
+                    </a>
+                  </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> Development</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Development-summary" style="display:inline-block;">
+                    <a href="#" class="feature_icon" title="Build" data-target=".Build">
+                      <i class="fas fa-building"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Source Code Repository" data-target="Code.Repo">
+                      <i class="fas fa-archive"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Continuous integration" data-target="Code.CI">
+                      <i class="fas fa-vials"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Development framework" data-target="Framework.Development">
+                      <i class="fab fa-dev"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Testing framework" data-target="Framework.Testing">
+                      <i class="fas fa-vial"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Open source" data-target="OpenSourceLicense">
+                      <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Content management system" data-target="Framework.CMS">
+                      <i class="fab fa-wordpress"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Infrastructure as Code" data-target="Metadata.Infrastructure">
+                      <i class="fas fa-dolly"></i>
+                    </a>
+                  </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> Device Permissions</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Device Permissions-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="Phone calls" data-target="Permissions.PhoneCalls">
+                      <i class="fa fa-phone"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="SMS" data-target="Permissions.SMS">
+                      <i class="far fa-comment"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Email" data-target="Permissions.Email">
+                      <i class="fa fa-envelope"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Calendar events" data-target="Permissions.CalendarEvents">
+                      <i class="far fa-calendar-alt"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Camera" data-target="Permissions.Camera">
+                      <i class="fa fa-camera"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Media library" data-target="Permissions.MediaLibrary">
+                      <i class="far fa-file-audio"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Voice command" data-target="Permissions.VoiceCommand">
+                      <i class="fa fa-bullhorn"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Microphone" data-target="Permissions.Microphone">
+                      <i class="fa fa-microphone"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+        <table class="table table-sm"style="margin: 0;" >
+          <tr>
+            <td style="width:160px;line-height:30px;vertical-align:top">
+              <i> General Features</i> 
+            </td>  
+            <td style="line-height:30px;;vertical-align:top">
+                <div id="General Features-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="Network communications" data-target="Network.Connection">
+                      <i class="fas fa-network-wired"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="File read" data-target="FileOperation.Read">
+                      <i class="fas fa-file"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="File write" data-target="FileOperation.Write">
+                      <i class="far fa-edit"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="File delete" data-target="FileOperation.Delete">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Multi-threaded processing" data-target="Multiprocessing">
+                      <i class="fas fa-code-branch"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Logging" data-target="Logging">
+                      <i class="far fa-clock"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Processes XML" data-target="Data.Parsing.XML">
+                      <i class="far fa-file-code"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Processes JSON" data-target="Data.Parsing.JSON">
+                      <i class="far fa-file-alt"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm"style="margin: 0;" >
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> Miscellenous</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Miscellenous-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="AV media" data-target="Data.Media">
+                      <i class="fas fa-play-circle"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Zip file processing" data-target="Data.Zipfile">
+                      <i class="far fa-file-archive"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML form" data-target="HTMLForm.Defined">
+                      <i class="far fa-window-maximize"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Exception caught" data-target="Exception.Caught">
+                      <i class="fas fa-meteor"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Specialized hardware" data-target="Hardware">
+                      <i class="far fa-keyboard"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Fix comments" data-target="Comment.Fix">
+                      <i class="fas fa-toolbox"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Suspicious comments" data-target="Comment.Suspicious">
+                      <i class="fas fa-burn"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> OS Integration</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="OS Integration-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="OS platform" data-target="Metadata.Platform.OS">
+                      <i class="fab fa-linux"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="App container" data-target="Application.Container">
+                      <i class="fas fa-box"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Environment variable read" data-target="OS.Environment.Read">
+                      <i class="fas fa-tree"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="OS process scan" data-target="Process.ListRequest">
+                      <i class="fas fa-binoculars"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Windows registry read" data-target="OS.SystemRegistry.Read">
+                      <i class="fas fa-cubes"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Local system service" data-target="Application.Type.Client.Service">
+                      <i class="fas fa-door-open"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm"style="margin: 0;" >
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> OS System Changes</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="OS System Changes-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="System user write" data-target="OS.UserAccount.Write">
+                      <i class="fas fa-user-plus"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Permissions write" data-target="ACL.Write">
+                      <i class="fas fa-file-signature"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="System token write" data-target="SystemToken.Write">
+                      <i class="fab fa-bandcamp"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Environment variable write" data-target="OS.Environment.Write">
+                      <i class="fas fa-tree"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Windows registry write" data-target="SystemRegistry.Write">
+                      <i class="fas fa-tools"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Windows registry ACL" data-target="SystemRegistry.ACL">
+                      <i class="fas fa-unlock"></i>
+                    </a>
+                  </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm"style="margin: 0;" >
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i> Pipeline Tools</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">     
+                <div id="Pipeline Tools-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="Compiler Settings" data-target=".CompilerSettings">
+                      <i class="fas fa-list-ul"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Code Signing" data-target="Packaging.CodeSigning">
+                      <i class="fas fa-signature"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Linters" data-target=".Linter">
+                      <i class="fas fa-spell-check"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Static Analyzers" data-target=".StaticAnalysis">
+                      <i class="fas fa-microscope "></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Packaging" data-target="Pipeline.Packaging">
+                      <i class="fas fa-truck-loading"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm"style="margin: 0;" >
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i>Session Headers</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Session Headers-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="Strict Transport Security (HSTS)" data-target="Headers.HSTS">
+                      <i class="far fa-hand-paper"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Content Security Policy (CSP)" data-target="Headers.CSP">
+                      <i class="fas fa-dungeon"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="X-Frame-Options" data-target="Headers.X-Frame">
+                      <i class="fas fa-crop"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Cross Site Scripting (X-XSS)" data-target="Headers.XSS">
+                      <i class="fas fa-times"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Public Key Pins (HPKP) Deprecated" data-target="Headers.HPKP">
+                      <i class="fas fa-thumbtack"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Certificate Transparency (Expect-CT)" data-target="Headers.Expect-CT">
+                      <i class="fas fa-certificate"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="X-Content-Type Options" data-target="Headers.X-Content-Type">
+                      <i class="fas fa-border-style"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Clear Site Data" data-target="Headers.Clear-Site-Data">
+                      <i class="fas fa-fire-alt"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm" style="margin: 0;">
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i>Sensitive Data</i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Sensitive Data-summary" style="display:inline block">
+                    <a href="#" class="feature_icon" title="Personally identifiable data" data-target="Sensitive.Identification">
+                      <i class="far fa-address-card"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Medical data" data-target="Sensitive.Medical">
+                      <i class="fas fa-stethoscope"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Credentials" data-target="Sensitive.Credentials">
+                      <i class="fas fa-user-secret"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Account or membership" data-target="Sensitive.UserAccount">
+                      <i class="fas fa-user-circle"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Product key" data-target="Sensitive.ProductKey">
+                      <i class="fas fa-compact-disc"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Crypto currency" data-target="CryptoCurrency">
+                      <i class="fab fa-bitcoin"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Sensitive secret" data-target="Sensitive.Secret">
+                      <i class="fab fa-keycdn"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="Financial data" data-target="Sensitive.Financial">
+                      <i class="fas fa-money-bill"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm"style="margin: 0;" >
+            <tr>
+              <td style="width:160px;line-height:30px;vertical-align:top">
+                <i>Web App Features </i> 
+              </td>  
+              <td style="line-height:30px;;vertical-align:top">
+                <div id="Web App Features-summary" style="display:inline-block">
+                    <a href="#" class="feature_icon" title="HTML5 Audio" data-target="WebApp.Media.Audio">
+                      <i class="fas fa-volume-up"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 GetUserMedia" data-target="WebApp.Media.GetUserMedia">
+                      <i class="fas fa-play-circle"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 IndexedDB" data-target="IndexedDB">
+                      <i class="fas fa-arrow-alt-circle-down"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 PostMessage" data-target="WebApp.Communications.PostMessage">
+                      <i class="fas fa-share-square"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 Server Sent Event" data-target="WebApp.Communications.ServerEvent">
+                      <i class="fas fa-satellite-dish"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 File Reader" data-target="WebApp.Storage.FileReader">
+                      <i class="fas fa-book-open"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="HTML5 Worker" data-target="WebApp.Worker">
+                      <i class="fas fa-people-carry"></i>
+                    </a>
+                    <a href="#" id="test" class="feature_icon" title="HTML5 File Upload" data-target="WebApp.Storage.FileUpload">
+                      <i class="fas fa-file-upload"></i>
+                    </a>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>  
+        <div class="col">
+          <h3>Associated Rules</h3>
+          <div id="features">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th style="font-size:14px;line-height:32px;">Name<span style="font-size:11px;line-height:32px;">&nbsp;(click rule to view source excerpt)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hint: Select feature on left</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
     
+  <div id="file_listing_modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width: 700px;overflow-x:auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Source File Listing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="max-height: 150px; overflow-y:auto; border-bottom: 1px solid #ccc">
+                    <ul style="list-style-type:none; padding-left: 0">
+                    </ul>
+                </div>
+                <div style="height: 360px; overflow-y:auto;">
+                    <div id="editor-container" style="margin-top: 5px;">
+                        <div id="editor" style="height: 350px; max-height: 350px;">
+                        </div>
+                    </div>
+                </div>
+              <div>
+                <h7 style="color:blue;" id="match-line-number"></h7>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div> 
 
 {% endblock content %}
+
+{% block javascripts %}
+
+<script type="text/javascript" >
+
+
+$('a.feature_icon').on('click', (e) => {
+            const targetRegexValue = $(e.target).closest('a').data('target');
+
+            if (!targetRegexValue) {
+                console.log('Error: No target regular expression. This probably indicates a bug.');
+                return;
+            }
+
+
+            console.log(targetRegexValue)         
+            let match = "{{ appinspector.match}}"
+            var title  = [ 
+              {% for elt in appinspector.match %}
+              "{{ elt.title }}",
+              {% endfor %}
+          ];
+          console.log(title)
+            let severity ="{{ appinspector.match.severity }}"
+            let rules =[]
+                for ( tag in title) {
+                  console.log(tag)
+                    if (targetRegexValue == tag) {
+                       rules += tag;
+                       console.log(rules)
+                        break;  // Only break out of inner loop, we only need one match per tag set
+                    }
+                }
+            
+
+            const $tbody = $('#features table tbody');
+            $tbody.empty();
+
+            // Now we iterate through all of the rules that relate to this icon
+            for (rule in rules)
+            {
+                let $tr = $('<tr>');
+                $tr.on('click', 'td', { 'obj': this }, this.show_file_listing);
+                let $td0 = $('<td>');
+                let $td0a = $('<a>');
+                $td0a.attr('href', '#');
+                $td0a.data('ruleId', rule);
+                $td0a.text(rule);
+                $td0.append($td0a);
+                $tr.append($td0);
+                $tbody.append($tr);
+            }
+          }
+);
+
+</script>
+
+{% endblock javascripts %}
