@@ -230,6 +230,9 @@ def  load_match(title, detailed):
             match.pattern = detailed['pattern']
         if "fileName" in detailed :
             match.filename = detailed['fileName']
+        if "tags" in detailed and len(detailed['tags']):
+            match.tags = detailed['tags'][0]
+        
 
 
 

@@ -99,6 +99,7 @@ class Match(db.Model):
     pattern = Column(String)
     language = Column(String)
     filename = Column(String)
+    tags = Column(String)
 
 class InspectorTag(db.Model):
 
@@ -112,7 +113,6 @@ class InspectorTag(db.Model):
         "Match",
         backref=db.backref("tag", lazy=True, cascade="all, delete-orphan"),
     )
-    unique_tag = Column(String)
     excerpt = Column(String)
     start_column = Column(Integer)
     start_line = Column(Integer)

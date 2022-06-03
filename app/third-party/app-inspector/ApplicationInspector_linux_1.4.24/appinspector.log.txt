@@ -34,3 +34,4 @@
 2022-05-30 14:19:59 1 ERROR - AppInsLog - No file types found in source path that are supported
 2022-05-31 10:02:54 1 ERROR - AppInsLog - No file types found in source path that are supported
 2022-05-31 10:32:17 1 ERROR - AppInsLog - No file types found in source path that are supported
+2022-06-03 17:11:06 1 ERROR - AppInsLog - No file types found in source path that are supported
