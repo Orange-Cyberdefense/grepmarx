@@ -545,36 +545,11 @@
     </div>
   </section>
 
-  <div id="file_listing_modal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document" style="width: 700px;overflow-x:auto;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Source File Listing</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div style="max-height: 150px; overflow-y:auto; border-bottom: 1px solid #ccc">
-            <ul style="list-style-type:none; padding-left: 0">
-            </ul>
-          </div>
-          <div style="height: 360px; overflow-y:auto;">
-            <div id="editor-container" style="margin-top: 5px;">
-              <div id="editor" style="height: 350px; max-height: 350px;">
-              </div>
-            </div>
-          </div>
-          <div>
-            <h7 style="color:blue;" id="match-line-number"></h7>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
+  <div class="modal fade" id="file_listing_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg " role="document">
+        <!-- Placeholder for insp details -->
     </div>
-  </div>
+</div>
 
   {% endblock content %}
 
@@ -582,48 +557,75 @@
 
   <script type="text/javascript">
 
+    // var model = JSON.parse("{{ appinspector.match }}")
+    //   var excerpt = [
+    //       {% for elt in appinspector.match %}
+    //             "{{ elt.tag }}",
+    //        {% endfor %}
+    // ];
 
-    function show_file_listing(e) {
-      // let $_tr = e.target.nodeName == 'TR' ? $(e.target) : $(e.target).closest('tr');
-      // let ruleId = "{{ appinspector.match.tag }}"
-      // let $this = e.data.obj;
-      // console.log(ruleId)
+    function show_file_listing(match_id) {
+        console.log(match_id)
+        ajaxInspDetails(match_id)
+    }
 
-      // $('#file_listing_modal ul').empty();
-      // $('editor-container').addClass('d-none');
+    // for (let match of excerpt) {
+    //     console.log(Object.values(match))
+    // }
 
-      // const removePrefix = (fn) => {
-      //     if (!fn.startsWith($this.mt.sourcePath)) {
-      //         return fn;
-      //     }
-      //     return fn.slice($this.mt.sourcePath.length);
-      // };
+    // $('#file_listing_modal ul').empty();
+    // $('editor-container').addClass('d-none');
 
-      // for (let match of $this.md) {
-      //     let excerpt = (match.excerpt || '') || match.sample;
-      //     if (match.ruleId === ruleId || match.ruleName === ruleId) {
-      //         let $li = $('<li>');
-      //         let $a = $('<a>');
-      //         let $l = match.startLocationLine - 3;
-      //         let $e = match.endLocationLine;
-      //         if ($l <= 0) $l = 1; //fix #183
-      //         $a.addClass('content-link')
-      //             .attr('href', '#')
-      //             .data('excerpt', excerpt)
-      //             .data('startLocationLine', $l)
-      //             .data('endLocationLine', $e)
-      //             .text(removePrefix(match.fileName));
-      //         $li.append($a);
-      //         $('#file_listing_modal ul').append($li);
+    // const removePrefix = (fn) => {
+    //     if (!fn.startsWith($this.mt.sourcePath)) {
+    //         return fn;
+    //     }
+    //     return fn.slice($this.mt.sourcePath.length);
+    // };
 
-      //         $('#match-line-number').text('Line number: ' + match.startLocationLine.toString());
-      //     }
-      // }
-      // $('#file_listing_modal').on('shown.bs.modal', function (e) {
-      //     $('a.content-link').first().trigger('click');
-      // });
+    //   for (let match of matched_list) {
+    //       let excerpt = (match.tag || '') || match.sample;
+    //       if (match.ruleId === ruleId || match.ruleName === ruleId) {
+    //           let $li = $('<li>');
+    //           let $a = $('<a>');
+    //           let $l = match.startLocationLine - 3;
+    //           let $e = match.endLocationLine;
+    //           if ($l <= 0) $l = 1; //fix #183
+    //           $a.addClass('content-link')
+    //               .attr('href', '#')
+    //               .data('excerpt', excerpt)
+    //               .data('startLocationLine', $l)
+    //               .data('endLocationLine', $e)
+    //               .text(removePrefix(match.fileName));
+    //           $li.append($a);
+    //           $('#file_listing_modal ul').append($li);
 
-      // $('#file_listing_modal').modal();
+    //           $('#match-line-number').text('Line number: ' + match.startLocationLine.toString());
+    //       }
+    //   }
+    //   $('#file_listing_modal').on('shown.bs.modal', function (e) {
+    //       $('a.content-link').first().trigger('click');
+    //   });
+
+    //   $('#file_listing_modal').modal();
+    // }
+
+
+
+    function ajaxInspDetails(match_id) {
+      reqInspDetails = new XMLHttpRequest();
+      reqInspDetails.onreadystatechange = function () {
+  
+        if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
+          var e = document.getElementById('file_listing_modal');
+          e.innerHTML = reqInspDetails.responseText;
+          //alert(reqInspDetails.responseText);
+          document.getElementById('file_listing_modal').style.visibility = 'visible';
+        }
+      };
+      reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
+      reqInspDetails.send();
+      // alert('2');
     }
 
 
@@ -637,39 +639,34 @@
       }
 
       const targetRegex = new RegExp(targetRegexValue, 'i');
-      console.log(targetRegex)
 
-      let match = "{{ appinspector.match}}"
+
+
       var title = [
         {% for elt in appinspector.match %}
               "{{ elt.tags }}",
       {% endfor %}
           ];
+      let matched = false
 
-    let matched = false
 
+      title.forEach(elem => {
+        // console.log("target: " + targetRegexValue + "| title : " + elem)
+        if (targetRegex.exec(elem)) {
 
-    title.forEach(elem => {
-      console.log(elem, targetRegex)
+          matched = true;
 
-      // console.log("target: " + targetRegexValue + "| title : " + elem)
-      if (targetRegex.exec(elem)) {
-        console.log(true)
-        matched = true;
+        }
+      })
 
+      if (!matched) {
+        elem.style.color = 'grey';
       }
-    })
 
-
-
-    if (!matched) {
-      elem.style.color = 'grey';
-    }
-      
     });
 
 
-    $('a.feature_icon').on('click', (e) => {
+    $('a.feature_icon').on('click', function(e) {
       const targetRegexValue = $(e.target).closest('a').data('target');
 
       if (!targetRegexValue) {
@@ -678,36 +675,29 @@
       }
 
       const targetRegex = new RegExp(targetRegexValue, 'i');
-      let match = "{{ appinspector.match}}"
-      var title = [
-        {% for elt in appinspector.match %}
-              "{{ elt.tags }}",
+
+      let matches = {}
+      {% for elt in appinspector.match %}
+      matches[{{ elt.id }}] = "{{ elt.tags }}";
       {% endfor %}
-          ];
-    let severity = "{{ appinspector.match.severity }}"
-    let rules = []
-    for (i = 0; i < title.length; i++) {
-      if (targetRegex.exec(title[i])) {
-        rules += title[i]
+
+      const $tbody = $('#features table tbody');
+      $tbody.empty();
+
+      for (id in Object.keys(matches)) {
+        if (targetRegex.exec(matches[id])) {
+            let $tr = $('<tr>');
+            let $td0 = $('<td>');
+            let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
+            $td0.click(show_file_listing(id))
+            $td0a.attr('href', '#');
+            $td0a.text(matches[id]);
+            $td0.append($td0a);
+            $tr.append($td0);
+            $tbody.append($tr);
+          }
       }
-    }
-
-    const $tbody = $('#features table tbody');
-    $tbody.empty();
-
-    // Now we iterate through all of the rules that relate to this icon
-
-    let $tr = $('<tr>');
-    $tr.on('click', 'td', { 'obj': this }, this.show_file_listing);
-    let $td0 = $('<td>');
-    let $td0a = $('<a>');
-    $td0a.attr('href', '#');
-    $td0a.text(rules);
-    $td0.append($td0a);
-    $tr.append($td0);
-    $tbody.append($tr);
-                }
-);
+    });
 
   </script>
 

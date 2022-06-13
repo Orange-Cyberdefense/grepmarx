@@ -232,13 +232,14 @@ def  load_match(title, detailed):
             match.filename = detailed['fileName']
         if "tags" in detailed and len(detailed['tags']):
             match.tags = detailed['tags'][0]
+
         
 
 
 
     return match
 
-def load_tags(app_inspector_result, all_detailed):
+def ajaload_tags(app_inspector_result, all_detailed):
     """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
 
     Args:

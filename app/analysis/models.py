@@ -101,6 +101,7 @@ class Match(db.Model):
     filename = Column(String)
     tags = Column(String)
 
+
 class InspectorTag(db.Model):
 
     __tablename__ = "InspectorTag"

@@ -12,7 +12,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
-from app.analysis.models import Analysis, AppInspector, Occurence, Vulnerability, Match
+from app.analysis.models import Analysis, AppInspector, InspectorTag, Occurence, Vulnerability, Match
 from app.analysis.util import (
     async_scan,
     import_rules,
@@ -60,6 +60,20 @@ def analysis_app_inspector(appinspector_id):
         "app_inspector.html",
         appinspector = appinspector )
 
+
+
+@blueprint.route("/analysis/inspector_occurence/<matched_id>")
+@login_required
+def inspector_tag_view(matched_id):
+    inspectortag = InspectorTag.query.filter_by(id=matched_id).first_or_404()
+    match = Match.query.filter_by(id=matched_id).first_or_404()
+
+    hl_lines = str(inspectortag.start_line) + "-" + str(inspectortag.end_line)
+    return render_template(
+        "app_inspector_ocuurence_view.html",
+        inspectortag = inspectortag,
+        hl_lines = hl_lines,
+        match=match)
 
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required
