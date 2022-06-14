@@ -115,6 +115,7 @@ class InspectorTag(db.Model):
         backref=db.backref("tag", lazy=True, cascade="all, delete-orphan"),
     )
     excerpt = Column(String)
+    filename = Column(String)
     start_column = Column(Integer)
     start_line = Column(Integer)
     end_column = Column(Integer)

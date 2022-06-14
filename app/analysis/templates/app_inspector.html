@@ -611,7 +611,10 @@
     // }
 
 
+    function insp(id) { 
 
+      console.log(id);
+    }
     function ajaxInspDetails(match_id) {
       reqInspDetails = new XMLHttpRequest();
       reqInspDetails.onreadystatechange = function () {
@@ -680,6 +683,7 @@
       {% for elt in appinspector.match %}
       matches[{{ elt.id }}] = "{{ elt.tags }}";
       {% endfor %}
+  
 
       const $tbody = $('#features table tbody');
       $tbody.empty();
@@ -689,8 +693,8 @@
             let $tr = $('<tr>');
             let $td0 = $('<td>');
             let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
-            $td0.click(show_file_listing(id))
             $td0a.attr('href', '#');
+            $td0a.click(show_file_listing(id))
             $td0a.text(matches[id]);
             $td0.append($td0a);
             $tr.append($td0);

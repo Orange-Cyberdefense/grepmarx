@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from importlib.metadata import files
 import json
 import os
 import time
@@ -17,6 +18,7 @@ from app.analysis.util import (
     async_scan,
     import_rules,
     vulnerabilities_sorted_by_severity,
+
 )
 from app.constants import (
     EXTRACT_FOLDER_NAME,
@@ -60,20 +62,29 @@ def analysis_app_inspector(appinspector_id):
         "app_inspector.html",
         appinspector = appinspector )
 
+# @blueprint.route("/analysis/inspector_occurence/<inspector_id>")
+# @login_required
+# def inspector_view(inspector_id):
+#     inspectortag = InspectorTag.query.filter_by(id=inspector_id).first_or_404()
+#     return render_template(
+#         "app_inspector_excerpt.html",
+#         inspectortag = inspectortag
+#         )
+
 
 
 @blueprint.route("/analysis/inspector_occurence/<matched_id>")
 @login_required
 def inspector_tag_view(matched_id):
-    inspectortag = InspectorTag.query.filter_by(id=matched_id).first_or_404()
     match = Match.query.filter_by(id=matched_id).first_or_404()
+    inspectortag = InspectorTag.query.filter_by(match_id=matched_id).all()
 
-    hl_lines = str(inspectortag.start_line) + "-" + str(inspectortag.end_line)
+
     return render_template(
         "app_inspector_ocuurence_view.html",
         inspectortag = inspectortag,
-        hl_lines = hl_lines,
-        match=match)
+        match=match
+        )
 
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required

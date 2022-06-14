@@ -4,6 +4,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from difflib import Match
+from fileinput import filename
 import json
 import multiprocessing
 import os
@@ -201,11 +202,11 @@ def load_scan_app_inspector(app_inspector, app_inspector_result):
                     e_match = [m for m in match if m.title == title]
                     if len(e_match) == 0:
                         n_match = load_match(title, all_detailed)
-                        n_match.tag.append(load_tags(app_inspector_result, all_detailed))
+                        n_match.tag.append(load_tags(all_detailed))
                         match.append(n_match)
                     else :
                         e_matchs = e_match[0]
-                        e_matchs.tag.append(load_tags(app_inspector_result, all_detailed))
+                        e_matchs.tag.append(load_tags(all_detailed))
                         app_inspector.match = match
 
 
@@ -232,14 +233,12 @@ def  load_match(title, detailed):
             match.filename = detailed['fileName']
         if "tags" in detailed and len(detailed['tags']):
             match.tags = detailed['tags'][0]
-
-        
-
-
-
+            
     return match
 
-def ajaload_tags(app_inspector_result, all_detailed):
+
+
+def load_tags(all_detailed):
     """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
 
     Args:
@@ -253,12 +252,13 @@ def ajaload_tags(app_inspector_result, all_detailed):
         start_column = all_detailed['startLocationColumn'],
         end_column = all_detailed['endLocationColumn'],
         end_line = all_detailed['endLocationLine'],
-        excerpt = all_detailed['excerpt']
+        excerpt = all_detailed['excerpt'],
+        filename = all_detailed['fileName']
     )
-    if app_inspector_result != "":
-        data = app_inspector_result['metaData']
-        for all_unique in data['uniqueTags']:
-            tags.unique_tag = all_unique
+    # if app_inspector_result != "":
+    #     data = app_inspector_result['metaData']
+    #     for all_unique in data['uniqueTags']:
+    #         tags.unique_tag = all_unique
     return tags
         
 
