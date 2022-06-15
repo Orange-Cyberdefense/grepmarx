@@ -94,7 +94,6 @@ class Match(db.Model):
         backref=db.backref("match", lazy=True, cascade="all, delete-orphan"),
     )
     title = Column(String, nullable=False)
-    severity = Column(String, nullable=False)
     description = Column(String)
     pattern = Column(String)
     language = Column(String)
@@ -116,6 +115,7 @@ class InspectorTag(db.Model):
     )
     excerpt = Column(String)
     filename = Column(String)
+    severity = Column(String, nullable=False)
     start_column = Column(Integer)
     start_line = Column(Integer)
     end_column = Column(Integer)

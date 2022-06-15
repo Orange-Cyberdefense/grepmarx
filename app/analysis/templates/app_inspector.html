@@ -5,10 +5,6 @@
 {% block stylesheets %}
 <link rel="stylesheet" href="/static/assets/plugins/enlighterjs/css/enlighterjs.min.css" />
 <link rel="stylesheet" href="/static/assets/css/grepmarx-workbench.css" />
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.css" /> -->
-
 
 <style>
   .button {
@@ -35,7 +31,7 @@
             additional details. A disabled icon indicates a 'not found' status. Click a Rule name on the right to view
             where a specific feature was found in code. The <b>full set</b> of identified features can be found under
             the Summary menu.
-            To see all <i>occurences</i> of each feature, choose a different report format and use the -d option.
+            To see all <i>occurences</i> of each feature, choose a different report format.
           </div>
         </div>
       </div>
@@ -547,162 +543,105 @@
 
   <div class="modal fade" id="file_listing_modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg " role="document">
-        <!-- Placeholder for insp details -->
+        <!-- Placeholder for tags view details -->
     </div>
 </div>
 
-  {% endblock content %}
+{% endblock content %}
 
-  {% block javascripts %}
+{% block javascripts %}
 
-  <script type="text/javascript">
+<script type="text/javascript">
 
-    // var model = JSON.parse("{{ appinspector.match }}")
-    //   var excerpt = [
-    //       {% for elt in appinspector.match %}
-    //             "{{ elt.tag }}",
-    //        {% endfor %}
-    // ];
+function ajaxInspExcerpt(id) {
+reqInspDetails = new XMLHttpRequest();
+reqInspDetails.onreadystatechange = function () {
+if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
+var e = document.getElementById('excerpt_base');
+e.innerHTML = reqInspDetails.responseText;
 
-    function show_file_listing(match_id) {
-        console.log(match_id)
-        ajaxInspDetails(match_id)
+document.getElementById('excerpt_base').style.visibility = 'visible';
+}
+};
+reqInspDetails.open('GET', '/analysis/inspector_excerpt/'+ id);
+reqInspDetails.send();
+}
+
+function ajaxInspDetails(match_id) {
+reqInspDetails = new XMLHttpRequest();
+reqInspDetails.onreadystatechange = function () {
+
+if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
+var e = document.getElementById('file_listing_modal');
+e.innerHTML = reqInspDetails.responseText;
+document.getElementById('file_listing_modal').style.visibility = 'visible';
+}
+};
+reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
+reqInspDetails.send();
+}
+
+
+document.querySelectorAll('a.feature_icon').forEach(elem => {
+
+let targetRegexValue = elem.getAttribute('data-target')
+
+    if (!targetRegexValue) {
+      console.log('Error: No target regular expression. This probably indicates a bug.');
+      return;
     }
 
-    // for (let match of excerpt) {
-    //     console.log(Object.values(match))
-    // }
+    const targetRegex = new RegExp(targetRegexValue, 'i');
+    var title = [
+    {% for elt in appinspector.match %}
+    "{{ elt.tags }}",
+    {% endfor %}
+    ];
+    let matched = false
+    title.forEach(elem => {
+      if (targetRegex.exec(elem)) {
+        matched = true;
+      }
+    })
 
-    // $('#file_listing_modal ul').empty();
-    // $('editor-container').addClass('d-none');
-
-    // const removePrefix = (fn) => {
-    //     if (!fn.startsWith($this.mt.sourcePath)) {
-    //         return fn;
-    //     }
-    //     return fn.slice($this.mt.sourcePath.length);
-    // };
-
-    //   for (let match of matched_list) {
-    //       let excerpt = (match.tag || '') || match.sample;
-    //       if (match.ruleId === ruleId || match.ruleName === ruleId) {
-    //           let $li = $('<li>');
-    //           let $a = $('<a>');
-    //           let $l = match.startLocationLine - 3;
-    //           let $e = match.endLocationLine;
-    //           if ($l <= 0) $l = 1; //fix #183
-    //           $a.addClass('content-link')
-    //               .attr('href', '#')
-    //               .data('excerpt', excerpt)
-    //               .data('startLocationLine', $l)
-    //               .data('endLocationLine', $e)
-    //               .text(removePrefix(match.fileName));
-    //           $li.append($a);
-    //           $('#file_listing_modal ul').append($li);
-
-    //           $('#match-line-number').text('Line number: ' + match.startLocationLine.toString());
-    //       }
-    //   }
-    //   $('#file_listing_modal').on('shown.bs.modal', function (e) {
-    //       $('a.content-link').first().trigger('click');
-    //   });
-
-    //   $('#file_listing_modal').modal();
-    // }
-
-
-    function insp(id) { 
-
-      console.log(id);
+    if (!matched) {
+      elem.style.color = 'grey';
     }
-    function ajaxInspDetails(match_id) {
-      reqInspDetails = new XMLHttpRequest();
-      reqInspDetails.onreadystatechange = function () {
-  
-        if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
-          var e = document.getElementById('file_listing_modal');
-          e.innerHTML = reqInspDetails.responseText;
-          //alert(reqInspDetails.responseText);
-          document.getElementById('file_listing_modal').style.visibility = 'visible';
-        }
-      };
-      reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
-      reqInspDetails.send();
-      // alert('2');
+});
+
+
+$('a.feature_icon').on('click', function(e) {
+  const targetRegexValue = $(e.target).closest('a').data('target');
+
+    if (!targetRegexValue) {
+    console.log('Error: No target regular expression. This probably indicates a bug.');
+    return;
     }
 
+  const targetRegex = new RegExp(targetRegexValue, 'i');
 
-    document.querySelectorAll('a.feature_icon').forEach(elem => {
-
-      let targetRegexValue = elem.getAttribute('data-target')
-
-      if (!targetRegexValue) {
-        console.log('Error: No target regular expression. This probably indicates a bug.');
-        return;
-      }
-
-      const targetRegex = new RegExp(targetRegexValue, 'i');
+  let matches = {}
+  {% for elt in appinspector.match %}
+  matches[{{ elt.id }}] = "{{ elt.tags }}";
+  {% endfor %}
 
 
+  const $tbody = $('#features table tbody');
+  $tbody.empty();
 
-      var title = [
-        {% for elt in appinspector.match %}
-              "{{ elt.tags }}",
-      {% endfor %}
-          ];
-      let matched = false
-
-
-      title.forEach(elem => {
-        // console.log("target: " + targetRegexValue + "| title : " + elem)
-        if (targetRegex.exec(elem)) {
-
-          matched = true;
-
-        }
-      })
-
-      if (!matched) {
-        elem.style.color = 'grey';
-      }
-
-    });
-
-
-    $('a.feature_icon').on('click', function(e) {
-      const targetRegexValue = $(e.target).closest('a').data('target');
-
-      if (!targetRegexValue) {
-        console.log('Error: No target regular expression. This probably indicates a bug.');
-        return;
-      }
-
-      const targetRegex = new RegExp(targetRegexValue, 'i');
-
-      let matches = {}
-      {% for elt in appinspector.match %}
-      matches[{{ elt.id }}] = "{{ elt.tags }}";
-      {% endfor %}
-  
-
-      const $tbody = $('#features table tbody');
-      $tbody.empty();
-
-      for (id in Object.keys(matches)) {
-        if (targetRegex.exec(matches[id])) {
-            let $tr = $('<tr>');
-            let $td0 = $('<td>');
-            let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
-            $td0a.attr('href', '#');
-            $td0a.click(show_file_listing(id))
-            $td0a.text(matches[id]);
-            $td0.append($td0a);
-            $tr.append($td0);
-            $tbody.append($tr);
-          }
-      }
-    });
-
-  </script>
-
-  {% endblock javascripts %}
+  for (id in Object.keys(matches)) {
+    if (targetRegex.exec(matches[id])) {
+    let $tr = $('<tr>');
+      let $td0 = $('<td>');
+        let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
+          $td0a.attr('href', '#');
+          $td0a.click(ajaxInspDetails(id))
+          $td0a.text(matches[id]);
+          $td0.append($td0a);
+          $tr.append($td0);
+          $tbody.append($tr);
+    }
+  }
+});
+</script>
+{% endblock javascripts %}

@@ -189,6 +189,7 @@ def load_scan_app_inspector(app_inspector, app_inspector_result):
 
     Args:
         app_inspector_result (str): Application Inspector JSON output.
+        app_inspector(oonject): Application Inspector object filter by ID.
     """
     match  = list()
 
@@ -197,16 +198,18 @@ def load_scan_app_inspector(app_inspector, app_inspector_result):
             data = app_inspector_result['metaData']
             if "detailedMatchList" in data :
                 detailed = data['detailedMatchList']
-                for all_detailed in detailed :
-                    title = all_detailed['ruleName']
+                #we go through the dictionary again and again
+                for data_in_detailed in detailed :
+                    title = data_in_detailed['ruleName']
                     e_match = [m for m in match if m.title == title]
                     if len(e_match) == 0:
-                        n_match = load_match(title, all_detailed)
-                        n_match.tag.append(load_tags(all_detailed))
+                        #creation of a match and an associated tag
+                        n_match = load_match(title, data_in_detailed)
+                        n_match.tag.append(load_tags(data_in_detailed))
                         match.append(n_match)
                     else :
                         e_matchs = e_match[0]
-                        e_matchs.tag.append(load_tags(all_detailed))
+                        e_matchs.tag.append(load_tags(data_in_detailed))
                         app_inspector.match = match
 
 
@@ -225,8 +228,6 @@ def  load_match(title, detailed):
     if detailed != "" :
         if "ruleDescription" in detailed :
             match.description = detailed['ruleDescription']
-        if "severity" in detailed :
-            match.severity = detailed['severity']
         if "pattern" in detailed :
             match.pattern = detailed['pattern']
         if "fileName" in detailed :
@@ -238,27 +239,25 @@ def  load_match(title, detailed):
 
 
 
-def load_tags(all_detailed):
+def load_tags(data_in_detailed):
     """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
 
     Args:
-        app_inspector_result (dict): 'data' elements with its properties
+        data_in_detailed (dict): 'data' elements with its properties
 
     Returns:
         Occurence: fully populated occurence
     """
     tags = InspectorTag(
-        start_line = all_detailed['startLocationLine'],
-        start_column = all_detailed['startLocationColumn'],
-        end_column = all_detailed['endLocationColumn'],
-        end_line = all_detailed['endLocationLine'],
-        excerpt = all_detailed['excerpt'],
-        filename = all_detailed['fileName']
+        start_line = data_in_detailed['startLocationLine'],
+        start_column = data_in_detailed['startLocationColumn'],
+        end_column = data_in_detailed['endLocationColumn'],
+        end_line = data_in_detailed['endLocationLine'],
+        excerpt = data_in_detailed['excerpt'],
+        filename = data_in_detailed['fileName']
     )
-    # if app_inspector_result != "":
-    #     data = app_inspector_result['metaData']
-    #     for all_unique in data['uniqueTags']:
-    #         tags.unique_tag = all_unique
+    if "severity" in data_in_detailed :
+            tags.severity = data_in_detailed['severity']
     return tags
         
 

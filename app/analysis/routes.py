@@ -54,6 +54,8 @@ def analysis_workbench(analysis_id):
         segment="",
     )
 
+
+
 @blueprint.route("/analysis/project_inspector/<appinspector_id>")
 @login_required
 def analysis_app_inspector(appinspector_id):
@@ -62,17 +64,20 @@ def analysis_app_inspector(appinspector_id):
         "app_inspector.html",
         appinspector = appinspector )
 
-# @blueprint.route("/analysis/inspector_occurence/<inspector_id>")
-# @login_required
-# def inspector_view(inspector_id):
-#     inspectortag = InspectorTag.query.filter_by(id=inspector_id).first_or_404()
-#     return render_template(
-#         "app_inspector_excerpt.html",
-#         inspectortag = inspectortag
-#         )
+
+#Inspector_excerpt allows to retrieve the content of an inspectorTag object thanks to an id 
+@blueprint.route("/analysis/inspector_excerpt/<inspector_id>")
+@login_required
+def inspector_view(inspector_id):
+    inspectortag = InspectorTag.query.filter_by(id=inspector_id).first_or_404()
+    print(inspectortag.excerpt)
+    return render_template(
+        "app_inspector_excerpt.html",
+        inspectortag = inspectortag
+        )
 
 
-
+#Inspector_excerpt allows you to retrieve all the filenames associated with a match 
 @blueprint.route("/analysis/inspector_occurence/<matched_id>")
 @login_required
 def inspector_tag_view(matched_id):
