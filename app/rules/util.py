@@ -75,7 +75,11 @@ def sync_db(rules_folder):
                         # Add metadata: OWASP and CWE ids
                         if "metadata" in c_rule:
                             if "cwe" in c_rule["metadata"]:
-                                rule.cwe = c_rule["metadata"]["cwe"]
+                                # There may be multiple CWE ids
+                                if type(c_rule["metadata"]["cwe"]) is list:
+                                    rule.cwe = c_rule["metadata"]["cwe"][0]
+                                else:
+                                    rule.cwe = c_rule["metadata"]["cwe"]
                             if "owasp" in c_rule["metadata"]:
                                 # There may be multiple OWASP ids (eg. 2017, 2021...)
                                 if type(c_rule["metadata"]["owasp"]) is list:
