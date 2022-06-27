@@ -10,6 +10,7 @@ from tkinter.tix import Select
 from xmlrpc.client import Boolean
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, HiddenField, SelectField
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.fields.simple import TextAreaField
 from wtforms.validators import Email, DataRequired, Regexp
 
@@ -32,3 +33,15 @@ class RepositoryForm(FlaskForm):
     uri = StringField("Repository URI", id="repo-uri", validators=[DataRequired()])
     git_username = StringField("Git username", id="repo-username")
     git_token = StringField("Git Acess Token", id="repo-token")
+
+class LdapForm(FlaskForm):
+    id = HiddenField("Ldap id")
+    display_name = StringField("Display name", id="ldap-name", validators=[DataRequired(), Regexp('^[a-zA-Z0-9-_]+$', message="Repository name must contain only letters, numbers, dash (-) or underscore (_) characters")])
+    password = PasswordField("Password", id="ldap-password")
+    url = StringField("LDAP URL", id="ldap-url", validators=[DataRequired()])
+    admin_bind_dn = StringField("Admin Bind DN", id="ldap-dn", validators=[DataRequired()])
+    search_base = StringField("Search base", id="ldap-search", validators=[DataRequired()])
+    searchfilter = StringField("Search Filter", id="ldap-filter", validators=[DataRequired()])
+    tls_cert = FileField("Tls certificate", id="ldap-cert", validators=[FileRequired(), FileAllowed(['cert'], 'certr only')])
+
+

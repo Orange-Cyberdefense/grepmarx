@@ -13,7 +13,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from flask_login import current_user, login_required
 from app import db
 from app.administration import blueprint
-from app.administration.forms import RepositoryForm, UserForm
+from app.administration.forms import RepositoryForm, UserForm, LdapForm
 from app.rules.models import RuleRepository
 from app.administration.util import validate_user_form
 from app.base import util
@@ -170,6 +170,20 @@ def users_remove(user_id):
         return redirect(url_for("administration_blueprint.users_list"))
     else:
         return render_template("403.html"),403
+
+
+@blueprint.route("/ldap")
+@login_required
+def ldap_engine():
+    admin = util.is_admin(current_user.role)
+    if admin:
+        return render_template(
+            "ldap_engine.html",
+            form=LdapForm()
+        )
+    else :
+        return render_template("403.html"),403
+        
 
 
 @blueprint.route("/repos")
