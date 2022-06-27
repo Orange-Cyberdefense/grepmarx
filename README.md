@@ -125,7 +125,7 @@ This quick guide assumes you want to deploy the application on an Ubuntu 20.04.2
 
 > Install required packages
 ```bash
-$ sudo apt install python3-pip python3-venv postgresql redis-server
+$ sudo apt install python3-pip python3-venv postgresql redis-server celery gunicorn  
 ```
 
 ### Configure the database
@@ -160,12 +160,15 @@ $ sudo useradd -m grepmarx
 > Get the code, create a virtualenv and install the requirements
 ```bash
 $ sudo su grepmarx
+$ /bin/bash
 $ cd
 $ git clone https://.../grepmarx.git
 $ cd grepmarx
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ (venv) $ pip install -r requirements-pgsql.txt
+$ (venv) $ pip install -r requirements.txt
+$ (venv) $ pip install -r requirements-mysql.txt
 $ (venv) $ deactivate
 ```
 
@@ -192,9 +195,16 @@ command=gunicorn -w 3 -t 300 --bind unix:grepmarx.sock run:app
 > Go back to your main user shell
 ```bash
 $ exit
+$ exit
 ```
+> configure permission on grepmarx user 
+
+```
+$ chmod -R 746
+``` 
 
 ### Configure systemd
+
 
 > Create a service unit file for the application such as
 ```bash
@@ -217,7 +227,7 @@ WantedBy=multi-user.target
 > Start and enable the service
 
 ```bash
-$ sudo systemctl start grepmarx.service
+$ sudo systemctl enable grepmarx.service
 $ sudo systemctl start grepmarx.service
 ```
 
