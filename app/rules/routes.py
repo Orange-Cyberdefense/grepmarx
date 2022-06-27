@@ -2,20 +2,25 @@
 """
 Copyright (c) 2021 - present Orange Cyberdefense
 """
+from crypt import methods
 import json
 import os
+import re
+import requests
 
+from flask import Flask
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from app import db
 from app.constants import OWASP_TOP10_LINKS, RULES_PATH
 from app.rules import blueprint
-from app.rules.forms import RulePackForm
+from app.rules.forms import RulePackForm, RulesAddForm
+from app.base import util
 from app.rules.models import Rule, RulePack, SupportedLanguage
 from app.rules.util import (
     comma_separated_to_list,
     validate_languages_rules,
-    sync_db,
+    sync_db,add_new_rule
 )
 
 
@@ -86,6 +91,7 @@ def rule_packs_form_page(edit, rule_pack_form):
         user=current_user,
         segment="rule_packs",
     )
+
 
 
 @blueprint.route("/rules/packs/create", methods=["GET", "POST"])
@@ -211,3 +217,20 @@ def rules_packs_remove(rule_pack_id):
     current_app.logger.info("Rule pack deleted (rule_pack.id=%i)", rule_pack.id)
     flash("Rule pack has been successfully removed", "success")
     return redirect(url_for("rules_blueprint.rule_packs_list"))
+
+@blueprint.route("/rules/add", methods=["GET", "POST"])
+@login_required
+def rules_add():
+    admin = util.is_admin(current_user.role)
+    if admin:
+        rule_form = RulesAddForm()
+        if rule_form.validate_on_submit():
+            name=rule_form.name.data,
+            code=rule_form.rule.data,
+            print(name)
+
+            add_new_rule(name, code )
+        return render_template("add_rules.html", 
+        form=rule_form)
+    else :
+        return render_template("403.html"), 403

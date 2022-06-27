@@ -16,6 +16,7 @@ STATUS_ANALYZING = 2
 STATUS_ERROR = 3
 STATUS_PENDING = 4
 PROJECTS_SRC_PATH = "data/projects/"
+APP_INSP_PATH="app/third-party/app-inspector/ApplicationInspector_linux_1.4.24/ApplicationInspector.CLI"
 EXTRACT_FOLDER_NAME = "extract"
 SCC_PATH = "app/third-party/scc/scc"
 
@@ -25,6 +26,7 @@ SEVERITY_HIGH = "high"
 SEVERITY_MEDIUM = "medium"
 SEVERITY_LOW = "low"
 RULES_PATH = "data/rules/"
+RULES_ADMIN_PATH ="data/rules/AdminRules/"
 RULE_EXTENSIONS = {".yaml", ".yml"}
 OWASP_TOP10_LINKS = {
     "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",

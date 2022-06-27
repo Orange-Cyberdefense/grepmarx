@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from importlib.metadata import files
 import json
 import os
 import time
@@ -12,11 +13,12 @@ from flask_login import current_user, login_required
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
-from app.analysis.models import Analysis, Occurence, Vulnerability
+from app.analysis.models import Analysis, AppInspector, InspectorTag, Occurence, Vulnerability, Match
 from app.analysis.util import (
     async_scan,
     import_rules,
     vulnerabilities_sorted_by_severity,
+
 )
 from app.constants import (
     EXTRACT_FOLDER_NAME,
@@ -52,6 +54,42 @@ def analysis_workbench(analysis_id):
         segment="",
     )
 
+
+
+@blueprint.route("/analysis/project_inspector/<appinspector_id>")
+@login_required
+def analysis_app_inspector(appinspector_id):
+    appinspector = AppInspector.query.filter_by(id=appinspector_id).first_or_404()
+    return render_template(
+        "app_inspector.html",
+        appinspector = appinspector )
+
+
+#Inspector_excerpt allows to retrieve the content of an inspectorTag object thanks to an id 
+@blueprint.route("/analysis/inspector_excerpt/<inspector_id>")
+@login_required
+def inspector_view(inspector_id):
+    inspectortag = InspectorTag.query.filter_by(id=inspector_id).first_or_404()
+    print(inspectortag.excerpt)
+    return render_template(
+        "app_inspector_excerpt.html",
+        inspectortag = inspectortag
+        )
+
+
+#Inspector_excerpt allows you to retrieve all the filenames associated with a match 
+@blueprint.route("/analysis/inspector_occurence/<matched_id>")
+@login_required
+def inspector_tag_view(matched_id):
+    match = Match.query.filter_by(id=matched_id).first_or_404()
+    inspectortag = InspectorTag.query.filter_by(match_id=matched_id).all()
+
+
+    return render_template(
+        "app_inspector_ocuurence_view.html",
+        inspectortag = inspectortag,
+        match=match
+        )
 
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required
@@ -153,6 +191,8 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
+        #create a new app inspector
+        project.appinspector = AppInspector()
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
@@ -161,7 +201,7 @@ def scans_launch():
         project.status = STATUS_PENDING
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
-        async_scan.delay(project.analysis.id)
+        async_scan.delay(project.analysis.id, project.appinspector.id)
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
         time.sleep(1.0)
         # Done

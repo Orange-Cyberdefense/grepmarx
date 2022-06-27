@@ -9,7 +9,7 @@ from datetime import datetime
 
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user, LoginManager
 from app import db, login_manager
 from app.base import blueprint
 from app.base.forms import LoginForm

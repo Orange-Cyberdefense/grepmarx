@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if edit %}Edit rule pack{% else %}Create rule pack{% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Add Rules</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Rules</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        Press Sumbit button after adding your rules
+                    </p>
+                </div>
+            </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+
+        {% include 'messages.html' %}
+
+
+        <form class="form-horizontal" method="post" action="/rules/add">
+            {{ form.hidden_tag() }}
+                <div class="card card-default">
+                        <div class="card-header">
+                            <h3 class="card-title">Rule information</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label for="rule-name" class="col-sm-1 col-form-label">Rule name :</label>
+                                <div class="col-sm-8">
+                                    {{ form.name(placeholder=" Only letters, numbers, dash - or underscore _ characters", class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="rule-code" class="col-sm-2 col-form-label">Rule code :</label>
+                                <div class="col-sm-12">
+                                    {{ form.rule(placeholder="Add the rule code here", class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <a href="/rules" class="btn btn-secondary">Cancel</a>
+                            <input name="add-rule" type="submit" value="Add this Rule" class="btn btn-default float-right">
+                        </div>
+                    </div>
+        
+                </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

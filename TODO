@@ -10,11 +10,7 @@
 
 - IMPROVEMENT: LDAP authentication
 
-- IMPROVEMENT: Application Inspector integration
-
 - IMPROVEMENT: Dependencycheck integration
-
-- IMPROVEMENT: Admin page to configure semgrep options
 
 - IMPROVEMENT: Admin page to configure supported languages and extensions (for extensions remove last comma ',' if not needed!)
 
@@ -26,8 +22,6 @@
 
 - IMPROVEMENT: Use PostgreSQL instead of SQLite in docker-compose configuration
 
-- IMPROVEMENT: Auto refresh rules after a repo was added/pulled
-
 - IMPROVEMENT: Auto select rule packs on the new scan launch screen depending on detected languages
 
 - IMPROVEMENT: Better risk level calculation
@@ -36,4 +30,4 @@
 
 - IMPROVEMENT: Replace pygments usage by simple extension-based recognition
 
-- IMPROVEMENT: Use monaco-editor for code view
+- IMPROVEMENT: Fix the different security flaws ( Potential : Zip sleeping, SSTI, Path Traversal, RFI )

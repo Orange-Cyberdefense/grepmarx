@@ -11,11 +11,18 @@ DROP TABLE IF EXISTS LanguageLinesCount;
 DROP TABLE IF EXISTS ProjectLinesCount;
 DROP TABLE IF EXISTS Rule;
 DROP TABLE IF EXISTS RulePack;
+DROP TABLE IF EXISTS RuleAppInsp;
 DROP TABLE IF EXISTS RuleToRulePackAssociation;
 DROP TABLE IF EXISTS SupportedLanguage;
 DROP TABLE IF EXISTS RuleToSupportedLanguageAssociation;
 DROP TABLE IF EXISTS RulePackToSupportedLanguageAssociation;
 DROP TABLE IF EXISTS AnalysisToRulePackAssociation;
 DROP TABLE IF EXISTS RuleRepository;
+DROP TABLE IF EXISTS ProjectAppInsp;
+DROP TABLE IF EXISTS AppInspector;
+DROP TABLE IF EXISTS Match;
+DROP TABLE IF EXISTS Tag;
+DROP TABLE IF EXISTS InspectorTag;
+
 --DROP TABLE IF EXISTS alembic_version;
 

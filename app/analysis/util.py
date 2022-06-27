@@ -3,6 +3,8 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from difflib import Match
+from fileinput import filename
 import json
 import multiprocessing
 import os
@@ -12,9 +14,13 @@ from glob import glob
 from shutil import copyfile, rmtree
 
 from flask import current_app
+from git import Tag
 from app import celery, db
 from app.analysis.models import (
     Analysis,
+    AppInspector,
+    Match,
+    InspectorTag,
     Occurence,
     Position,
     Vulnerability,
@@ -31,7 +37,7 @@ from app.constants import (
     STATUS_FINISHED,
 )
 from app.rules.util import generate_severity
-from app.projects.util import calculate_risk_level, count_occurences
+from app.projects.util import application_inspector_scan,calculate_risk_level, count_occurences
 from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
@@ -43,7 +49,7 @@ from semgrep.output import OutputHandler, OutputSettings
 
 
 @celery.task(name="grepmarx-scan")
-def async_scan(analysis_id):
+def async_scan(analysis_id, app_inspector_id):
     """Launch a new code scan on the project corresponding to the given analysis ID, asynchronously through celery.
 
     Args:
@@ -51,6 +57,7 @@ def async_scan(analysis_id):
     """
     current_app.logger.debug("Entering async scan for analysis with id=%i", analysis_id)
     analysis = Analysis.query.filter_by(id=analysis_id).first()
+    app_inspector = AppInspector.query.filter_by(id=app_inspector_id).first()
     # Status in now Analysing
     analysis.started_on = datetime.now()
     analysis.project.status = STATUS_ANALYZING
@@ -60,7 +67,9 @@ def async_scan(analysis_id):
     # Invoke semgrep
     try:
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
+        app_inspector_result = application_inspector_scan(app_inspector.project.id)
         save_result(analysis, semgrep_result)
+        load_scan_app_inspector(app_inspector,app_inspector_result)
         load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
@@ -172,7 +181,87 @@ def load_scan_results(analysis, semgrep_output):
                         # Add an occurence to an existing vulnerability
                         e_vuln = e_vulns[0]
                         e_vuln.occurences.append(load_occurence(c_result))
-    analysis.vulnerabilities = vulns
+                        analysis.vulnerabilities = vulns
+
+
+def load_scan_app_inspector(app_inspector, app_inspector_result):
+    """Populate an AppInspector object with the result of a Application Inspector scan.
+
+    Args:
+        app_inspector_result (str): Application Inspector JSON output.
+        app_inspector(oonject): Application Inspector object filter by ID.
+    """
+    match  = list()
+
+    if app_inspector_result != "" :
+        if "metaData" in app_inspector_result :
+            data = app_inspector_result['metaData']
+            if "detailedMatchList" in data :
+                detailed = data['detailedMatchList']
+                #we go through the dictionary again and again
+                for data_in_detailed in detailed :
+                    title = data_in_detailed['ruleName']
+                    e_match = [m for m in match if m.title == title]
+                    if len(e_match) == 0:
+                        #creation of a match and an associated tag
+                        n_match = load_match(title, data_in_detailed)
+                        n_match.tag.append(load_tags(data_in_detailed))
+                        match.append(n_match)
+                    else :
+                        e_matchs = e_match[0]
+                        e_matchs.tag.append(load_tags(data_in_detailed))
+                        app_inspector.match = match
+
+
+def  load_match(title, detailed):
+    """Create a match object from a 'result' element of app_inspector JSON results.
+
+    Args:
+        title (string): finding's title
+        app_inspector_result (dict): 'result' elements with its properties
+
+    Returns:
+        Match: fully populated match
+    """
+
+    match  = Match(title=title)
+    if detailed != "" :
+        if "ruleDescription" in detailed :
+            match.description = detailed['ruleDescription']
+        if "pattern" in detailed :
+            match.pattern = detailed['pattern']
+        if "fileName" in detailed :
+            match.filename = detailed['fileName']
+        if "tags" in detailed and len(detailed['tags']):
+            match.tags = detailed['tags'][0]
+            
+    return match
+
+
+
+def load_tags(data_in_detailed):
+    """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
+
+    Args:
+        data_in_detailed (dict): 'data' elements with its properties
+
+    Returns:
+        Occurence: fully populated occurence
+    """
+    tags = InspectorTag(
+        start_line = data_in_detailed['startLocationLine'],
+        start_column = data_in_detailed['startLocationColumn'],
+        end_column = data_in_detailed['endLocationColumn'],
+        end_line = data_in_detailed['endLocationLine'],
+        excerpt = data_in_detailed['excerpt'],
+        filename = data_in_detailed['fileName']
+    )
+    if "severity" in data_in_detailed :
+            tags.severity = data_in_detailed['severity']
+    return tags
+        
+
+        
 
 
 def load_vulnerability(title, semgrep_result):

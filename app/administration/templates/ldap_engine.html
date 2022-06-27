@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %} LDAP information{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/enlighterjs/css/enlighterjs.min.css" />
+<link rel="stylesheet" href="/static/assets/css/grepmarx-workbench.css" />
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+<!-- Content Header (Page header) -->
+
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-4">
+        <div class="col-sm-8">
+          <h2>LDAP</h2>
+          <div>
+            It is an Internet Protocol for looking up contact information about users, information about certificates,
+            network pointers, etc.,
+            from a server where the data is stored in a directory style structure.
+            Its most popular use is to provide a "single sign on" where a user can access multiple applications by
+            logging in once as the password would
+            be shared across services.
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'messages.html' %}
+    <div class="card card-default">
+      <div class="container-fluid ">
+        <div class="card-body">
+          <div class="card card-default">
+            <div class="card-header">
+              <h3 class="card-title">LDAP Configuration</h3>
+              </div>
+            <div class="card-body">
+              <div class="form-group row">
+                <label for="ldap-name" class="col-sm-2 col-form-label">Display Name</label>
+                <div class="col-sm-10">
+                  {{ form.display_name(placeholder="Name of your LDAP configuration", class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-password" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                  {{ form.password(placeholder="Password to access", class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-url" class="col-sm-2 col-form-label">LDAP URL</label>
+                <div class="col-sm-10">
+                  {{ form.url(placeholder="LDAP Url (ex ldap://server:636) - Only SASL", class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-dn" class="col-sm-2 col-form-label">Admin bind Ddn</label>
+                <div class="col-sm-10">
+                  {{ form.admin_bind_dn(placeholder="Example :  cn=user,ou=test,dc=test,dc=com", class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-search" class="col-sm-2 col-form-label">Search base</label>
+                <div class="col-sm-10">
+                  {{ form.search_base( placeholder="Example : ou=test,ou=test2,dc=test,dc=com",class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-filter" class="col-sm-2 col-form-label">Search Filter</label>
+                <div class="col-sm-10">
+                  {{ form.searchfilter( placeholder="Example : (&(o=test)(uid={{username}}))",class="form-control") }}
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="ldap-cert" class="col-sm-2 col-form-label">TLS Certificate</label>
+                <div class="col-sm-10">
+                  {{ form.tls_cert( class="form-control") }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div class="btn-group float-sm-right">
+              <a class="btn btn-default" href="#"
+                  onclick="alert('add')"
+                  data-toggle="modal" data-target="#confirm-removal">
+                  <span class="fas fa-plus"></span>
+                  Save Ldap configuration
+              </a>
+          </div>
+      </div>
+      </div>
+
+      {% endblock content %}

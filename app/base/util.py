@@ -10,11 +10,15 @@ import os
 from calendar import monthrange
 from datetime import date, datetime, timedelta
 
+from flask import url_for
+
 from app import db
 from app.analysis.models import Analysis
-from app.base import models
+from app.base import models, blueprint
 from app.rules.models import SupportedLanguage
 from sqlalchemy import and_, func
+
+
 
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
@@ -69,9 +73,10 @@ def last_12_months_analysis_count():
 
 
 def init_db():
+
     """Insert a default admin/admin user and supported languages in the database."""
     db.session.add(
-        models.User(username="admin", email="admin@grepmarx", password="admin")
+        models.User(username="admin", email="admin@grepmarx", password="admin", role="1")
     )
     db.session.add(SupportedLanguage(name="Python", extensions=".py"))
     db.session.add(
@@ -102,3 +107,11 @@ def init_db():
     db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
     db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.commit()
+
+
+def is_admin(role):
+    if str(role) == '1':
+        return True
+    else:
+        return False
+
