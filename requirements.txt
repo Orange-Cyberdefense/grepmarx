@@ -16,7 +16,7 @@ sqlalchemy==1.4.31
 supervisor==4.2.4
 pyyaml==6.0
 flask_wtf==1.0.0
-wtforms==3.0.0
+wtforms==2.3.3
 redis==3.5.3
 semgrep==0.80.0
 flaskcode==0.0.8
