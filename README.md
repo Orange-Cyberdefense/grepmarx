@@ -199,7 +199,7 @@ $ exit
 ```
 > configure permission on grepmarx user 
 
-```
+```bash
 $ cd 
 $ chown -R grepmarx:www-data grepmarx
 $ chmod -R u=rwX -g=rX  grepmarx
