@@ -30,14 +30,16 @@
         </div>
       </div>
     </div>
+  </section>
     {% include 'messages.html' %}
+  <section class="content">
     <div class="card card-default">
       <div class="container-fluid ">
         <div class="card-body">
           <div class="card card-default">
             <div class="card-header">
               <h3 class="card-title">LDAP Configuration</h3>
-              </div>
+            </div>
             <div class="card-body">
               <div class="form-group row">
                 <label for="ldap-name" class="col-sm-2 col-form-label">Display Name</label>
@@ -84,16 +86,18 @@
             </div>
           </div>
         </div>
+      </div>
+        <div class="card-footer">
         <div class="col-sm-12">
           <div class="btn-group float-sm-right">
-              <a class="btn btn-default" href="#"
-                  onclick="alert('add')"
-                  data-toggle="modal" data-target="#confirm-removal">
-                  <span class="fas fa-plus"></span>
-                  Save Ldap configuration
-              </a>
+            <a class="btn btn-default" href="#" onclick="alert('add')" data-toggle="modal"
+              data-target="#confirm-removal">
+              <span class="fas fa-plus"></span>
+              Save Ldap configuration
+            </a>
           </div>
+        </div>
       </div>
-      </div>
-
       {% endblock content %}
+    </section>
+</div>
