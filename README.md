@@ -125,7 +125,7 @@ This quick guide assumes you want to deploy the application on an Ubuntu 20.04.2
 
 > Install required packages
 ```bash
-$ sudo apt install python3-pip python3-venv postgresql redis-server celery gunicorn  
+$ sudo apt install python3-pip python3-venv postgresql redis-server celery gunicorn nginx  
 ```
 
 ### Configure the database
@@ -200,7 +200,9 @@ $ exit
 > configure permission on grepmarx user 
 
 ```
-$ chmod -R 746
+$ cd 
+$ chown -R grepmarx:www-data grepmarx
+$ chmod -R u=rwX -g=rX  grepmarx
 ``` 
 
 ### Configure systemd
@@ -233,7 +235,7 @@ $ sudo systemctl start grepmarx.service
 
 ### Configure nginx
 
-> Create a nginx congiguration file for the application such as
+> Create a nginx congiguration file for HTTP the application such as 
 ```bash
 $ cat /etc/nginx/sites-available/grepmarx.conf
 server {
@@ -246,6 +248,37 @@ server {
         proxy_pass http://unix:/home/grepmarx/grepmarx/grepmarx.sock;
     }
 }
+```
+
+> Switch to https  by creatting a self-sign certificate and change nginx configuration
+
+```bash
+$ mkdir /etc/nginx/certificate
+$ cd  /etc/nginx/certificate 
+$ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out cert.cert -keyout cert.key
+```
+
+```bash
+$ cat /etc/nginx/sites-available/grepmarx.conf
+
+server {
+    listen 80;
+    return 301 https://172.18.19.50;
+}
+
+server {
+    listen 443 ssl;
+    ssl_certificate /etc/nginx/certificate/cert.crt;
+    ssl_certificate_key /etc/nginx/certificate/cert.key;
+    server_name grepmarx_dev;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/grepmarx/grepmarx/grepmarx.sock;
+    }
+
+}
+
 ```
 
 > Enable the configuration and restart nginx
