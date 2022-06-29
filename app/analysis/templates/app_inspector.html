@@ -597,6 +597,7 @@ let targetRegexValue = elem.getAttribute('data-target')
     "{{ elt.tags }}",
     {% endfor %}
     ];
+    
     let matched = false
     title.forEach(elem => {
       if (targetRegex.exec(elem)) {
@@ -625,11 +626,13 @@ $('a.feature_icon').on('click', function(e) {
   matches[{{ elt.id }}] = "{{ elt.tags }}";
   {% endfor %}
 
+    console.log(Object.keys(matches))
 
   const $tbody = $('#features table tbody');
   $tbody.empty();
 
-  for (id in Object.keys(matches)) {
+  for (id of Object.keys(matches)) {
+    console.log(id)
     if (targetRegex.exec(matches[id])) {
     let $tr = $('<tr>');
       let $td0 = $('<td>');

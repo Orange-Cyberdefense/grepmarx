@@ -169,6 +169,7 @@ $ source venv/bin/activate
 $ (venv) $ pip install -r requirements-pgsql.txt
 $ (venv) $ pip install -r requirements.txt
 $ (venv) $ pip install -r requirements-mysql.txt
+pip install flask_principal
 $ (venv) $ deactivate
 ```
 

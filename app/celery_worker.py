@@ -4,6 +4,7 @@ from sys import exit
 from decouple import config
 from app.config import config_dict
 
+
 DEBUG = config('DEBUG', default=True, cast=bool)
 get_config_mode = 'Debug' if DEBUG else 'Production'
 try:
