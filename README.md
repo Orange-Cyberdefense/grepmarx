@@ -125,7 +125,7 @@ This quick guide assumes you want to deploy the application on an Ubuntu 20.04.2
 
 > Install required packages
 ```bash
-$ sudo apt install python3-pip python3-venv postgresql redis-server celery gunicorn nginx  
+$ sudo apt install python3-pip python3-venv postgresql redis-server nginx sudo python-tk python3-tk tk-dev libpq-dev
 ```
 
 ### Configure the database
@@ -155,7 +155,9 @@ $ sudo systemctl restart postgresql.service
 > Create a dedicated system user
 ```bash
 $ sudo useradd -m grepmarx
+$ sudo passwd grepmarx
 ```
+
 
 > Get the code, create a virtualenv and install the requirements
 ```bash
@@ -163,6 +165,7 @@ $ sudo su grepmarx
 $ /bin/bash
 $ cd
 $ git clone https://.../grepmarx.git
+$ sudo chown -R grepmarx:www-data grepmarx
 $ cd grepmarx
 $ python3 -m venv venv
 $ source venv/bin/activate
@@ -201,9 +204,9 @@ $ exit
 > configure permission on grepmarx user 
 
 ```bash
-$ cd 
-$ chown -R grepmarx:www-data grepmarx
-$ chmod -R u=rwX -g=rX  grepmarx
+$ sudo chmod -R u=rwX,g=rX,o=X /home/grepmarx/grepmarx
+$ cd/home
+$ sudo chmod u=X  grepmarx
 ``` 
 
 ### Configure systemd
@@ -258,6 +261,7 @@ $ mkdir /etc/nginx/certificate
 $ cd  /etc/nginx/certificate 
 $ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out cert.cert -keyout cert.key
 ```
+ !! DONT COPY/PASTE !!
 
 ```bash
 $ cat /etc/nginx/sites-available/grepmarx.conf
@@ -269,7 +273,7 @@ server {
 
 server {
     listen 443 ssl;
-    ssl_certificate /etc/nginx/certificate/cert.crt;
+    ssl_certificate /etc/nginx/certificate/cert.cert;
     ssl_certificate_key /etc/nginx/certificate/cert.key;
     server_name grepmarx_dev;
 

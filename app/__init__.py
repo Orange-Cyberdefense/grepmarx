@@ -50,7 +50,8 @@ def create_app(config):
     app = Flask(__name__, static_folder="base/static")
     app.config.from_object(config)
     migrate.init_app(app, db)
-    # Configure celery
+    #configure Celery
+    celery.config_from_object(config)
     celery.conf.update(app.config)
     register_extensions(app)
     register_blueprints(app)
