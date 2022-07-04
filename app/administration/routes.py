@@ -18,7 +18,7 @@ from app.rules.models import RuleRepository
 from app.administration.util import validate_user_form
 from app.base import util
 from app.base.models import User
-from flask_principal import Principal, Permission, RoleNeed
+
 
 
 @blueprint.route("/users")
