@@ -3,6 +3,11 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+# Authentification
+
+AUTH_LOCAL =1
+AUTH_LDAP =0
+
 # Analysis constants
 
 IGNORE_EXTENSIONS = {".min.js"}

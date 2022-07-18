@@ -86,24 +86,26 @@
             </a>
           </li>
           <!-- Administration -->
-
-          <li class="nav-header">ADMINISTRATION</li>
-          <li class="nav-item">
-            <a href="/users" class="nav-link {% if 'users' in segment %} active {% endif %}">
-              <i class="fas fa-user"></i>
-              <p>
-                User accounts
-              </p>
-            </a>
+          {%  if current_user.username == "admin" %}
+            <li class="nav-header">ADMINISTRATION</li>
+            <li class="nav-item" >
+              <a href="/users" class="nav-link {% if 'users' in segment %} active {% endif %}">
+                <i class="fas fa-user" ></i>
+                <p>
+                  User accounts
+                </p>
+              </a>
+            </li>
+            <li class=" nav-item">
+              <a href="/ldap" class="nav-link ">
+                <i class="fas fa-network-wired"></i>
+                <p>
+                  LDAP 
+                </p>
+              </a>
           </li>
-          <li class=" nav-item">
-            <a href="/ldap" class="nav-link ">
-              <i class="fas fa-network-wired"></i>
-              <p>
-                LDAP 
-              </p>
-            </a>
-        </li>
+          {% endif %}
+
         </ul>
       </nav>
     </div>

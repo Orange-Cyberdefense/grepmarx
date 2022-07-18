@@ -4,6 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from email.policy import default
 from flask_login import UserMixin
 from sqlalchemy import LargeBinary, Column, Integer, String, Boolean, DateTime
 
@@ -16,10 +17,11 @@ class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True)
+    username = Column(String)
     first_name = Column(String)
     last_name = Column(String)
     role = Column(String, default='0')
+    local = Column(Boolean,default=True)
     email = Column(String, unique=True)
     password = Column(LargeBinary)
     dark_theme = Column(Boolean, default=False)

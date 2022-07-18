@@ -3,8 +3,10 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from multiprocessing import connection
 from app.base.models import User
-
+from ldap3 import Server, Connection, ALL
+from ldap3.core.exceptions import LDAPException, LDAPBindError
 
 def validate_user_form(
     form, skip_username=False, skip_email=False, skip_password=False
@@ -28,3 +30,19 @@ def validate_user_form(
         if form.password.data != form.password_confirm.data:
             err = "Passwords does not match"
     return err
+
+def bind(name, password, url, dnd,base,filter):
+    ldap_server =url
+
+    server = Server(ldap_server,get_info=ALL)
+  
+
+    c = Connection(server, user=dnd, password=password,auto_bind=True)
+    print(c)
+    if not c.bind():
+        tested =0
+    else:
+        tested = 1
+ 
+    return tested
+

@@ -3,19 +3,23 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from distutils.command.build_scripts import first_line_re
+from re import U
+import re
+from pyrsistent import b, v
 
 
 from requests import session
+from app.administration.models import LdapConf
 from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 import json
 
-from flask import current_app, flash, redirect, render_template, request, url_for
+from flask import current_app, flash, redirect, render_template, request, url_for, jsonify
 from flask_login import current_user, login_required
 from app import db
 from app.administration import blueprint
 from app.administration.forms import RepositoryForm, UserForm, LdapForm
 from app.rules.models import RuleRepository
-from app.administration.util import validate_user_form
+from app.administration.util import validate_user_form, bind
 from app.base import util
 from app.base.models import User
 
@@ -181,6 +185,41 @@ def ldap_engine():
             "ldap_engine.html",
             form=LdapForm()
         )
+    else :
+        return render_template("403.html"),403
+
+@blueprint.route("/ldap/testing",methods=["GET", "POST"])
+@login_required
+def ldap_testing():
+    admin = util.is_admin(current_user.role)
+    if admin:
+        name = request.args.get('name')
+        password = request.args.get('passwd')
+        url = request.args.get('url')
+        Dnd = request.args.get('Dnd')
+        base = request.args.get('base')
+        filter = request.args.get('filter')
+        # tls = request.args.get('tls')
+
+        result_test = bind(name,password,url,Dnd,base,filter)
+        print(result_test)
+        if result_test == 1 :
+            #export into bdd
+            # Create the rule pack
+            ldap_conf = LdapConf(
+                title=name,
+                url=url,
+                bind_Dnd=Dnd,
+                search_base=base,
+                search_filter=filter,
+            )
+            db.session.add(ldap_conf)
+            db.session.commit()
+            current_app.logger.info(
+                "New ldap configuration added (ldap_conf.id=%i)", ldap_conf.id
+            )
+            flash("Ldap configuration has been successfully created", "success")
+        return jsonify(result_test)
     else :
         return render_template("403.html"),403
         
