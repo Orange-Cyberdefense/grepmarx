@@ -50,7 +50,7 @@
         <div class="form-group row">
           <label for="ldap-password" class="col-sm-2 col-form-label">Password</label>
           <div class="col-sm-10">
-            {{ form.password(placeholder="Password to access", class="form-control",id="form_passwd") }}
+            {{ form.password(placeholder="admin password", class="form-control",id="form_passwd") }}
           </div>
         </div>
         <div class="form-group row">
@@ -60,21 +60,21 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="ldap-dn" class="col-sm-2 col-form-label">Admin bind Ddn</label>
+          <label for="ldap-dn" class="col-sm-2 col-form-label">Admin Bind </label>
           <div class="col-sm-10">
-            {{ form.admin_bind_dn(placeholder="Example :  cn=user,ou=test,dc=test,dc=com", class="form-control",id="form_Dnd") }}
+            {{ form.admin_bind_dn(placeholder="Example :  cn=admin,ou=test,dc=test,dc=com (to log your admin account)", class="form-control",id="form_Dnd") }}
           </div>
         </div>
         <div class="form-group row">
           <label for="ldap-search" class="col-sm-2 col-form-label">Search base</label>
           <div class="col-sm-10">
-            {{ form.search_base( placeholder="Example : ou=test,ou=test2,dc=test,dc=com",class="form-control",id="form_base") }}
+            {{ form.search_base( placeholder="Example : ou=test,ou=test2,dc=test,dc=com (path to search your users ldap account)",class="form-control",id="form_base") }}
           </div>
         </div>
         <div class="form-group row">
           <label for="ldap-filter" class="col-sm-2 col-form-label">Search Filter</label>
           <div class="col-sm-10">
-            {{ form.searchfilter( placeholder="Example : (&(o=test)(uid={{username}}))",class="form-control",id="form_filter")
+            {{ form.searchfilter( placeholder="Example : (&(o=test)(uid={{username}})) (filter is using to parse the output and only get parameters )",class="form-control",id="form_filter")
             }}
           </div>
         </div>
@@ -88,18 +88,9 @@
       <div class="card-footer">
         <div class="col-sm-12">
           <div class="btn-group float-sm-right">
-            <a class="btn btn-default" href="#" onclick="ajax_into_bdd()" data-toggle="modal"
-              data-target="#confirm-removal">
-              <span class="fas fa-plus"></span>
-              Save Ldap configuration
-            </a>
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="btn-group float-sm-right">
             <button class="btn btn-default" data-toggle="modal" data-target="#confirm-bind">
               <span class="fas fa-globe"></span>
-              Bind Connection Test
+              Save and Bind Connection Test
             </button>
           </div>
         </div>
@@ -157,12 +148,14 @@
     var filter = document.getElementById('form_filter').value;
     // var tls = document.getElementById('form_tls').value;
 
-    // reqInspDetails.onreadystatechange = function () {
-    //   if (this.readyState == 4 && this.status == 200) {
-    //     document.getElementById("form_name").value =
-    //       this.responseText;
-    //   }
-    // };
+    reqInspDetails.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.location = "/ldap"
+      }
+      else{
+        alert('Error configuration, password or server adress is invalid')
+      }
+    };
 
     reqInspDetails.open('GET', '/ldap/testing?name=' + name + '&passwd=' + passwd + '&url=' + url + '&Dnd=' + Dnd +
       '&base=' + base + '&filter=' + filter);
