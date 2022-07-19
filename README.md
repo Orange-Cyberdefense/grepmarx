@@ -296,6 +296,8 @@ $ sudo systemctl restart nginx
 
 Grepmarx is now be accessible through http://\<server\>. 
 
+### Update DB
+
 **Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 What you should do next:

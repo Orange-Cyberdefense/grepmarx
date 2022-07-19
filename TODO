@@ -8,8 +8,6 @@
 
 - IMPROVEMENT: Default order is inconsistent on the project list page
 
-- IMPROVEMENT: LDAP authentication
-
 - IMPROVEMENT: Dependencycheck integration
 
 - IMPROVEMENT: Admin page to configure supported languages and extensions (for extensions remove last comma ',' if not needed!)

@@ -6,19 +6,25 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 
 from datetime import datetime
+from operator import concat
+from threading import local
 
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
 from flask_login import current_user, login_required, login_user, logout_user, LoginManager
 from app import db, login_manager
 from app.base import blueprint
+from app.constants import AUTH_LDAP,AUTH_LOCAL
 from app.base.forms import LoginForm
 from app.base.models import User
+from app.administration.models import LdapConf
 from app.base.util import (init_db, last_12_months_analysis_count,
                                 verify_pass)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
 from is_safe_url import is_safe_url
+from ldap3 import Server, Connection, ALL
+from ldap3.core.exceptions import LDAPException, LDAPBindError
 
 
 @blueprint.route("/")
@@ -36,20 +42,56 @@ def login():
         # read form data
         username = request.form["username"]
         password = request.form["password"]
+        if request.form.get('ldap'):
+            ldap_conf = LdapConf.query.first()
+            ldap_server = ldap_conf.url
+            ldap_search = ldap_conf.search_base
+            user ="cn="+username+","
+            all = concat(user, ldap_search)
+            server = Server(ldap_server, get_info=ALL)
+            c = Connection(server, user=all, password=password, auto_bind=True)
+            if c.bind() == True:
+                
+                user = User.query.filter_by(username=username,local=AUTH_LDAP).first()
+
+                if user :
+                    db.session.commit()
+                    login_user(user)
+                    current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+                    return redirect(url_for("base_blueprint.route_default"))
+                else :
+                    user = User(
+                            username=username,
+                            local = False,
+                        )
+                    db.session.add(user)
+                    db.session.commit()
+                    current_app.logger.info("New user configuration added (user.id=%i)", user.id)
+                    login_user(user)
+                    current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+                    return redirect(url_for("base_blueprint.route_default"))
+            
+            else :
+                current_app.logger.info(
+                "Authentication failure (username was '%s')", username)
+                return render_template(
+                    "login.html", msg="Wrong user or password", form=login_form
+                    )
         # Locate user
-        user = User.query.filter_by(username=username).first()
-        # Check the password
-        if user and verify_pass(password, user.password):
-            user.last_login_on = datetime.now()
-            db.session.commit()
-            login_user(user)
-            current_app.logger.info("Authentication successful (user.id=%i)", user.id)
-            return redirect(url_for("base_blueprint.route_default"))
-        # Something (user or pass) is not ok
-        current_app.logger.info("Authentication failure (username was '%s')", username)
-        return render_template(
-            "login.html", msg="Wrong user or password", form=login_form
-        )
+        else :
+            user = User.query.filter_by(username=username,local=AUTH_LOCAL).first()
+            # Check the password
+            if user and verify_pass(password, user.password):
+                user.last_login_on = datetime.now()
+                db.session.commit()
+                login_user(user)
+                current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+                return redirect(url_for("base_blueprint.route_default"))
+            # Something (user or pass) is not ok
+            current_app.logger.info("Authentication failure (username was '%s')", username)
+            return render_template(
+                "login.html", msg="Wrong user or password", form=login_form
+            )
     if not current_user.is_authenticated:
         return render_template("login.html", form=login_form)
     return redirect(url_for("base_blueprint.index"))

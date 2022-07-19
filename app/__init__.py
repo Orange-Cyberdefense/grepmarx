@@ -18,7 +18,7 @@ from flask_authorize import Authorize
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-migrate = Migrate()
+
 
 # Instantiate Celery
 celery = Celery(__name__)
@@ -49,7 +49,7 @@ def configure_database(app):
 def create_app(config):
     app = Flask(__name__, static_folder="base/static")
     app.config.from_object(config)
-    migrate.init_app(app, db)
+    Migrate(app, db)
     #configure Celery
     celery.config_from_object(config)
     celery.conf.update(app.config)
