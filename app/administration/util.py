@@ -7,6 +7,7 @@ from multiprocessing import connection
 from app.base.models import User
 from ldap3 import Server, Connection, ALL
 from ldap3.core.exceptions import LDAPException, LDAPBindError
+import re
 
 def validate_user_form(
     form, skip_username=False, skip_email=False, skip_password=False
@@ -32,6 +33,9 @@ def validate_user_form(
     return err
 
 def bind(name, password, url, dnd,base,filter):
+
+    
+
     ldap_server =url
 
     server = Server(ldap_server,get_info=ALL)
