@@ -13,6 +13,7 @@ from flask import (current_app, redirect, render_template, request, session,
                    url_for)
 from flask_login import current_user, login_required, login_user, logout_user, LoginManager
 from app import db, login_manager
+from app.administration.util import bind
 from app.base import blueprint
 from app.constants import AUTH_LDAP,AUTH_LOCAL
 from app.base.forms import LoginForm
@@ -50,7 +51,8 @@ def login():
             all = concat(user, ldap_search)
             server = Server(ldap_server, get_info=ALL)
             c = Connection(server, user=all, password=password, auto_bind=True)
-            if c.bind() == True:
+            test = c.bind()
+            if test == True:
                 
                 user = User.query.filter_by(username=username,local=AUTH_LDAP).first()
 
@@ -71,7 +73,7 @@ def login():
                     current_app.logger.info("Authentication successful (user.id=%i)", user.id)
                     return redirect(url_for("base_blueprint.route_default"))
             
-            else :
+            else:
                 current_app.logger.info(
                 "Authentication failure (username was '%s')", username)
                 return render_template(
