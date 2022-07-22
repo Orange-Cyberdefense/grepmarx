@@ -201,7 +201,7 @@ def ldap_testing():
         filter = request.args.get('filter')
         # tls = request.args.get('tls')
 
-        result_test = bind(name,password,url,Dnd,base,filter)
+        result_test = bind(password,url,Dnd)
         print(result_test)
         if result_test == 1 :
             #export into bdd

@@ -32,7 +32,7 @@ def validate_user_form(
             err = "Passwords does not match"
     return err
 
-def bind(password, url, dnd,base,filter):
+def bind(password, url, dnd):
 
     ldap_server =url
 
