@@ -42,14 +42,14 @@ services:
       restart: always
       environment:
         - POSTGRES_USER=grepmarx
-        - POSTGRES_PASSWORD=changeme
+        - POSTGRES_PASSWORD=***REMOVED***
       ports:
         - '5432:5432'
       volumes: 
         - db:/var/lib/postgresql/data
-  volumes:
+
+volumes:
     db:
-      driver: local
 
 networks:
   web_network:

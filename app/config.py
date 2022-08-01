@@ -19,7 +19,7 @@ class Config(object):
     result_backend = config("RESULT_BACKEND", default="redis://localhost:6379/0")
 
     # SqlAlechemy - This will create a file in <app> FOLDER
-    SQLALCHEMY_DATABASE_URI = os.getenv("postgresql://grepmarx:changeme@db:5432/grepmarx","sqlite:///")
+    SQLALCHEMY_DATABASE_URI = os.getenv("postgresql://grepmarx:***REMOVED***@db:5432/grepmarx","sqlite:///")
     # SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
