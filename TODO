@@ -29,3 +29,7 @@
 - IMPROVEMENT: Replace pygments usage by simple extension-based recognition
 
 - IMPROVEMENT: Fix the different security flaws ( Potential : Zip sleeping, SSTI, Path Traversal, RFI )
+
+- Recherches de Languages à mieux trier ( Regex)
+
+- CHANGER L'insertion de de règles

@@ -199,7 +199,7 @@ def ldap_testing():
         Dnd = request.args.get('Dnd')
         base = request.args.get('base')
         filter = request.args.get('filter')
-        # tls = request.args.get('tls')
+        #tls = request.args.get('tls')
 
         result_test = bind(password,url,Dnd)
         print(result_test)
