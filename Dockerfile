@@ -12,6 +12,14 @@ COPY run.py gunicorn-cfg.py requirements.txt .env ./
 COPY nginx nginx
 COPY app app
 
+# CONFIGUTATIONS
+# nginx configuration
+
+COPY $PWD/nginx/grepmarx.conf /etc/nginx/conf.d/default.conf
+COPY $PWD/nginx/ssl/*.key /etc/ssl/private/
+COPY $PWD/nginx/ssl/*.crt /etc/ssl/certs/
+
+
 RUN rm -fr app/db.sqlite3 # just in case
 
 # install python dependencies

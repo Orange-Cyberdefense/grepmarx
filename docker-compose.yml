@@ -30,9 +30,12 @@ services:
     restart: always
     image: "nginx:latest"
     ports:
-      - "5000:5000"
+      - "8080:8080"
+      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - ./nginx/ssl/cert.crt:/etc/ssl/certs/cert.crt
+      - ./nginx/ssl/cert.key:/etc/ssl/private/cert.key
     networks:
       - web_network
     depends_on: 

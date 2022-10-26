@@ -89,14 +89,19 @@ The application can then be easily executed in a docker container. The steps:
 $ git clone https://...grepmarx.git
 $ cd grepmarx
 ```
-
+> Create certificate
+```bash
+$ cd ./nginx/ssl
+$ sudo openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out cert.cert -keyout cert.key
+$ sudo openssl x509 -in cert.crt -addtrust clientAuth -out cert.crt
+```
 > Start the app in Docker
 
 ```bash
 $ sudo docker-compose pull && sudo docker-compose build && sudo docker-compose up -d
 ```
 
-Visit `http://localhost:5000` in your browser. The app should be up & running.
+Visit `https://localhost` in your browser. The app should be up & running.
 
 
 #### [Gunicorn](https://gunicorn.org/)
