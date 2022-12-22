@@ -34,8 +34,9 @@ Extra
 | ------ | ------ | ------ | ------ | ------ |
 | GNU/Linux | 2.8Ghz | 4-6 | 12GB | IE9+, Edge (latest), Firefox (latest), Safari (latest), Chrome (latest), Opera (latest) |
 
-## Build from sources
 
+## Build from sources
+q
 A Redis server is required to queue security scans. Install the `redis` package with your favorite distro package manager, then:
 ```bash
 $ redis-server
@@ -301,6 +302,36 @@ $ sudo systemctl restart nginx
 
 Grepmarx is now be accessible through http://\<server\>. 
 
+# Backup and Restoration Procedure for Grepmarx application
+
+ 
+
+This document describes the process for backing up and restoring the Grepmarx application which is running in a Docker container.
+
+ 
+
+## Backup
+
+ 
+
+1. Stop the Grepmarx Docker container and PostgreSQL database Docker container using the command `docker stop grepmarx` and `docker stop postgresql`.
+2. Create a backup of the PostgreSQL database using the command `pg_dumpall -U postgres > backup.sql`.
+3. Create a backup of the Grepmarx application using the command `tar -cvzf grepmarx-backup.tar.gz *`.
+4. Move the backup files to the desired storage location using the command `mv backup.sql grepmarx-backup.tar.gz <destination_path>`.
+
+ 
+
+## Restoration
+
+ 
+
+1. Move the backup files to the desired location using the command `mv backup.sql grepmarx-backup.tar.gz <destination_path>`.
+2. Create a new Docker container for Grepmarx using the command `docker create --name grepmarx <image_name>`.
+3. Create a new Docker container for PostgreSQL using the command `docker create --name postgresql <image_name>`.
+4. Restore the PostgreSQL database using the command `psql -U postgres < backup.sql`.
+5. Restore the Grepmarx application using the command `tar -xvf grepmarx-backup.tar.gz *`.
+6. Start the Docker containers for Grepmarx and PostgreSQL using the commands `docker start grepmarx` and `docker start postgresql`.
+
 ### Update DB
 
 **Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
@@ -310,6 +341,7 @@ What you should do next:
 - Harden nginx configuration: https://www.cisecurity.org/benchmark/nginx/
 - Harden postgresql configuration: https://www.cisecurity.org/benchmark/postgresql/
 - Harden system configuration: https://www.cisecurity.org/benchmark/ubuntu_linux/
+
 
 ## Credits & Links
 
