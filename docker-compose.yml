@@ -45,7 +45,7 @@ services:
       restart: always
       environment:
         - POSTGRES_USER=grepmarx
-        - POSTGRES_PASSWORD=***REMOVED***
+        - POSTGRES_PASSWORD=changeme
       ports:
         - '5432:5432'
       volumes: 
