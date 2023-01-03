@@ -10,11 +10,11 @@
   .button {
     color: grey;
   }
-.feature_icon{
-  padding-left: 30px;
-  width: 1000ch;
-}
 
+  .feature_icon {
+    padding-left: 30px;
+    width: 1000ch;
+  }
 </style>
 
 {% endblock stylesheets %}
@@ -108,7 +108,8 @@
                       <a href="#" class="feature_icon" title="Web Analytics" data-target="Web.Analytics">
                         <i class="fas fa-flag-checkered fa-lg"></i>
                       </a>
-                      <a href="#" class="feature_icon fa-lg" title="Advertising network" data-target=".AdvertisingNetwork">
+                      <a href="#" class="feature_icon fa-lg" title="Advertising network"
+                        data-target=".AdvertisingNetwork">
                         <i class="fas fa-ad"></i>
                       </a>
                     </div>
@@ -548,8 +549,10 @@
 
   <div class="modal fade" id="file_listing_modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg " role="document">
-        <!-- Placeholder for tags view details -->
+      <!-- Placeholder for tags view details -->
     </div>
+  </div>
+
 </div>
 
 {% endblock content %}
@@ -558,38 +561,38 @@
 
 <script type="text/javascript">
 
-function ajaxInspExcerpt(id) {
-reqInspDetails = new XMLHttpRequest();
-reqInspDetails.onreadystatechange = function () {
-if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
-var e = document.getElementById('excerpt_base');
-e.innerHTML = reqInspDetails.responseText;
+  function ajaxInspExcerpt(id) {
+    reqInspDetails = new XMLHttpRequest();
+    reqInspDetails.onreadystatechange = function () {
+      if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
+        var e = document.getElementById('excerpt_base');
+        e.innerHTML = reqInspDetails.responseText;
 
-document.getElementById('excerpt_base').style.visibility = 'visible';
-}
-};
-reqInspDetails.open('GET', '/analysis/inspector_excerpt/'+ id);
-reqInspDetails.send();
-}
+        document.getElementById('excerpt_base').style.visibility = 'visible';
+      }
+    };
+    reqInspDetails.open('GET', '/analysis/inspector_excerpt/' + id);
+    reqInspDetails.send();
+  }
 
-function ajaxInspDetails(match_id) {
-reqInspDetails = new XMLHttpRequest();
-reqInspDetails.onreadystatechange = function () {
+  function ajaxInspDetails(match_id) {
+    reqInspDetails = new XMLHttpRequest();
+    reqInspDetails.onreadystatechange = function () {
 
-if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
-var e = document.getElementById('file_listing_modal');
-e.innerHTML = reqInspDetails.responseText;
-document.getElementById('file_listing_modal').style.visibility = 'visible';
-}
-};
-reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
-reqInspDetails.send();
-}
+      if (reqInspDetails.readyState === XMLHttpRequest.DONE) {
+        var e = document.getElementById('file_listing_modal');
+        e.innerHTML = reqInspDetails.responseText;
+        document.getElementById('file_listing_modal').style.visibility = 'visible';
+      }
+    };
+    reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
+    reqInspDetails.send();
+  }
 
 
-document.querySelectorAll('a.feature_icon').forEach(elem => {
+  document.querySelectorAll('a.feature_icon').forEach(elem => {
 
-let targetRegexValue = elem.getAttribute('data-target')
+    let targetRegexValue = elem.getAttribute('data-target')
 
     if (!targetRegexValue) {
       console.log('Error: No target regular expression. This probably indicates a bug.');
@@ -598,40 +601,41 @@ let targetRegexValue = elem.getAttribute('data-target')
 
     const targetRegex = new RegExp(targetRegexValue, 'i');
     var title = [
-    {% for elt in appinspector.match %}
+      {% for elt in appinspector.match %}
     "{{ elt.tags }}",
     {% endfor %}
     ];
-    
-    let matched = false
-    title.forEach(elem => {
-      if (targetRegex.exec(elem)) {
-        matched = true;
-      }
-    })
 
-    if (!matched) {
-      elem.style.color = 'grey';
+  let matched = false
+  title.forEach(elem => {
+    if (targetRegex.exec(elem)) {
+      matched = true;
     }
+  })
+
+  if (!matched) {
+    elem.style.color = 'grey';
+  }
 });
 
 
-$('a.feature_icon').on('click', function(e) {
-  const targetRegexValue = $(e.target).closest('a').data('target');
+  $('a.feature_icon').on('click', function (e) {
+    const targetRegexValue = $(e.target).closest('a').data('target');
 
     if (!targetRegexValue) {
-    console.log('Error: No target regular expression. This probably indicates a bug.');
-    return;
+      console.log('Error: No target regular expression. This probably indicates a bug.');
+      return;
     }
 
-  const targetRegex = new RegExp(targetRegexValue, 'i');
+    const targetRegex = new RegExp(targetRegexValue, 'i');
 
-  let matches = {}
-  {% for elt in appinspector.match %}
-  matches[{{ elt.id }}] = "{{ elt.tags }}";
+    let matches = {}
+    {% for elt in appinspector.match %}
+    matches[{{ elt.id }
+  }] = "{{ elt.tags }}";
   {% endfor %}
 
-    console.log(Object.keys(matches))
+  console.log(Object.keys(matches))
 
   const $tbody = $('#features table tbody');
   $tbody.empty();
@@ -639,15 +643,15 @@ $('a.feature_icon').on('click', function(e) {
   for (id of Object.keys(matches)) {
     console.log(id)
     if (targetRegex.exec(matches[id])) {
-    let $tr = $('<tr>');
+      let $tr = $('<tr>');
       let $td0 = $('<td>');
-        let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
-          $td0a.attr('href', '#');
-          $td0a.click(ajaxInspDetails(id))
-          $td0a.text(matches[id]);
-          $td0.append($td0a);
-          $tr.append($td0);
-          $tbody.append($tr);
+      let $td0a = $('<a data-toggle="modal" data-target="#file_listing_modal">');
+      $td0a.attr('href', '#');
+      $td0a.click(ajaxInspDetails(id))
+      $td0a.text(matches[id]);
+      $td0.append($td0a);
+      $tr.append($td0);
+      $tbody.append($tr);
     }
   }
 });
