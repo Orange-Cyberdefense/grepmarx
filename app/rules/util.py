@@ -46,62 +46,69 @@ def sync_db(rules_folder):
     # Parse rules in these files
     for c_filename in rules_filenames:
         with open(c_filename, "r") as yml_stream:
-            try:
-                yml_rules = safe_load(yml_stream)
-                file_path = c_filename.replace(RULES_PATH, "")
-                repository = file_path.split(os.path.sep)[0]
-                category = ".".join(file_path.split(os.path.sep)[1:][:-1])
-                # Extract rules from the file, if any
-                if "rules" in yml_rules:
-                    for c_rule in yml_rules["rules"]:
-                        rule = Rule.query.filter_by(file_path=file_path).first()
-                        # Create a new rule only if the file doesn't corresponds to an existing
-                        # rule, in order to keep ids and not break RulePacks
-                        if rule is None:
-                            rule = Rule(
-                                title=c_rule["id"],
-                                file_path=file_path,
-                                repository=RuleRepository.query.filter_by(
-                                    name=repository
-                                ).first(),
-                                category=category,
-                            )
-                            db.session.add(rule)
-                        # Associate the rule with a known, supported language
-                        if "languages" in c_rule:
-                            for c_language in c_rule["languages"]:
-                                for c_sl in supported_languages:
-                                    if c_sl.name.lower() == c_language.lower():
-                                        rule.languages.append(c_sl)
-                        # Add metadata: OWASP and CWE ids
-                        if "metadata" in c_rule:
-                            if "cwe" in c_rule["metadata"]:
-                                # There may be multiple CWE ids
-                                if type(c_rule["metadata"]["cwe"]) is list:
-                                    rule.cwe = c_rule["metadata"]["cwe"][0]
-                                else:
-                                    rule.cwe = c_rule["metadata"]["cwe"]
-                            if "owasp" in c_rule["metadata"]:
-                                # There may be multiple OWASP ids (eg. 2017, 2021...)
-                                if type(c_rule["metadata"]["owasp"]) is list:
-                                    rule.owasp = c_rule["metadata"]["owasp"][0]
-                                else:
-                                    rule.owasp = c_rule["metadata"]["owasp"]
-                        # Replace rule level/severity by a calculated one
-                        rule.severity = generate_severity(rule.cwe)
-                        current_app.logger.debug(
-                            "Rule imported in DB: %s",
-                            rule.repository.name
-                            + "/"
-                            + rule.category
-                            + "/"
-                            + rule.title,
-                        )
-            except YAMLError as e:
-                db.session.rollback()
-                raise (e)
+            file_path = c_filename.replace(RULES_PATH, "")
+            repository = file_path.split(os.path.sep)[0]
+            # Check if the folder matches an existing repository
+            if RuleRepository.query.filter_by(name=repository).first() is None:
+                current_app.logger.debug(
+                    "Folder does not match a registered rule repository. You should remove the unused `%s' folder.",
+                    repository,
+                )
             else:
-                db.session.commit()
+                try:
+                    yml_rules = safe_load(yml_stream)
+                    category = ".".join(file_path.split(os.path.sep)[1:][:-1])
+                    # Extract rules from the file, if any
+                    if "rules" in yml_rules:
+                        for c_rule in yml_rules["rules"]:
+                            rule = Rule.query.filter_by(file_path=file_path).first()
+                            # Create a new rule only if the file doesn't corresponds to an existing
+                            # rule, in order to keep ids and not break RulePacks
+                            if rule is None:
+                                rule = Rule(
+                                    title=c_rule["id"],
+                                    file_path=file_path,
+                                    repository=RuleRepository.query.filter_by(
+                                        name=repository
+                                    ).first(),
+                                    category=category,
+                                )
+                                db.session.add(rule)
+                            # Associate the rule with a known, supported language
+                            if "languages" in c_rule:
+                                for c_language in c_rule["languages"]:
+                                    for c_sl in supported_languages:
+                                        if c_sl.name.lower() == c_language.lower():
+                                            rule.languages.append(c_sl)
+                            # Add metadata: OWASP and CWE ids
+                            if "metadata" in c_rule:
+                                if "cwe" in c_rule["metadata"]:
+                                    # There may be multiple CWE ids
+                                    if type(c_rule["metadata"]["cwe"]) is list:
+                                        rule.cwe = c_rule["metadata"]["cwe"][0]
+                                    else:
+                                        rule.cwe = c_rule["metadata"]["cwe"]
+                                if "owasp" in c_rule["metadata"]:
+                                    # There may be multiple OWASP ids (eg. 2017, 2021...)
+                                    if type(c_rule["metadata"]["owasp"]) is list:
+                                        rule.owasp = c_rule["metadata"]["owasp"][0]
+                                    else:
+                                        rule.owasp = c_rule["metadata"]["owasp"]
+                            # Replace rule level/severity by a calculated one
+                            rule.severity = generate_severity(rule.cwe)
+                            current_app.logger.debug(
+                                "Rule imported in DB: %s",
+                                rule.repository.name
+                                + "/"
+                                + rule.category
+                                + "/"
+                                + rule.title,
+                            )
+                except YAMLError as e:
+                    db.session.rollback()
+                    raise (e)
+                else:
+                    db.session.commit()
 
 
 def generate_severity(cwe_string):
@@ -185,26 +192,32 @@ def clone_rule_repo(repo, username, token):
     Args:
         repo (RuleRepository): rule repository to clone
     """
-    print("username = " + username + "password =" + token +"repo= "+ repo.uri[0:18] )
+    print("username = " + username + "password =" + token + "repo= " + repo.uri[0:18])
     repo_path = os.path.join(RULES_PATH, repo.name)
-    if username == "" and token == "" or username != "" and token == "" or username == "" and token != "":
+    if (
+        username == ""
+        and token == ""
+        or username != ""
+        and token == ""
+        or username == ""
+        and token != ""
+    ):
         git.Repo.clone_from(repo.uri, repo_path)
 
     elif username != "" and token != "":
 
-        if (repo.uri[0:18] == "https://github.com"):
+        if repo.uri[0:18] == "https://github.com":
             remote = f"https://{username}:{token}@github.com/" + repo.uri[19:]
             git.Repo.clone_from(remote, repo_path)
-            
-        elif (repo.uri[0:18] == "https://git.pentes"):
-            remote = f"https://{username}:{token}@git.pentest.itm.lan/"+ repo.uri[28:]
+
+        elif repo.uri[0:18] == "https://git.pentes":
+            remote = f"https://{username}:{token}@git.pentest.itm.lan/" + repo.uri[28:]
             git.Repo.clone_from(remote, repo_path)
 
-        elif (repo.uri[0:18] == "https://172.18.15."):
-           remote = f"https://{username}:{token}@172.18.15.188/"+ repo.uri[22:]
-           git.Repo.clone_from(remote, repo_path)
-        
-    
+        elif repo.uri[0:18] == "https://172.18.15.":
+            remote = f"https://{username}:{token}@172.18.15.188/" + repo.uri[22:]
+            git.Repo.clone_from(remote, repo_path)
+
     repo.last_update_on = datetime.now()
     db.session.commit()
 
@@ -236,10 +249,10 @@ def remove_rule_repo(repo):
     db.session.delete(repo)
     db.session.commit()
 
+
 def add_new_rule(name, code):
     repo_path = os.path.join(RULES_ADMIN_PATH)
-    print(repo_path+str(name[0])+".yml")
-    new_rule = open(repo_path+str(name[0])+".yml", "w")
+    print(repo_path + str(name[0]) + ".yml")
+    new_rule = open(repo_path + str(name[0]) + ".yml", "w")
     new_rule.write(str(code[0]))
     new_rule.close()
-
