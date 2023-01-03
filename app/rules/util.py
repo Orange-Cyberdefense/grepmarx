@@ -51,7 +51,7 @@ def sync_db(rules_folder):
             # Check if the folder matches an existing repository
             if RuleRepository.query.filter_by(name=repository).first() is None:
                 current_app.logger.debug(
-                    "Folder does not match a registered rule repository. You should remove the unused `%s' folder.",
+                    "Folder does not match a registered rule repository. You should manually remove the unused `%s' folder.",
                     repository,
                 )
             else:
@@ -61,6 +61,10 @@ def sync_db(rules_folder):
                     # Extract rules from the file, if any
                     if "rules" in yml_rules:
                         for c_rule in yml_rules["rules"]:
+                            # Skip deprecated rules
+                            if "metadata" in c_rule and "deprecated" in c_rule["metadata"]:
+                                if c_rule["metadata"]["deprecated"]:
+                                    continue
                             rule = Rule.query.filter_by(file_path=file_path).first()
                             # Create a new rule only if the file doesn't corresponds to an existing
                             # rule, in order to keep ids and not break RulePacks
