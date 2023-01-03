@@ -40,18 +40,36 @@ var DataTable = $.fn.dataTable;
 $.extend( DataTable.ext.buttons, {
 	// A collection of column visibility buttons
 	colvis: function ( dt, conf ) {
-		return {
+		var node = null;
+		var buttonConf = {
 			extend: 'collection',
+			init: function ( dt, n ) {
+				node = n;
+			},
 			text: function ( dt ) {
 				return dt.i18n( 'buttons.colvis', 'Column visibility' );
 			},
 			className: 'buttons-colvis',
+			closeButton: false,
 			buttons: [ {
 				extend: 'columnsToggle',
 				columns: conf.columns,
 				columnText: conf.columnText
 			} ]
 		};
+
+		// Rebuild the collection with the new column structure if columns are reordered
+		dt.on( 'column-reorder.dt'+conf.namespace, function (e, settings, details) {
+			// console.log(node);
+			// console.log('node', dt.button(null, node).node());
+			dt.button(null, dt.button(null, node).node()).collectionRebuild([{
+				extend: 'columnsToggle',
+				columns: conf.columns,
+				columnText: conf.columnText
+			}]);
+		});
+
+		return buttonConf;
 	},
 
 	// Selected columns with individual buttons - toggle column visibility
@@ -117,6 +135,11 @@ $.extend( DataTable.ext.buttons, {
 					}
 				} )
 				.on( 'column-reorder.dt'+conf.namespace, function (e, settings, details) {
+					// Button has been removed from the DOM
+					if ( conf.destroying ) {
+						return;
+					}
+
 					if ( dt.columns( conf.columns ).count() !== 1 ) {
 						return;
 					}
@@ -143,7 +166,13 @@ $.extend( DataTable.ext.buttons, {
 			// `$( column(col).node() ).text()` but the node might not have been
 			// populated when Buttons is constructed.
 			var idx = dt.column( conf.columns ).index();
-			var title = dt.settings()[0].aoColumns[ idx ].sTitle
+			var title = dt.settings()[0].aoColumns[ idx ].sTitle;
+
+			if (! title) {
+				title = dt.column(idx).header().innerHTML;
+			}
+
+			title = title
 				.replace(/\n/g," ")        // remove new lines
 				.replace(/<br\s*\/?>/gi, " ")  // replace line breaks with spaces
 				.replace(/<select(.*?)<\/select>/g, "") // remove select tags, including options text
