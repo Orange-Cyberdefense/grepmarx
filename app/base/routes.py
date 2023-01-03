@@ -7,25 +7,22 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 from datetime import datetime
 from operator import concat
-from threading import local
 
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
-from flask_login import current_user, login_required, login_user, logout_user, LoginManager
+from flask_login import current_user, login_required, login_user, logout_user
 from app import db, login_manager
-from app.administration.util import bind
 from app.base import blueprint
-from app.constants import AUTH_LDAP,AUTH_LOCAL
+from app.constants import AUTH_LDAP,AUTH_LOCAL, PROJECTS_SRC_PATH, RULES_PATH
 from app.base.forms import LoginForm
 from app.base.models import User
 from app.administration.models import LdapConf
-from app.base.util import (init_db, last_12_months_analysis_count,
+from app.base.util import (init_db, last_12_months_analysis_count, remove_dir_content,
                                 verify_pass)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
 from is_safe_url import is_safe_url
 from ldap3 import Server, Connection, ALL
-from ldap3.core.exceptions import LDAPException, LDAPBindError
 
 
 @blueprint.route("/")
@@ -33,6 +30,9 @@ def route_default():
     # Init DB if first launch (eg. no user yet registered)
     if db.session.query(User).count() == 0:
         init_db()
+        # Also remove any project and rule repo in data/
+        remove_dir_content(PROJECTS_SRC_PATH)
+        remove_dir_content(RULES_PATH)
     return redirect(url_for("base_blueprint.login"))
 
 
