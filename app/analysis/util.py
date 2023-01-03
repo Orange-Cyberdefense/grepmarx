@@ -42,6 +42,7 @@ from semgrep import semgrep_main, util
 from semgrep.constants import OutputFormat
 
 from semgrep.output import OutputHandler, OutputSettings
+from semgrep.error import SemgrepError
 
 ##
 ## Analysis utils
@@ -112,36 +113,38 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         #json_stats=False,
         output_per_finding_max_lines_limit=None,
     )
-    output_handler = OutputHandler(output_settings)
-    (
-        filtered_matches_by_rule,
-        semgrep_errors,
-        all_targets,
-        renamed_targets,
-        ignore_log,
-        filtered_rules,
-        profiler,
-        profiling_data,
-        parsing_data,
-        explanations,
-        shown_severities,
-        lockfile_scan_info,
-    ) = semgrep_main.main(
-        output_handler=output_handler,
-        target=files_to_scan,
-        jobs=cpu_count,
-        pattern=None,
-        lang=None,
-        configs=[project_rules_path],
-        timeout=0,
-        timeout_threshold=3,
-        exclude=ignore,
-    )
-    output_handler.rule_matches = [
-        m for ms in filtered_matches_by_rule.values() for m in ms
-    ]
-    return output_handler._build_output()
-
+    try:
+        output_handler = OutputHandler(output_settings)
+        (
+            filtered_matches_by_rule,
+            semgrep_errors,
+            all_targets,
+            renamed_targets,
+            ignore_log,
+            filtered_rules,
+            profiler,
+            profiling_data,
+            parsing_data,
+            explanations,
+            shown_severities,
+            lockfile_scan_info,
+        ) = semgrep_main.main(
+            output_handler=output_handler,
+            target=files_to_scan,
+            jobs=cpu_count,
+            pattern=None,
+            lang=None,
+            configs=[project_rules_path],
+            timeout=0,
+            timeout_threshold=3,
+            exclude=ignore,
+        )
+        output_handler.rule_matches = [
+            m for ms in filtered_matches_by_rule.values() for m in ms
+        ]
+        return output_handler._build_output()
+    except SemgrepError as e:
+        raise Exception("SemgrepError", output_handler.semgrep_structured_errors[0].long_msg) 
 
 def save_result(analysis, semgrep_result):
     """Save Semgrep JSON results as a file in the project's directory.
