@@ -631,8 +631,7 @@
 
     let matches = {}
     {% for elt in appinspector.match %}
-    matches[{{ elt.id }
-  }] = "{{ elt.tags }}";
+    matches[{{ elt.id }}] = "{{ elt.tags }}";
   {% endfor %}
 
   console.log(Object.keys(matches))
