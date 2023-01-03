@@ -5,8 +5,8 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 # Authentification
 
-AUTH_LOCAL =1
-AUTH_LDAP =0
+AUTH_LOCAL = True
+AUTH_LDAP = False
 
 # Analysis constants
 
