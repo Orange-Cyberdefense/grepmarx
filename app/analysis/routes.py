@@ -62,6 +62,7 @@ def analysis_app_inspector(appinspector_id):
     appinspector = AppInspector.query.filter_by(id=appinspector_id).first_or_404()
     return render_template(
         "app_inspector.html",
+        user=current_user,
         appinspector = appinspector )
 
 
