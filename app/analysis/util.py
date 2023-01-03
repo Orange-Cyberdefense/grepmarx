@@ -79,7 +79,7 @@ def async_scan(analysis_id, app_inspector_id):
             "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
         )
         # Uncomment for debugging purposes
-        # raise 
+        # raise e
     # Done
     analysis.finished_on = datetime.now()
     # Update project properties
@@ -101,7 +101,7 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         [str]: Semgrep JSON output
     """
     cpu_count = multiprocessing.cpu_count()
-    util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
+    #util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
     output_settings = OutputSettings(
         output_format=OutputFormat.JSON,
         output_destination=None,
@@ -109,17 +109,23 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         verbose_errors=False,
         strict=False,
         timeout_threshold=3,
-        json_stats=False,
+        #json_stats=False,
         output_per_finding_max_lines_limit=None,
     )
     output_handler = OutputHandler(output_settings)
     (
         filtered_matches_by_rule,
-        _all_targets,
-        _filtered_rules,
-        _profiler,
-        _profiling_data,
-        _shown_severities,
+        semgrep_errors,
+        all_targets,
+        renamed_targets,
+        ignore_log,
+        filtered_rules,
+        profiler,
+        profiling_data,
+        parsing_data,
+        explanations,
+        shown_severities,
+        lockfile_scan_info,
     ) = semgrep_main.main(
         output_handler=output_handler,
         target=files_to_scan,
