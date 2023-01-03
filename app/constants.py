@@ -103,5 +103,10 @@ LANGUAGES_DEVICONS = {
     "OCaml": "devicon-ocaml-plain",
     "Ruby": "devicon-ruby-plain",
     "Kotlin": "devicon-kotlin-plain",
+    "Bash": "devicon-bash-plain",
+    "Rust": "devicon-rust-plain",
+    "Scala": "devicon-scala-plain",
+    "Solidity": "devicon-solidity-plain",
+    "Terraform": "devicon-terraform-plain",
     "Generic": "devicon-devicon-plain"
 }

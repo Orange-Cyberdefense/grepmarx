@@ -106,6 +106,11 @@ def init_db():
         SupportedLanguage(name="Ruby", extensions=".rb,.rhtml,.rxml,.rjs,.erb")
     )
     db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
+    db.session.add(SupportedLanguage(name="Bash", extensions=".sh,.bash"))
+    db.session.add(SupportedLanguage(name="Rust", extensions=".rs,.rlib"))
+    db.session.add(SupportedLanguage(name="Scala", extensions=".scala,.sc"))
+    db.session.add(SupportedLanguage(name="Solidity", extensions=".sol"))
+    db.session.add(SupportedLanguage(name="Terraform", extensions=".tf"))
     db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.commit()
 

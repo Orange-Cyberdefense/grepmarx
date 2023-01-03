@@ -8,7 +8,7 @@ Grepmarx is a web application providing a single platform to quickly understand,
 
 Code scanning capabilities
 - Security code analysis (SAST - Static Analysis Security Testing)
-- Multiple languages support: C/C++, C#, Go, HTML, Java, Kotlin, JavaScript, TypeScript, OCaml, PHP, Python, Ruby
+- Multiple languages support: C/C++, C#, Go, HTML, Java, Kotlin, JavaScript, TypeScript, OCaml, PHP, Python, Ruby, Bash, Rust, Scala, Solidity, Terraform
 - Multiple frameworks support: Spring, Django, Flask, jQuery, Express, Angular...
 
 Analysis rules
