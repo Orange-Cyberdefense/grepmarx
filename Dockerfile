@@ -16,8 +16,8 @@ COPY app app
 # nginx configuration
 
 COPY $PWD/nginx/grepmarx.conf /etc/nginx/conf.d/default.conf
-COPY $PWD/nginx/ssl/*.key /etc/ssl/private/
-COPY $PWD/nginx/ssl/*.crt /etc/ssl/certs/
+# COPY $PWD/nginx/ssl/*.key /etc/ssl/private/
+# COPY $PWD/nginx/ssl/*.crt /etc/ssl/certs/
 
 
 RUN rm -fr app/db.sqlite3 # just in case
@@ -26,5 +26,5 @@ RUN rm -fr app/db.sqlite3 # just in case
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 5000
+EXPOSE 80
 CMD /usr/bin/supervisord

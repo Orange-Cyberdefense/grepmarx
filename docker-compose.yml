@@ -12,13 +12,11 @@ services:
   grepmarx:
     restart: always
     environment:
-      - DEBUG=True
+      - DEBUG=False
       - SECRET_KEY=***REMOVED***
       - CELERY_BROKER_URL=redis://redis:6379/0
       - RESULT_BACKEND=redis://redis:6379/0
     build: .
-    ports:
-      - "5005:5005"
     networks:
       - web_network
     links:
@@ -30,12 +28,11 @@ services:
     restart: always
     image: "nginx:latest"
     ports:
-      - "8080:8080"
-      - "443:443"
+      - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - ./nginx/ssl/cert.crt:/etc/ssl/certs/cert.crt
-      - ./nginx/ssl/cert.key:/etc/ssl/private/cert.key
+      # - ./nginx/ssl/cert.crt:/etc/ssl/certs/cert.crt
+      # - ./nginx/ssl/cert.key:/etc/ssl/private/cert.key
     networks:
       - web_network
     depends_on: 
@@ -45,11 +42,11 @@ services:
       restart: always
       environment:
         - POSTGRES_USER=grepmarx
-        - POSTGRES_PASSWORD=changeme
-      ports:
-        - '5432:5432'
+        - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
       volumes: 
         - db:/var/lib/postgresql/data
+      networks:
+        - web_network
 
 volumes:
     db:
