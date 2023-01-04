@@ -32,6 +32,7 @@ from app.constants import (
     RULES_PATH,
     SEVERITY_HIGH,
     SEVERITY_MEDIUM,
+    STATUS_ABORTED,
     STATUS_ANALYZING,
     STATUS_ERROR,
     STATUS_FINISHED,
@@ -90,6 +91,12 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis.project.risk_level = calculate_risk_level(analysis.project)
     db.session.commit()
 
+def stop_analysis(analysis):
+    task_id = analysis.task_id
+    celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
+    analysis.project.status = STATUS_ABORTED
+    analysis.task_id = ""
+    db.session.commit()
 
 def semgrep_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:

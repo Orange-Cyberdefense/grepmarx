@@ -65,7 +65,7 @@ $ # Create the databse
 $ flask db upgrade
 
 $ # Start the celery worker process
-$ celery -A app.celery_worker.celery worker --pool=solo --loglevel=info --detach
+$ celery -A app.celery_worker.celery worker --pool=prefork --loglevel=info --detach
 
 $ # Start the application (development mode)
 $ # --host=0.0.0.0 - expose the app on all network interfaces (default 127.0.0.1)

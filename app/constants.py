@@ -20,6 +20,7 @@ STATUS_FINISHED = 1
 STATUS_ANALYZING = 2
 STATUS_ERROR = 3
 STATUS_PENDING = 4
+STATUS_ABORTED = 5
 PROJECTS_SRC_PATH = "data/projects/"
 APP_INSP_PATH="app/third-party/app-inspector/ApplicationInspector_linux_1.4.24/ApplicationInspector.CLI"
 EXTRACT_FOLDER_NAME = "extract"

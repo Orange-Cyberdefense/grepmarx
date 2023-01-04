@@ -92,7 +92,7 @@
                                     {{ c_project.id }}
                                 </td>
                                 <td>
-                                    {% if c_project.status == 0 or c_project.status == 3 %}
+                                    {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
                                     <a href="/analysis/scans/new/{{ c_project.id }}">
                                         {% elif c_project.status == 1 %}
                                         <a href="/analysis/workbench/{{ c_project.analysis.id }}">
@@ -169,29 +169,36 @@
                                         title="{{ c_project.error_message }}">Error</span>
                                     {% elif c_project.status == 4 %}
                                     <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
+                                    {% elif c_project.status == 5 %}
+                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">Aborted</span>
                                     {% endif %}
                                 </td>
                                 <td class="project-actions">
                                     <div class="btn-group btn-group-sm">
-                                        {% if c_project.status == 0 or c_project.status == 3 %}
+                                        {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
                                         <a class="btn btn-default btn-sm" href="/analysis/scans/new/{{ c_project.id }}">
-                                            {% elif c_project.status == 1 %}
-                                            <a class="btn btn-default btn-sm"
-                                            href="/analysis/project_inspector/{{ c_project.analysis.id }}">
-                                                <i class="fas fa-glasses"></i>
-                                            <a class="btn btn-default btn-sm"
-                                                href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                                {% elif c_project.status == 2 or c_project.status == 4 %}
-                                                <a class="btn btn-default btn-sm" href="#">
-                                                    {% endif %}
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a class="btn btn-default btn-sm" href="#"
-                                                    onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
-                                                    data-toggle="modal" data-target="#confirm-removal">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
+                                        {% elif c_project.status == 1 %}
+                                        <a class="btn btn-default btn-sm"
+                                        href="/analysis/project_inspector/{{ c_project.analysis.id }}">
+                                            <i class="fas fa-glasses"></i>
+                                        <a class="btn btn-default btn-sm"
+                                            href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                        {% elif c_project.status == 2 or c_project.status == 4 %}
+                                        <a class="btn btn-default btn-sm" href="#">
+                                            {% endif %}
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a class="btn btn-default btn-sm" href="#"
+                                            onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
+                                            data-toggle="modal" data-target="#confirm-removal">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </div>
+                                    {% if c_project.status == 2 %}
+                                    <a class="text-danger" href="/analysis/scans/stop/{{ c_project.analysis.id }}">
+                                        <i class="fas fa-ban"></i>
+                                    </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

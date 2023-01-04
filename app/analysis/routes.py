@@ -17,6 +17,7 @@ from app.analysis.models import Analysis, AppInspector, InspectorTag, Occurence,
 from app.analysis.util import (
     async_scan,
     import_rules,
+    stop_analysis,
     vulnerabilities_sorted_by_severity,
 
 )
@@ -203,6 +204,7 @@ def scans_launch():
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id, project.appinspector.id)
+        #async_scan.apply_async(args=(project.analysis.id, project.appinspector.id))
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
         time.sleep(1.0)
         # Done
@@ -216,3 +218,11 @@ def scans_launch():
         )
         flash(str(scan_form.errors), "error")
         return scans_new(project_id=project.id, scan_form=scan_form)
+
+@blueprint.route("/analysis/scans/stop/<analysis_id>")
+@login_required
+def scans_stop(analysis_id):
+    analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    stop_analysis(analysis)
+    flash("Analysis has successfully been stopped.", "success")
+    return redirect(url_for("projects_blueprint.projects_list"))

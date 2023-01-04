@@ -34,7 +34,7 @@
                 "-l",
                 "info",
                 "-P",
-                "solo",
+                "prefork",
             ]
         }
     
