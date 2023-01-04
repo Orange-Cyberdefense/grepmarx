@@ -11,16 +11,10 @@ from calendar import monthrange
 from datetime import date, datetime, timedelta
 import shutil
 
-from flask import url_for
-
 from app import db
 from app.analysis.models import Analysis
-from app.base import models, blueprint
-from app.rules.models import SupportedLanguage
+from app.base import models
 from sqlalchemy import and_, func
-
-
-
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_pass(password):
@@ -61,7 +55,7 @@ def month_analysis_count(date_in_month):
 
 
 def last_12_months_analysis_count():
-    """Get analysis count for the last 6 months."""
+    """Get analysis count for the last 12 months."""
     ret = dict()
     now = datetime.now()
     month, count = month_analysis_count(now)
@@ -74,52 +68,21 @@ def last_12_months_analysis_count():
 
 
 def init_db():
-
-    """Insert a default admin/admin user and supported languages in the database."""
+    """Insert a default admin/admin user in the database."""
     db.session.add(
-        models.User(username="admin", email="admin@grepmarx", password="admin", role="1")
-    )
-    db.session.add(SupportedLanguage(name="Python", extensions=".py"))
-    db.session.add(
-        SupportedLanguage(
-            name="C", extensions=".cpp,.c++,.cxx,.hpp,.hh,.h++,.hxx,.c,.cc,.h"
+        models.User(
+            username="admin", email="admin@grepmarx", password="admin", role="1"
         )
     )
-    db.session.add(SupportedLanguage(name="JavaScript", extensions=".js,.htm,.html"))
-    db.session.add(SupportedLanguage(name="TypeScript", extensions=".ts,.html"))
-    db.session.add(SupportedLanguage(name="JSON", extensions=".json"))
-    db.session.add(
-        SupportedLanguage(
-            name="PHP",
-            extensions=".php,.php3,.php4,.php5,.php5.6,.phtm,.phtml,.tpl,.ctp,.twig",
-        )
-    )
-    db.session.add(
-        SupportedLanguage(
-            name="Java",
-            extensions=".javasln,.project,.java,.jsp,.jspf,.tag,.tld,.hbs,.properties",
-        )
-    )
-    db.session.add(SupportedLanguage(name="Go", extensions=".go"))
-    db.session.add(SupportedLanguage(name="OCaml", extensions=".ml,.mli"))
-    db.session.add(
-        SupportedLanguage(name="Ruby", extensions=".rb,.rhtml,.rxml,.rjs,.erb")
-    )
-    db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
-    db.session.add(SupportedLanguage(name="Bash", extensions=".sh,.bash"))
-    db.session.add(SupportedLanguage(name="Rust", extensions=".rs,.rlib"))
-    db.session.add(SupportedLanguage(name="Scala", extensions=".scala,.sc"))
-    db.session.add(SupportedLanguage(name="Solidity", extensions=".sol"))
-    db.session.add(SupportedLanguage(name="Terraform", extensions=".tf"))
-    db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.commit()
 
 
 def is_admin(role):
-    if str(role) == '1':
+    if str(role) == "1":
         return True
     else:
         return False
+
 
 def remove_dir_content(directory):
     # https://stackoverflow.com/questions/185936/how-to-delete-the-contents-of-a-folder
@@ -131,4 +94,4 @@ def remove_dir_content(directory):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
+            print("Failed to delete %s. Reason: %s" % (file_path, e))
