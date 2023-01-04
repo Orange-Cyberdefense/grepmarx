@@ -47,14 +47,22 @@ def configure_database(app):
         
 
 def create_app(config):
+
+    # Init app and config
     app = Flask(__name__, static_folder="base/static")
     app.config.from_object(config)
-    Migrate(app, db)
-    #configure Celery
+    
+    # Configure Celery
     celery.config_from_object(config)
     celery.conf.update(app.config)
+
+    # Register modules
     register_extensions(app)
     register_blueprints(app)
+
+    # Configure DB
     configure_database(app)
+    Migrate(app, db)
+
     return app
 

@@ -61,6 +61,9 @@ $ export FLASK_APP=run.py
 $ # Set up the DEBUG environment
 $ # export FLASK_ENV=development
 
+$ # Create the databse
+$ flask db upgrade
+
 $ # Start the celery worker process
 $ celery -A app.celery_worker.celery worker --pool=solo --loglevel=info --detach
 
