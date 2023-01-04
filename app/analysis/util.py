@@ -49,8 +49,8 @@ from semgrep.error import SemgrepError
 ##
 
 
-@celery.task(name="grepmarx-scan")
-def async_scan(analysis_id, app_inspector_id):
+@celery.task(name="grepmarx-scan", bind = True)
+def async_scan(self, analysis_id, app_inspector_id):
     """Launch a new code scan on the project corresponding to the given analysis ID, asynchronously through celery.
 
     Args:
@@ -62,6 +62,7 @@ def async_scan(analysis_id, app_inspector_id):
     # Status in now Analysing
     analysis.started_on = datetime.now()
     analysis.project.status = STATUS_ANALYZING
+    analysis.task_id = self.request.id
     db.session.commit()
     # Prepare semgrep options
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
@@ -83,6 +84,7 @@ def async_scan(analysis_id, app_inspector_id):
         # raise e
     # Done
     analysis.finished_on = datetime.now()
+    analysis.task_id = ""
     # Update project properties
     analysis.project.occurences_count = count_occurences(analysis.project)
     analysis.project.risk_level = calculate_risk_level(analysis.project)

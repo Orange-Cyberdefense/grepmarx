@@ -24,6 +24,7 @@ class Analysis(db.Model):
     )
     ignore_paths = Column(String)
     ignore_filenames = Column(String)
+    task_id = Column(String)
 
 
 class Vulnerability(db.Model):
