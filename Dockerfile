@@ -23,7 +23,7 @@ COPY $PWD/nginx/grepmarx.conf /etc/nginx/conf.d/default.conf
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 80
+EXPOSE 5000
 
 # Handle database creation / migration
 CMD flask db upgrade
