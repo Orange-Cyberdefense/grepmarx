@@ -1,5 +1,17 @@
 version: '3.8'
+
 services:
+
+  db:
+      image: postgres:14.1-alpine
+      restart: always
+      environment:
+        - POSTGRES_USER=grepmarx
+        - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
+      volumes: 
+        - db-data:/var/lib/postgresql/data
+      networks:
+        - web_network
 
   redis:
     image: redis:latest
@@ -13,44 +25,35 @@ services:
     restart: always
     environment:
       - DEBUG=False
-      - SECRET_KEY=***REMOVED***
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=!!!CHANGE_ME!!!
+      - CELERY_BROKER_URL = redis://redis:6379/0
+      - RESULT_BACKEND = redis://redis:6379/0
+      - DB_ENGINE=postgresql
+      - DB_NAME=grepmarx
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=grepmarx
+      - DB_PASS=!!!CHANGE_ME!!!
+    volumes: 
+        - gpx-data:/opt/grepmarx/data
     build: .
     networks:
       - web_network
     links:
       - redis
+      - db
     depends_on:
       - redis
+      - db
 
   nginx:
     restart: always
     image: "nginx:latest"
     ports:
       - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-      # - ./nginx/ssl/cert.crt:/etc/ssl/certs/cert.crt
-      # - ./nginx/ssl/cert.key:/etc/ssl/private/cert.key
-    networks:
-      - web_network
     depends_on: 
       - grepmarx
-  db:
-      image: postgres:14.1-alpine
-      restart: always
-      environment:
-        - POSTGRES_USER=grepmarx
-        - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
-      volumes: 
-        - db:/var/lib/postgresql/data
-      networks:
-        - web_network
 
 volumes:
-    db:
-
-networks:
-  web_network:
-    driver: bridge
+    db-data:
+    gpx-data:
