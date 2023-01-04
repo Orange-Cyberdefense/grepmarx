@@ -175,28 +175,32 @@
                                 </td>
                                 <td class="project-actions">
                                     <div class="btn-group btn-group-sm">
-                                        {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
+                                        {% if c_project.status != 2 and c_project.status != 4 %}
                                         <a class="btn btn-default btn-sm" href="/analysis/scans/new/{{ c_project.id }}">
-                                        {% elif c_project.status == 1 %}
+                                            <i title="New Scan" class="fas fa-play"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if c_project.status == 1 %}
                                         <a class="btn btn-default btn-sm"
                                         href="/analysis/project_inspector/{{ c_project.analysis.id }}">
-                                            <i class="fas fa-glasses"></i>
+                                            <i title="Features" class="fas fa-list"></i>
+                                        </a>
                                         <a class="btn btn-default btn-sm"
                                             href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                        {% elif c_project.status == 2 or c_project.status == 4 %}
-                                        <a class="btn btn-default btn-sm" href="#">
-                                            {% endif %}
-                                            <i class="fas fa-eye"></i>
+                                            <i title="Workbench" class="fas fa-laptop-code"></i>
                                         </a>
-                                        <a class="btn btn-default btn-sm" href="#"
+                                        {% endif %}
+                                        {% if c_project.status != 2 %}
+                                        <a class="btn btn-default btn-sm text-danger" href="#"
                                             onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
                                             data-toggle="modal" data-target="#confirm-removal">
-                                            <i class="fas fa-trash"></i>
+                                            <i title="Delete" class="fas fa-trash"></i>
                                         </a>
+                                        {% endif %}
                                     </div>
                                     {% if c_project.status == 2 %}
-                                    <a class="text-danger" href="/analysis/scans/stop/{{ c_project.analysis.id }}">
-                                        <i class="fas fa-ban"></i>
+                                    <a class="btn btn-default btn-sm text-danger" href="/analysis/scans/stop/{{ c_project.analysis.id }}">
+                                        <i class="fas fa-ban"></i> Abort scan
                                     </a>
                                     {% endif %}
                                 </td>
