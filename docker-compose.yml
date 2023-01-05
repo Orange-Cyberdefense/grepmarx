@@ -37,6 +37,8 @@ services:
       - ./nginx:/etc/nginx/conf.d
     ports:
       - "5000:5000"
+    #ports:
+    #  - "443:443"
     links:
       - grepmarx
     depends_on: 

@@ -19,6 +19,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements-pgsql.txt
 
 EXPOSE 5000
+#EXPOSE 443
 
 RUN chmod u+x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
