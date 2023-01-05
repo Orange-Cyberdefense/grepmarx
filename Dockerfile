@@ -15,12 +15,6 @@ COPY app app
 COPY migrations migrations
 RUN mkdir data
 
-# Nginx configuration
-COPY $PWD/nginx/grepmarx.conf /etc/nginx/conf.d/default.conf
-# COPY $PWD/nginx/ssl/*.key /etc/ssl/private/
-# COPY $PWD/nginx/ssl/*.crt /etc/ssl/certs/
-
-# Install python dependencies
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements-pgsql.txt
 
