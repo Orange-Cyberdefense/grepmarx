@@ -120,4 +120,3 @@ class SupportedLanguage(db.Model):
         secondary=rule_to_supported_language_association_table,
         back_populates="languages",
     )
-    coin = Column(String)
