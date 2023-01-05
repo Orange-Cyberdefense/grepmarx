@@ -3,13 +3,16 @@ version: '3.8'
 services:
 
   db:
-      image: postgres:14.1-alpine
-      restart: always
-      environment:
-        - POSTGRES_USER=grepmarx
-        - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
-      volumes: 
-        - db-data:/var/lib/postgresql/data
+    image: postgres:14.1-alpine
+    restart: always
+    restart: always
+    environment:
+      - POSTGRES_USER=grepmarx
+      - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db-data:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
@@ -17,19 +20,8 @@ services:
 
   grepmarx:
     restart: always
-    environment:
-      - DEBUG=False
-      - SECRET_KEY=!!!CHANGE_ME!!!
-      - CELERY_BROKER_URL = redis://redis:6379/0
-      - RESULT_BACKEND = redis://redis:6379/0
-      - DB_ENGINE=postgresql
-      - DB_NAME=grepmarx
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USERNAME=grepmarx
-      - DB_PASS=!!!CHANGE_ME!!!
     volumes: 
-        - gpx-data:/opt/grepmarx/data
+      - gpx-data:/opt/grepmarx/data
     build: .
     links:
       - redis
