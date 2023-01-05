@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y supervisor && rm -rf /var/lib/apt/lists
 RUN mkdir -p /var/log/supervisor
 COPY supervisord-docker.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY run.py gunicorn-cfg.py requirements.txt .env ./
+COPY entrypoint.sh run.py gunicorn-cfg.py requirements.txt .env ./
 COPY nginx nginx
 COPY app app
-COPY data data
 COPY migrations migrations
+RUN mkdir data
 
 # Nginx configuration
 COPY $PWD/nginx/grepmarx.conf /etc/nginx/conf.d/default.conf
@@ -25,6 +25,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
-# Handle database creation / migration
-CMD flask db upgrade
-CMD /usr/bin/supervisord
+RUN chmod u+x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]

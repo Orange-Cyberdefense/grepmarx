@@ -65,3 +65,6 @@ def upgrade():
             {"id": 17, "name": "Generic", "extensions": ""},
         ],
     )
+
+def downgrade():
+        print("")
