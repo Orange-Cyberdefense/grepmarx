@@ -112,11 +112,6 @@ $ # Set up the DEBUG environment
 $ # export FLASK_ENV=development
 ```
 
-> Create the databse
-```bash
-$ flask db upgrade
-```
-
 > Start the celery worker process
 ```bash
 $ celery -A app.celery_worker.celery worker --pool=prefork --loglevel=info --detach

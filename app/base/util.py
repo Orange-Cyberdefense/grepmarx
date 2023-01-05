@@ -13,6 +13,7 @@ import shutil
 
 from app import db
 from app.analysis.models import Analysis
+from app.rules.models import SupportedLanguage
 from app.base import models
 from sqlalchemy import and_, func
 
@@ -74,6 +75,39 @@ def init_db():
             username="admin", email="admin@grepmarx", password="admin", role="1"
         )
     )
+    db.session.add(SupportedLanguage(name="Python", extensions=".py"))
+    db.session.add(
+        SupportedLanguage(
+            name="C", extensions=".cpp,.c++,.cxx,.hpp,.hh,.h++,.hxx,.c,.cc,.h"
+        )
+    )
+    db.session.add(SupportedLanguage(name="JavaScript", extensions=".js,.htm,.html"))
+    db.session.add(SupportedLanguage(name="TypeScript", extensions=".ts,.html"))
+    db.session.add(SupportedLanguage(name="JSON", extensions=".json"))
+    db.session.add(
+        SupportedLanguage(
+            name="PHP",
+            extensions=".php,.php3,.php4,.php5,.php5.6,.phtm,.phtml,.tpl,.ctp,.twig",
+        )
+    )
+    db.session.add(
+        SupportedLanguage(
+            name="Java",
+            extensions=".javasln,.project,.java,.jsp,.jspf,.tag,.tld,.hbs,.properties",
+        )
+    )
+    db.session.add(SupportedLanguage(name="Go", extensions=".go"))
+    db.session.add(SupportedLanguage(name="OCaml", extensions=".ml,.mli"))
+    db.session.add(
+        SupportedLanguage(name="Ruby", extensions=".rb,.rhtml,.rxml,.rjs,.erb")
+    )
+    db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
+    db.session.add(SupportedLanguage(name="Bash", extensions=".sh,.bash"))
+    db.session.add(SupportedLanguage(name="Rust", extensions=".rs,.rlib"))
+    db.session.add(SupportedLanguage(name="Scala", extensions=".scala,.sc"))
+    db.session.add(SupportedLanguage(name="Solidity", extensions=".sol"))
+    db.session.add(SupportedLanguage(name="Terraform", extensions=".tf"))
+    db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.commit()
 
 
