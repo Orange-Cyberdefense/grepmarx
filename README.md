@@ -42,7 +42,7 @@ The application can then be easily executed in a docker container. The steps:
 > Get the code
 
 ```bash
-$ git clone https://...grepmarx.git
+$ git clone https://github.com/Orange-Cyberdefense/grepmarx.git
 $ cd grepmarx
 ```
 
@@ -88,7 +88,7 @@ $ redis-server
 > Get the code
 
 ```bash
-$ git clone https://...grepmarx.git
+$ git clone https://github.com/Orange-Cyberdefense/grepmarx.git
 $ cd grepmarx
 ```
 > Install virtualenv modules
