@@ -7,6 +7,9 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 from datetime import datetime
 from operator import concat
+from os import path
+from is_safe_url import is_safe_url
+from ldap3 import Server, Connection, ALL
 
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
@@ -21,18 +24,17 @@ from app.base.util import (init_db, last_12_months_analysis_count, remove_dir_co
                                 verify_pass)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
-from is_safe_url import is_safe_url
-from ldap3 import Server, Connection, ALL
-
 
 @blueprint.route("/")
 def route_default():
     # Init DB if first launch (eg. no user yet registered)
     if db.session.query(User).count() == 0:
         init_db()
-        # Also remove any project and rule repo in data/
-        remove_dir_content(PROJECTS_SRC_PATH)
-        remove_dir_content(RULES_PATH)
+        # Also remove projects and rules repo in data/ (if any)
+        if(path.exists(PROJECTS_SRC_PATH)):
+            remove_dir_content(PROJECTS_SRC_PATH)
+        if(path.exists(RULES_PATH)):
+            remove_dir_content(RULES_PATH)
     return redirect(url_for("base_blueprint.login"))
 
 
