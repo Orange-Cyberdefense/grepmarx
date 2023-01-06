@@ -55,64 +55,65 @@ def sync_db(rules_folder):
                     repository,
                 )
             else:
+                # Parse yaml content
                 try:
                     yml_rules = safe_load(yml_stream)
-                    category = ".".join(file_path.split(os.path.sep)[1:][:-1])
-                    # Extract rules from the file, if any
-                    if "rules" in yml_rules:
-                        for c_rule in yml_rules["rules"]:
-                            # Skip deprecated rules
-                            if "metadata" in c_rule and "deprecated" in c_rule["metadata"]:
-                                if c_rule["metadata"]["deprecated"]:
-                                    continue
-                            rule = Rule.query.filter_by(file_path=file_path).first()
-                            # Create a new rule only if the file doesn't corresponds to an existing
-                            # rule, in order to keep ids and not break RulePacks
-                            if rule is None:
-                                rule = Rule(
-                                    title=c_rule["id"],
-                                    file_path=file_path,
-                                    repository=RuleRepository.query.filter_by(
-                                        name=repository
-                                    ).first(),
-                                    category=category,
-                                )
-                                db.session.add(rule)
-                            # Associate the rule with a known, supported language
-                            if "languages" in c_rule:
-                                for c_language in c_rule["languages"]:
-                                    for c_sl in supported_languages:
-                                        if c_sl.name.lower() == c_language.lower():
-                                            rule.languages.append(c_sl)
-                            # Add metadata: OWASP and CWE ids
-                            if "metadata" in c_rule:
-                                if "cwe" in c_rule["metadata"]:
-                                    # There may be multiple CWE ids
-                                    if type(c_rule["metadata"]["cwe"]) is list:
-                                        rule.cwe = c_rule["metadata"]["cwe"][0]
-                                    else:
-                                        rule.cwe = c_rule["metadata"]["cwe"]
-                                if "owasp" in c_rule["metadata"]:
-                                    # There may be multiple OWASP ids (eg. 2017, 2021...)
-                                    if type(c_rule["metadata"]["owasp"]) is list:
-                                        rule.owasp = c_rule["metadata"]["owasp"][0]
-                                    else:
-                                        rule.owasp = c_rule["metadata"]["owasp"]
-                            # Replace rule level/severity by a calculated one
-                            rule.severity = generate_severity(rule.cwe)
-                            current_app.logger.debug(
-                                "Rule imported in DB: %s",
-                                rule.repository.name
-                                + "/"
-                                + rule.category
-                                + "/"
-                                + rule.title,
-                            )
+                # Skip file if not parseable
                 except YAMLError as e:
-                    db.session.rollback()
-                    raise (e)
-                else:
-                    db.session.commit()
+                    current_app.logger.debug(e)
+                    continue
+                category = ".".join(file_path.split(os.path.sep)[1:][:-1])
+                # Extract rules from the file, if any
+                if "rules" in yml_rules:
+                    for c_rule in yml_rules["rules"]:
+                        # Skip deprecated rules
+                        if "metadata" in c_rule and "deprecated" in c_rule["metadata"]:
+                            if c_rule["metadata"]["deprecated"]:
+                                continue
+                        rule = Rule.query.filter_by(file_path=file_path).first()
+                        # Create a new rule only if the file doesn't corresponds to an existing
+                        # rule, in order to keep ids and not break RulePacks
+                        if rule is None:
+                            rule = Rule(
+                                title=c_rule["id"],
+                                file_path=file_path,
+                                repository=RuleRepository.query.filter_by(
+                                    name=repository
+                                ).first(),
+                                category=category,
+                            )
+                            db.session.add(rule)
+                        # Associate the rule with a known, supported language
+                        if "languages" in c_rule:
+                            for c_language in c_rule["languages"]:
+                                for c_sl in supported_languages:
+                                    if c_sl.name.lower() == c_language.lower():
+                                        rule.languages.append(c_sl)
+                        # Add metadata: OWASP and CWE ids
+                        if "metadata" in c_rule:
+                            if "cwe" in c_rule["metadata"]:
+                                # There may be multiple CWE ids
+                                if type(c_rule["metadata"]["cwe"]) is list:
+                                    rule.cwe = c_rule["metadata"]["cwe"][0]
+                                else:
+                                    rule.cwe = c_rule["metadata"]["cwe"]
+                            if "owasp" in c_rule["metadata"]:
+                                # There may be multiple OWASP ids (eg. 2017, 2021...)
+                                if type(c_rule["metadata"]["owasp"]) is list:
+                                    rule.owasp = c_rule["metadata"]["owasp"][0]
+                                else:
+                                    rule.owasp = c_rule["metadata"]["owasp"]
+                        # Replace rule level/severity by a calculated one
+                        rule.severity = generate_severity(rule.cwe)
+                        current_app.logger.debug(
+                            "Rule imported in DB: %s",
+                            rule.repository.name
+                            + "/"
+                            + rule.category
+                            + "/"
+                            + rule.title,
+                        )
+                        db.session.commit()
 
 
 def generate_severity(cwe_string):
