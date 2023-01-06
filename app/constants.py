@@ -35,16 +35,16 @@ RULES_PATH = "data/rules/"
 RULES_ADMIN_PATH ="data/rules/AdminRules/"
 RULE_EXTENSIONS = {".yaml", ".yml"}
 OWASP_TOP10_LINKS = {
-    "A1": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html",
-    "A2": "https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication.html",
-    "A3": "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html",
-    "A4": "https://owasp.org/www-project-top-ten/2017/A4_2017-XML_External_Entities_(XXE).html",
-    "A5": "https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control.html",
-    "A6": "https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html",
-    "A7": "https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS).html",
-    "A8": "https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization.html",
-    "A9": "https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html",
-    "A10": "https://owasp.org/www-project-top-ten/2017/A10_2017-Insufficient_Logging%2526Monitoring.html",
+    "A01": "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+    "A02": "https://owasp.org/Top10/A02_2021-Cryptographic_Failures/",
+    "A03": "https://owasp.org/Top10/A03_2021-Injection/",
+    "A04": "https://owasp.org/Top10/A04_2021-Insecure_Design/",
+    "A05": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+    "A06": "https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/",
+    "A07": "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/",
+    "A08": "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/",
+    "A09": "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/",
+    "A10": "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/",
 }
 # https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html#methodology
 TOP40_CWE_SEVERITIES = {
