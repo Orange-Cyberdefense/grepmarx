@@ -52,7 +52,7 @@ def login():
             ldap_search = ldap_conf.search_base
             user ="uid="+username+","
             all = concat(user, ldap_search)
-             tls = Tls( validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/cert/all.crt')
+            tls = Tls( validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
             server = Server(ldap_search, port=636, use_ssl=True, get_info=ALL)
             c = Connection(server, user=all, password=password, auto_bind=True)
             test = c.bind()
