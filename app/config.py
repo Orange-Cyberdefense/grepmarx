@@ -10,7 +10,7 @@ from decouple import config
 
 class Config(object):
 
-    SECRET_KEY = config("SECRET_KEY", default="***REMOVED***")
+    SECRET_KEY = config("SECRET_KEY")
 
     # Celery
     broker_url = config("CELERY_BROKER_URL", default="redis://localhost:6379/0")
