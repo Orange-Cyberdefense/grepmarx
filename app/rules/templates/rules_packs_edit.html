@@ -139,7 +139,7 @@
                                             <thead>
                                                 <tr>
                                                     <th id="th-select-all" class="p-1">
-                                                        <a class="btn btn-tertiary p-0" href="#pel"
+                                                        <a class="btn btn-tertiary p-0"
                                                             onclick="switchPageSelection()">
                                                             <span class="fas fa-check-square"></span>
                                                         </a>
@@ -279,7 +279,8 @@
             columnDefs: [{
                 orderable: false,
                 targets: 0
-            }]
+            }],
+            order: [[1, 'desc']]
         });
         /* Reset selection to ensure sync */
         refreshSelectedLines();
