@@ -144,14 +144,15 @@
           document.location = "/ldap"
         }
         else {
-          alert('Error configuration, password or server adress is invalid')
+          alert('Error configuration, password or server adress is invalid');
         }
-      };
+      }
 
       reqInspDetails.open('GET', '/ldap/testing?name=' + name + '&passwd=' + passwd + '&url=' + url + '&Dnd=' + Dnd +
         '&base=' + base);
       reqInspDetails.send();
 
     }
+  }
 </script>
 {% endblock javascripts %}
