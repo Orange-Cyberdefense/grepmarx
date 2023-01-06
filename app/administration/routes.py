@@ -198,8 +198,6 @@ def ldap_testing():
         url = request.args.get('url')
         Dnd = request.args.get('Dnd')
         base = request.args.get('base')
-        filter = request.args.get('filter')
-        #tls = request.args.get('tls')
 
         result_test = bind(password,url,Dnd)
         print(result_test)
@@ -211,7 +209,6 @@ def ldap_testing():
                 url=url,
                 bind_Dnd=Dnd,
                 search_base=base,
-                search_filter=filter,
             )
             db.session.add(ldap_conf)
             db.session.commit()

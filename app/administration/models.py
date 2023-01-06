@@ -15,7 +15,6 @@ class LdapConf(db.Model):
     url = Column(String, nullable=False)
     bind_Dnd = Column(String, nullable=False)
     search_base = Column(String, nullable=False)
-    search_filter = Column(String)
 
 
 

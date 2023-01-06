@@ -41,7 +41,6 @@ class LdapForm(FlaskForm):
     url = TextField("LDAP URL", id="ldap-url", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_\/\.:]+$', message="URL name must contain only letters, numbers, dash (-); slash(/), double points (:), simple poin (.), or underscore (_) characters")])
     admin_bind_dn = TextField("Admin Bind DN", id="ldap-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9=&]+$', message="Search base name must contain only letters, numbers, equals (=), comma(,) or and (&) characters")])
     search_base = TextField("Search base", id="ldap-search", validators=[DataRequired(),Regexp('^[a-zA-Z0-9=&]+$', message="Search base name must contain only letters, numbers, equals (=), comma(,) or and (&) characters")])
-    searchfilter = TextField("Search Filter", id="ldap-filter", validators=[DataRequired(),Regexp('^[a-zA-Z0-9=&}{\(\)}]+$', message="Search base name must contain only letters, numbers, equals (=), comma(,),parentheses, brace or and (&) characters")])
-    tls_cert = FileField("Tls certificate", id="ldap-cert", validators=[FileRequired(), FileAllowed(['cert'], 'certr only')])
+ 
 
 

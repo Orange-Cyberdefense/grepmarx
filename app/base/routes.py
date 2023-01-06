@@ -9,7 +9,8 @@ from datetime import datetime
 from operator import concat
 from os import path
 from is_safe_url import is_safe_url
-from ldap3 import Server, Connection, ALL
+from ldap3 import Server, Connection, Tls,ALL
+import ssl
 
 from flask import (current_app, redirect, render_template, request, session,
                    url_for)
@@ -49,9 +50,10 @@ def login():
             ldap_conf = LdapConf.query.first()
             ldap_server = ldap_conf.url
             ldap_search = ldap_conf.search_base
-            user ="cn="+username+","
+            user ="uid="+username+","
             all = concat(user, ldap_search)
-            server = Server(ldap_server, get_info=ALL)
+             tls = Tls( validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/cert/all.crt')
+            server = Server(ldap_search, port=636, use_ssl=True, get_info=ALL)
             c = Connection(server, user=all, password=password, auto_bind=True)
             test = c.bind()
             if test == True:

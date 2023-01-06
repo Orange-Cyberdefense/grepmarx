@@ -5,9 +5,10 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 from multiprocessing import connection
 from app.base.models import User
-from ldap3 import Server, Connection, ALL
+from ldap3 import Server, Connection,Tls, ALL
 from ldap3.core.exceptions import LDAPException, LDAPBindError
 import re
+import ssl
 
 def validate_user_form(
     form, skip_username=False, skip_email=False, skip_password=False
@@ -36,9 +37,8 @@ def bind(password, url, dnd):
 
     ldap_server =url
 
-    server = Server(ldap_server,get_info=ALL)
-  
-
+    tls = Tls( validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/cert/all.crt')
+    server = Server(ldap_server,port=636, use_ssl=True,get_info=ALL)
     c = Connection(server, user=dnd, password=password,auto_bind=True)
     print(c)
     if not c.bind():
