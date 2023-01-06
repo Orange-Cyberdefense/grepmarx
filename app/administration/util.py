@@ -37,8 +37,8 @@ def bind(password, url, dnd):
 
     ldap_server =url
 
-    tls = Tls( validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
-    server = Server(ldap_server,port=636, use_ssl=True,get_info=ALL)
+    tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
+    server = Server(ldap_server,port=636, use_ssl=True,get_info=ALL, tls=tls)
     c = Connection(server, user=dnd, password=password,auto_bind=True)
     print(c)
     if not c.bind():
