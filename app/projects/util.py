@@ -11,8 +11,6 @@ from hashlib import sha256
 from shutil import rmtree
 from zipfile import ZipFile, is_zipfile
 
-from pyparsing import Regex
-
 from app import db
 from app.constants import APP_INSP_PATH, EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC_PATH
 from app.projects.models import LanguageLinesCount, ProjectLinesCount

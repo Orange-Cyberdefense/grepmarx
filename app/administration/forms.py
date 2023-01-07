@@ -3,16 +3,10 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from email.policy import default
-from multiprocessing.sharedctypes import Value
-from pickle import FALSE
-from tkinter.tix import Select
-from xmlrpc.client import Boolean
 from flask_wtf import FlaskForm
-from wtforms import TextField, PasswordField, HiddenField, SelectField
-from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms import HiddenField, PasswordField, SelectField, TextField
 from wtforms.fields.simple import TextAreaField
-from wtforms.validators import Email, DataRequired, Regexp
+from wtforms.validators import DataRequired, Email, Regexp
 
 
 class UserForm(FlaskForm):
