@@ -29,12 +29,7 @@ class RepositoryForm(FlaskForm):
     git_token = TextField("Git Acess Token", id="repo-token")
 
 class LdapForm(FlaskForm):
-    id = HiddenField("Ldap id")
-    display_name = TextField("Display name", id="ldap-name", validators=[DataRequired(), Regexp('^[a-zA-Z0-9-_]+$', message="Display name must contain only letters, numbers, dash (-) or underscore (_) characters")])
-    password = PasswordField("Password", id="ldap-password")
-    url = TextField("LDAP URL", id="ldap-url", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_\/\.:]+$', message="URL name must contain only letters, numbers, dash (-); slash(/), double points (:), simple poin (.), or underscore (_) characters")])
-    admin_bind_dn = TextField("Admin Bind DN", id="ldap-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9=&]+$', message="Search base name must contain only letters, numbers, equals (=), comma(,) or and (&) characters")])
-    search_base = TextField("Search base", id="ldap-search", validators=[DataRequired(),Regexp('^[a-zA-Z0-9=&]+$', message="Search base name must contain only letters, numbers, equals (=), comma(,) or and (&) characters")])
- 
-
-
+    server_uri = TextField("LDAP server URI", id="ldap-server-uri", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_\/\.:]+$', message="Server URI must contain only letters, numbers, dash (-), slash (/), colon (:), dot (.), or underscore (_) characters")])
+    bind_dn = TextField("Bind DN", id="ldap-bind-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_,=]+$', message="Bind DN must contain only letters, numbers, dash (-), slash (/), equals (=) and comma(,) characters")])
+    bind_password = PasswordField("Bind password", id="ldap-bind-password")
+    base_dn = TextField("Base", id="ldap-base-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9,=]+$', message="Base DN name must contain only letters, numbers, equals (=) and comma(,) characters")])

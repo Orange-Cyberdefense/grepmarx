@@ -2,18 +2,20 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from distutils.command.build_scripts import first_line_re
-from re import U
-import re
-from pyrsistent import b, v
-
-
-from requests import session
-from app.administration.models import LdapConf
+from sqlalchemy.orm.exc import NoResultFound
+from app.administration.models import LdapConfiguration
 from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 import json
 
-from flask import current_app, flash, redirect, render_template, request, url_for, jsonify
+from flask import (
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+    jsonify,
+)
 from flask_login import current_user, login_required
 from app import db
 from app.administration import blueprint
@@ -24,10 +26,8 @@ from app.base import util
 from app.base.models import User
 
 
-
 @blueprint.route("/users")
 @login_required
-
 def users_list():
     admin = util.is_admin(current_user.role)
     if admin:
@@ -35,9 +35,8 @@ def users_list():
         return render_template(
             "users_list.html", users=users, user=current_user, segment="users"
         )
-    else :
-        return render_template("403.html"),403
-        
+    else:
+        return render_template("403.html"), 403
 
 
 @blueprint.route("/users/add", methods=["GET", "POST"])
@@ -49,10 +48,14 @@ def users_add():
         # POST / Form submitted
         if "save-user" in request.form:
             # Form is valid
-            if user_form.validate_on_submit()and user_form.role.data == '0' or user_form.role.data=='1':
-            # Perform additional custom checks
+            if (
+                user_form.validate_on_submit()
+                and user_form.role.data == "0"
+                or user_form.role.data == "1"
+            ):
+                # Perform additional custom checks
                 err = validate_user_form(user_form)
-                if err is not None :
+                if err is not None:
                     flash(err, "error")
                     return render_template(
                         "users_edit.html",
@@ -92,8 +95,8 @@ def users_add():
                 user=current_user,
                 segment="users",
             )
-    else :
-        return render_template("403.html"),403
+    else:
+        return render_template("403.html"), 403
 
 
 @blueprint.route("/users/edit/<user_id>", methods=["GET", "POST"])
@@ -158,7 +161,7 @@ def users_edit(user_id):
                 segment="users",
             )
     else:
-        return render_template("403.html"),403
+        return render_template("403.html"), 403
 
 
 @blueprint.route("/users/remove/<user_id>")
@@ -173,53 +176,91 @@ def users_remove(user_id):
         flash("User successfully deleted", "success")
         return redirect(url_for("administration_blueprint.users_list"))
     else:
-        return render_template("403.html"),403
+        return render_template("403.html"), 403
 
 
-@blueprint.route("/ldap")
+@blueprint.route("/ldap/configuration", methods=["GET", "POST"])
 @login_required
-def ldap_engine():
+def ldap_configuration():
     admin = util.is_admin(current_user.role)
     if admin:
-        return render_template(
-            "ldap_engine.html",
-            form=LdapForm()
-        )
-    else :
-        return render_template("403.html"),403
-
-@blueprint.route("/ldap/testing",methods=["GET", "POST"])
-@login_required
-def ldap_testing():
-    admin = util.is_admin(current_user.role)
-    if admin:
-        name = request.args.get('name')
-        password = request.args.get('passwd')
-        url = request.args.get('url')
-        Dnd = request.args.get('Dnd')
-        base = request.args.get('base')
-
-        result_test = bind(password,url,Dnd)
-        print(result_test)
-        if result_test == 1 :
-            #export into bdd
-            # Create the rule pack
-            ldap_conf = LdapConf(
-                title=name,
-                url=url,
-                bind_Dnd=Dnd,
-                search_base=base,
+        ldap_form = LdapForm()
+        try:
+            # Existing LDAP configuration in DB
+            ldap_config = LdapConfiguration.query.one()
+            render_form = LdapForm(obj=ldap_config)
+        except NoResultFound:
+            # No LDAP config in DB, create a new one
+            ldap_config = LdapConfiguration()
+            render_form = LdapForm()
+        # POST / Form submitted
+        if "save-ldap-config" in request.form:
+            # Form is valid
+            if ldap_form.validate_on_submit():
+                # Populate LDAP config object
+                # ldap_config.server_uri = ldap_form.server_uri.data
+                # ldap_config.bind_dn = ldap_form.bind_dn.data
+                # ldap_config.bind_password = ldap_form.bind_password.data
+                # ldap_config.base_dn = ldap_form.base_dn.data
+                # db.add(ldap_config)
+                ldap_form.populate_obj(ldap_config)
+                db.session.add(ldap_config)
+                db.session.commit()
+                flash("LDAP configuration successfully updated", "success")
+                return redirect(url_for("administration_blueprint.ldap_configuration"))
+            # Form is invalid, form.error is populated
+            else:
+                current_app.logger.warning(
+                    "LDAP configuration form invalid entries: %s",
+                    json.dumps(ldap_form.errors),
+                )
+                flash(str(ldap_form.errors), "error")
+                return render_template(
+                    "ldap_config.html",
+                    form=ldap_form,
+                    user=current_user,
+                    segment="ldap",
+                )
+        # GET / Display form
+        else:
+            return render_template(
+                "ldap_config.html", user=current_user, form=render_form, segment="ldap"
             )
-            db.session.add(ldap_conf)
-            db.session.commit()
-            current_app.logger.info(
-                "New ldap configuration added (ldap_conf.id=%i)", ldap_conf.id
-            )
-            flash("Ldap configuration has been successfully created", "success")
-        return jsonify(result_test)
-    else :
-        return render_template("403.html"),403
-        
+    else:
+        return render_template("403.html"), 403
+
+
+# @blueprint.route("/ldap/testing",methods=["GET", "POST"])
+# @login_required
+# def ldap_testing():
+#     admin = util.is_admin(current_user.role)
+#     if admin:
+#         name = request.args.get('name')
+#         password = request.args.get('passwd')
+#         url = request.args.get('url')
+#         Dnd = request.args.get('Dnd')
+#         base = request.args.get('base')
+
+#         result_test = bind(password,url,Dnd)
+#         print(result_test)
+#         if result_test == 1 :
+#             #export into bdd
+#             # Create the rule pack
+#             ldap_conf = LdapConf(
+#                 title=name,
+#                 url=url,
+#                 bind_Dnd=Dnd,
+#                 search_base=base,
+#             )
+#             db.session.add(ldap_conf)
+#             db.session.commit()
+#             current_app.logger.info(
+#                 "New ldap configuration added (ldap_conf.id=%i)", ldap_conf.id
+#             )
+#             flash("Ldap configuration has been successfully created", "success")
+#         return jsonify(result_test)
+#     else :
+#         return render_template("403.html"),403
 
 
 @blueprint.route("/repos")
@@ -243,7 +284,10 @@ def repos_add():
         # Form is valid
         if repo_form.validate_on_submit():
             # Repo name should be unique
-            if RuleRepository.query.filter_by(name=repo_form.name.data).first() is not None:
+            if (
+                RuleRepository.query.filter_by(name=repo_form.name.data).first()
+                is not None
+            ):
                 flash("Name is already registered for another repository", "error")
                 return render_template(
                     "repos_edit.html",
@@ -259,8 +303,8 @@ def repos_add():
                 uri=repo_form.uri.data,
             )
             username = repo_form.git_username.data
-            token= repo_form.git_token.data
-           
+            token = repo_form.git_token.data
+
             # Clone the repo
             clone_rule_repo(repo, username, token)
             # Save repo in DB

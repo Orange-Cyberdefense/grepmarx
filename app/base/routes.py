@@ -20,7 +20,6 @@ from app.base import blueprint
 from app.constants import AUTH_LDAP,AUTH_LOCAL, PROJECTS_SRC_PATH, RULES_PATH
 from app.base.forms import LoginForm
 from app.base.models import User
-from app.administration.models import LdapConf
 from app.base.util import (init_db, last_12_months_analysis_count, remove_dir_content,
                                 verify_pass)
 from app.projects.models import Project
@@ -47,42 +46,43 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         if request.form.get('ldap'):
-            ldap_conf = LdapConf.query.first()
-            ldap_server = ldap_conf.url
-            ldap_search = ldap_conf.search_base
-            user ="uid="+username+","
-            all = concat(user, ldap_search)
-            tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
-            server = Server(ldap_search, port=636, use_ssl=True, get_info=ALL, tls=tls)
-            c = Connection(server, user=all, password=password, auto_bind=True)
-            test = c.bind()
-            if test == True:
+            print("")
+            # ldap_conf = LdapConf.query.first()
+            # ldap_server = ldap_conf.url
+            # ldap_search = ldap_conf.search_base
+            # user ="uid="+username+","
+            # all = concat(user, ldap_search)
+            # tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
+            # server = Server(ldap_search, port=636, use_ssl=True, get_info=ALL, tls=tls)
+            # c = Connection(server, user=all, password=password, auto_bind=True)
+            # test = c.bind()
+            # if test == True:
                 
-                user = User.query.filter_by(username=username,local=AUTH_LDAP).first()
+            #     user = User.query.filter_by(username=username,local=AUTH_LDAP).first()
 
-                if user :
-                    db.session.commit()
-                    login_user(user)
-                    current_app.logger.info("Authentication successful (user.id=%i)", user.id)
-                    return redirect(url_for("base_blueprint.route_default"))
-                else :
-                    user = User(
-                            username=username,
-                            local = False,
-                        )
-                    db.session.add(user)
-                    db.session.commit()
-                    current_app.logger.info("New user configuration added (user.id=%i)", user.id)
-                    login_user(user)
-                    current_app.logger.info("Authentication successful (user.id=%i)", user.id)
-                    return redirect(url_for("base_blueprint.route_default"))
+            #     if user :
+            #         db.session.commit()
+            #         login_user(user)
+            #         current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+            #         return redirect(url_for("base_blueprint.route_default"))
+            #     else :
+            #         user = User(
+            #                 username=username,
+            #                 local = False,
+            #             )
+            #         db.session.add(user)
+            #         db.session.commit()
+            #         current_app.logger.info("New user configuration added (user.id=%i)", user.id)
+            #         login_user(user)
+            #         current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+            #         return redirect(url_for("base_blueprint.route_default"))
             
-            else:
-                current_app.logger.info(
-                "Authentication failure (username was '%s')", username)
-                return render_template(
-                    "login.html", msg="Wrong user or password", form=login_form
-                    )
+            # else:
+            #     current_app.logger.info(
+            #     "Authentication failure (username was '%s')", username)
+            #     return render_template(
+            #         "login.html", msg="Wrong user or password", form=login_form
+            #         )
         # Locate user
         else :
             user = User.query.filter_by(username=username,local=AUTH_LOCAL).first()

@@ -6,15 +6,12 @@ from app import db
 from sqlalchemy import Column, Integer, String
 
 
-class LdapConf(db.Model):
+class LdapConfiguration(db.Model):
 
-    __tablename__ = "LdapConf"
+    __tablename__ = "LdapConfiguration"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    url = Column(String, nullable=False)
-    bind_Dnd = Column(String, nullable=False)
-    search_base = Column(String, nullable=False)
-
-
-
+    server_uri = Column(String, nullable=True)
+    bind_dn = Column(String, nullable=True)
+    bind_password = Column(String, nullable=True)
+    base_dn = Column(String, nullable=True)

@@ -42,21 +42,15 @@
 
       <div class="card-body" id="form_ldap">
         <div class="form-group row">
-          <label for="ldap-name" class="col-sm-2 col-form-label">Display Name</label>
-          <div class="col-sm-10">
-            {{ form.display_name(placeholder="Name of your LDAP configuration", class="form-control", id="form_name") }}
-          </div>
-        </div>
-        <div class="form-group row">
           <label for="ldap-password" class="col-sm-2 col-form-label">Password</label>
           <div class="col-sm-10">
-            {{ form.password(placeholder="admin password", class="form-control",id="form_passwd") }}
+            {{ form.password(placeholder="admin password", class="form-control",id="ldap_bind_dn") }}
           </div>
         </div>
         <div class="form-group row">
           <label for="ldap-url" class="col-sm-2 col-form-label">LDAP URL</label>
           <div class="col-sm-10">
-            {{ form.url(placeholder="LDAP Url (ex ldap://server:636) - Only SASL", class="form-control",id="form_url")
+            {{ form.url(placeholder="LDAP Url (ex ldap://server:636) - Only SASL", class="form-control",id="ldap_server")
             }}
           </div>
         </div>
@@ -64,14 +58,14 @@
           <label for="ldap-dn" class="col-sm-2 col-form-label">Admin Bind </label>
           <div class="col-sm-10">
             {{ form.admin_bind_dn(placeholder="Example : cn=admin,ou=test,dc=test,dc=com (to log your admin account)",
-            class="form-control",id="form_Dnd") }}
+            class="form-control",id="ldap_bind_password") }}
           </div>
         </div>
         <div class="form-group row">
           <label for="ldap-search" class="col-sm-2 col-form-label">Search base</label>
           <div class="col-sm-10">
             {{ form.search_base( placeholder="Example : ou=test,ou=test2,dc=test,dc=com (path to search your users ldap
-            account)",class="form-control",id="form_base") }}
+            account)",class="form-control",id="ldap_search_base") }}
           </div>
         </div>
       </div>
@@ -130,13 +124,9 @@
 
     reqInspDetails = new XMLHttpRequest();
 
-    var name = document.getElementById('form_name').value;
-    var passwd = document.getElementById('form_passwd').value;
-    var url = document.getElementById('form_url').value;
-    var Dnd = document.getElementById('form_Dnd').value;
-    var base = document.getElementById('form_base').value;
-    // var filter = document.getElementById('form_filter').value;
-    // var tls = document.getElementById('form_tls').value;
+    var ldap_bind_dn = document.getElementById('ldap_bind_dn').value;
+    var ldap_bind_password = document.getElementById('ldap_bind_password').value;
+    var ldap_search_base = document.getElementById('ldap_search_base').value;
 
     reqInspDetails.onreadystatechange = function () {
       if (this.readyState === XMLHttpRequest.DONE) {
@@ -147,12 +137,12 @@
           alert('Error configuration, password or server adress is invalid');
         }
       }
-
-      reqInspDetails.open('GET', '/ldap/testing?name=' + name + '&passwd=' + passwd + '&url=' + url + '&Dnd=' + Dnd +
-        '&base=' + base);
-      reqInspDetails.send();
-
     }
+
+    reqInspDetails.open('GET', '/ldap/testing?name=' + name + '&passwd=' + passwd + '&url=' + url + '&Dnd=' + Dnd +
+      '&base=' + base);
+    reqInspDetails.send();
+
   }
 </script>
 {% endblock javascripts %}

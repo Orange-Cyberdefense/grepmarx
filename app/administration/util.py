@@ -3,12 +3,12 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from multiprocessing import connection
-from app.base.models import User
-from ldap3 import Server, Connection,Tls, ALL
-from ldap3.core.exceptions import LDAPException, LDAPBindError
-import re
 import ssl
+
+from ldap3 import ALL, Connection, Server, Tls
+
+from app.base.models import User
+
 
 def validate_user_form(
     form, skip_username=False, skip_email=False, skip_password=False
