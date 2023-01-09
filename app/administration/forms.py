@@ -4,7 +4,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, PasswordField, SelectField, TextField
+from wtforms import HiddenField, PasswordField, SelectField, TextField, IntegerField, BooleanField 
 from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Email, Regexp
 
@@ -29,7 +29,10 @@ class RepositoryForm(FlaskForm):
     git_token = TextField("Git Acess Token", id="repo-token")
 
 class LdapForm(FlaskForm):
-    server_uri = TextField("LDAP server URI", id="ldap-server-uri", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_\/\.:]+$', message="Server URI must contain only letters, numbers, dash (-), slash (/), colon (:), dot (.), or underscore (_) characters")])
-    bind_dn = TextField("Bind DN", id="ldap-bind-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9-_,=]+$', message="Bind DN must contain only letters, numbers, dash (-), slash (/), equals (=) and comma(,) characters")])
+    ldap_activated = BooleanField ("Activate LDAP authentication", id="ldap-activated", validators=[DataRequired()])
+    server_host = TextField("LDAP server host", id="ldap-server-uri", validators=[Regexp('^[a-zA-Z0-9-_\.]+$', message="Server URI must contain only letters, numbers, dash (-), dot (.), or underscore (_) characters")])
+    server_port = IntegerField("Port", id="ldap-server-port")
+    use_tls = BooleanField ("Activate TLS", id="ldap-use-tls")
+    bind_dn = TextField("Bind DN", id="ldap-bind-dn", validators=[Regexp('^[a-zA-Z0-9-_,=]+$', message="Bind DN must contain only letters, numbers, dash (-), slash (/), equals (=) and comma(,) characters")])
     bind_password = PasswordField("Bind password", id="ldap-bind-password")
-    base_dn = TextField("Base", id="ldap-base-dn", validators=[DataRequired(),Regexp('^[a-zA-Z0-9,=]+$', message="Base DN name must contain only letters, numbers, equals (=) and comma(,) characters")])
+    base_dn = TextField("Base", id="ldap-base-dn", validators=[Regexp('^[a-zA-Z0-9,=]+$', message="Base DN name must contain only letters, numbers, equals (=) and comma(,) characters")])

@@ -198,7 +198,7 @@ def ldap_configuration():
             # Form is valid
             if ldap_form.validate_on_submit():
                 # Populate LDAP config object
-                # ldap_config.server_uri = ldap_form.server_uri.data
+                # ldap_config.server_host = ldap_form.server_host.data
                 # ldap_config.bind_dn = ldap_form.bind_dn.data
                 # ldap_config.bind_password = ldap_form.bind_password.data
                 # ldap_config.base_dn = ldap_form.base_dn.data
