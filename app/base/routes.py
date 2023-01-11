@@ -4,26 +4,32 @@ Copyright (c) 2019 - present AppSeed.us
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-
+from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 from operator import concat
 from os import path
 from is_safe_url import is_safe_url
-from ldap3 import Server, Connection, Tls,ALL
+from ldap3 import Server, Connection, Tls, ALL
 import ssl
 
-from flask import (current_app, redirect, render_template, request, session,
-                   url_for)
+from flask import current_app, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from app import db, login_manager
+from app.administration.models import LdapConfiguration
 from app.base import blueprint
-from app.constants import AUTH_LDAP,AUTH_LOCAL, PROJECTS_SRC_PATH, RULES_PATH
+from app.constants import AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH, RULES_PATH
 from app.base.forms import LoginForm
 from app.base.models import User
-from app.base.util import (init_db, last_12_months_analysis_count, remove_dir_content,
-                                verify_pass)
+from app.base.util import (
+    init_db,
+    last_12_months_analysis_count,
+    ldap_authenticate_user,
+    remove_dir_content,
+    verify_pass,
+)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
+
 
 @blueprint.route("/")
 def route_default():
@@ -31,9 +37,9 @@ def route_default():
     if db.session.query(User).count() == 0:
         init_db()
         # Also remove projects and rules repo in data/ (if any)
-        if(path.exists(PROJECTS_SRC_PATH)):
+        if path.exists(PROJECTS_SRC_PATH):
             remove_dir_content(PROJECTS_SRC_PATH)
-        if(path.exists(RULES_PATH)):
+        if path.exists(RULES_PATH):
             remove_dir_content(RULES_PATH)
     return redirect(url_for("base_blueprint.login"))
 
@@ -45,56 +51,97 @@ def login():
         # read form data
         username = request.form["username"]
         password = request.form["password"]
-        if request.form.get('ldap'):
-            print("")
-            # ldap_conf = LdapConf.query.first()
+        # LDAP user
+        if request.form.get("ldap"):
+            # Ensure LDAP is configured
+            try:
+                # Existing LDAP configuration in DB
+                ldap_config = LdapConfiguration.query.one()
+            except NoResultFound:
+                # No LDAP config in DB, return an error
+                current_app.logger.info(
+                    "LDAP authentication is not enabled (username was '%s')", username
+                )
+                return render_template(
+                    "login.html",
+                    msg="LDAP authentication is not enabled",
+                    form=login_form,
+                )
+            print(ldap_authenticate_user(ldap_config, username, password))
             # ldap_server = ldap_conf.url
             # ldap_search = ldap_conf.search_base
-            # user ="uid="+username+","
+            # user = "uid=" + username + ","
             # all = concat(user, ldap_search)
-            # tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
-            # server = Server(ldap_search, port=636, use_ssl=True, get_info=ALL, tls=tls)
-            # c = Connection(server, user=all, password=password, auto_bind=True)
+            # # LDAP server setup
+            # if ldap_config.use_tls:
+            #     tls = Tls(
+            #         ciphers="ALL",
+            #         validate=ssl.CERT_REQUIRED,
+            #         ca_certs_file="/opt/grepmarx/ldap-cert/ca.crt",
+            #     )
+            # else:
+            #     tls = None
+            # server = Server(
+            #     host=ldap_config.server_host,
+            #     port=ldap_config.server_port,
+            #     use_ssl=ldap_config.use_tls,
+            #     tls=tls,
+            #     get_info=ALL,
+            # )
+            # # LDAP connection setup
+            # ldap_user = "uid=" + username + "," + ldap_config.base_dn # LDAP injection shouldn't be possible due to form validator regex
+            # c = Connection(server, user=ldap_user, password=password, read_only=True)
             # test = c.bind()
             # if test == True:
-                
-            #     user = User.query.filter_by(username=username,local=AUTH_LDAP).first()
 
-            #     if user :
+            #     user = User.query.filter_by(username=username, local=AUTH_LDAP).first()
+
+            #     if user:
             #         db.session.commit()
             #         login_user(user)
-            #         current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+            #         current_app.logger.info(
+            #             "Authentication successful (user.id=%i)", user.id
+            #         )
             #         return redirect(url_for("base_blueprint.route_default"))
-            #     else :
+            #     else:
             #         user = User(
-            #                 username=username,
-            #                 local = False,
-            #             )
+            #             username=username,
+            #             local=False,
+            #         )
             #         db.session.add(user)
             #         db.session.commit()
-            #         current_app.logger.info("New user configuration added (user.id=%i)", user.id)
+            #         current_app.logger.info(
+            #             "New user configuration added (user.id=%i)", user.id
+            #         )
             #         login_user(user)
-            #         current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+            #         current_app.logger.info(
+            #             "Authentication successful (user.id=%i)", user.id
+            #         )
             #         return redirect(url_for("base_blueprint.route_default"))
-            
+
             # else:
             #     current_app.logger.info(
-            #     "Authentication failure (username was '%s')", username)
+            #         "Authentication failure (username was '%s')", username
+            #     )
             #     return render_template(
             #         "login.html", msg="Wrong user or password", form=login_form
-            #         )
-        # Locate user
-        else :
-            user = User.query.filter_by(username=username,local=AUTH_LOCAL).first()
+            #     )
+        # Local user
+        else:
+            user = User.query.filter_by(username=username, local=AUTH_LOCAL).first()
             # Check the password
             if user and verify_pass(password, user.password):
                 user.last_login_on = datetime.now()
                 db.session.commit()
                 login_user(user)
-                current_app.logger.info("Authentication successful (user.id=%i)", user.id)
+                current_app.logger.info(
+                    "Authentication successful (user.id=%i)", user.id
+                )
                 return redirect(url_for("base_blueprint.route_default"))
             # Something (user or pass) is not ok
-            current_app.logger.info("Authentication failure (username was '%s')", username)
+            current_app.logger.info(
+                "Authentication failure (username was '%s')", username
+            )
             return render_template(
                 "login.html", msg="Wrong user or password", form=login_form
             )
@@ -120,6 +167,7 @@ def switch_theme():
     else:
         ret = redirect(url_for("base_blueprint.route_default"))
     return ret
+
 
 @blueprint.route("/dashboard")
 @login_required

@@ -61,7 +61,7 @@ def create_app(config):
 
     # Configure DB
     configure_database(app)
-    Migrate(app, db)
+    Migrate(app=app, db=db, compare_type=True)
 
     return app
 

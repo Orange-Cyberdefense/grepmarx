@@ -14,14 +14,13 @@ from flask import (
     render_template,
     request,
     url_for,
-    jsonify,
 )
 from flask_login import current_user, login_required
 from app import db
 from app.administration import blueprint
 from app.administration.forms import RepositoryForm, UserForm, LdapForm
 from app.rules.models import RuleRepository
-from app.administration.util import validate_user_form, bind
+from app.administration.util import validate_ldap_form, validate_user_form
 from app.base import util
 from app.base.models import User
 
@@ -197,12 +196,17 @@ def ldap_configuration():
         if "save-ldap-config" in request.form:
             # Form is valid
             if ldap_form.validate_on_submit():
-                # Populate LDAP config object
-                # ldap_config.server_host = ldap_form.server_host.data
-                # ldap_config.bind_dn = ldap_form.bind_dn.data
-                # ldap_config.bind_password = ldap_form.bind_password.data
-                # ldap_config.base_dn = ldap_form.base_dn.data
-                # db.add(ldap_config)
+                # Perform additional custom validation
+                err = validate_ldap_form(form=ldap_form)
+                if err is not None:
+                    flash(err, "error")
+                    return render_template(
+                        "ldap_config.html",
+                        form=ldap_form,
+                        user=current_user,
+                        segment="ldap",
+                    )
+                # LDAP configuration can be updated
                 ldap_form.populate_obj(ldap_config)
                 db.session.add(ldap_config)
                 db.session.commit()
