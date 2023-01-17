@@ -27,7 +27,8 @@ LDAP configuration
             <div class="row mb-2 ">
                 <div class="col-sm-8">
                     <p class="mb-3">
-                        Fill the following form to activate LDAP authentication on Grepmarx and to configure the LDAP server.
+                        Fill the following form to activate LDAP authentication on Grepmarx and to configure the LDAP
+                        server.
                     </p>
                 </div>
             </div>
@@ -38,32 +39,66 @@ LDAP configuration
     <section class="content">
 
         {% include 'messages.html' %}
-        
+
         <form class="form-horizontal" method="post" action="/ldap/configuration">
 
             {{ form.hidden_tag() }}
 
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">LDAP configuration</h3>
+                    <h3 class="card-title">LDAP settings</h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
                         </button>
                     </div>
                 </div>
-                
                 <div class="card-body">
 
                     <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label for="ldap-activated" class="col-form-label">
-                                Enable LDAP authentication
-                            </label>
+                        <div class="col-sm-12">
+                            <div class="custom-control custom-switch">
+                                {{ form.ldap_activated(class="custom-control-input") }}
+                                <label class="custom-control-label" for="ldap-activated">
+                                    Enable LDAP authentication
+                                </label>
+                            </div>
                         </div>
-                        <div class="ml-2 mt-2 custom-control custom-switch">
-                            {{ form.ldap_activated(class="custom-control-input") }}
-                            <label for="ldap-activated" class="custom-control-label">&nbsp;</label>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <div class="custom-control custom-switch">
+                                {{ form.users_approval(class="custom-control-input") }}
+                                <label class="custom-control-label" for="ldap-users-approval">
+                                    Users requires administrator approval on first login
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">LDAP server</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <div class="custom-control custom-switch">
+                                {{ form.use_tls(class="custom-control-input") }}
+                                <label class="custom-control-label" for="ldap-use-tls">
+                                    Enable TLS
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -82,59 +117,102 @@ LDAP configuration
                     </div>
 
                     <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label for="ldap-use-tls" class="col-form-label">
-                                Use TLS
-                            </label>
-                        </div>
-                        <div class="ml-2 mt-2 custom-control custom-switch">
-                            {{ form.use_tls(class="custom-control-input") }}
-                            <label for="ldap-use-tls" class="custom-control-label">&nbsp;</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label for="ldap-anonymous-bind" class="col-form-label">
-                                Anonymous bind
-                            </label>
-                        </div>
-                        <div class="ml-2 mt-2 custom-control custom-switch">
-                            {{ form.anonymous_bind(class="custom-control-input") }}
-                            <label for="ldap-anonymous-bind" class="custom-control-label">&nbsp;</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="ldap-bind-dn" class="col-sm-2 col-form-label">Bind DN</label>
+                        <label for="ldap-cacert-path" class="col-sm-2 col-form-label">CA certificate path</label>
                         <div class="col-sm-10">
-                            {{ form.bind_dn(placeholder="cn=read-only-admin,dc=example,dc=com", class="form-control") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="ldap-bind-password" class="col-sm-2 col-form-label">Bind password</label>
-                        <div class="col-sm-10">
-                            {{ form.bind_password(placeholder="", class="form-control") }}
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label for="ldap-base-dn" class="col-sm-2 col-form-label">Base DN</label>
-                        <div class="col-sm-10">
-                            {{ form.base_dn(placeholder="ou=auditors,dc=example,dc=com", class="form-control") }}
+                            {{ form.cacert_path(placeholder="/opt/grepmarx/ldap-cert/ca.crt", class="form-control") }}
                         </div>
                     </div>
 
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <a href="/" class="btn btn-secondary">Cancel</a>
-                    <input name="save-ldap-config" type="submit" value="Save LDAP configuration" class="btn btn-default float-right">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Authentication settings</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
+                <div class="card-body">
+
+                        <div class="form-group row">
+                            <label for="ldap-bind-dn" class="col-sm-2 col-form-label">Bind DN</label>
+                            <div class="col-sm-10">
+                                {{ form.bind_dn(placeholder="cn=read-only-admin,dc=example,dc=com",
+                                class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="ldap-bind-password" class="col-sm-2 col-form-label">Bind password</label>
+                            <div class="col-sm-10">
+                                {{ form.bind_password(placeholder="", class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="ldap-base-dn" class="col-sm-2 col-form-label">Base DN</label>
+                            <div class="col-sm-10">
+                                {{ form.base_dn(placeholder="dc=example,dc=com", class="form-control") }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">LDAP properties</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                            <div class="form-group row">
+                                <label for="ldap-users-dn" class="col-sm-2 col-form-label">Users DN</label>
+                                <div class="col-sm-10">
+                                    {{ form.users_dn(placeholder="ou=users", class="form-control") }}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="ldap-groups-dn" class="col-sm-2 col-form-label">Groups DN</label>
+                                <div class="col-sm-10">
+                                    {{ form.groups_dn(placeholder="ou=groups", class="form-control") }}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="ldap-user-rdn-attr" class="col-sm-2 col-form-label">User RDN
+                                    attribute</label>
+                                <div class="col-sm-10">
+                                    {{ form.user_rdn_attr(placeholder="cn", class="form-control") }}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="ldap-user-login-attr" class="col-sm-2 col-form-label">User login
+                                    attribute</label>
+                                <div class="col-sm-10">
+                                    {{ form.user_login_attr(placeholder="mail", class="form-control") }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <a href="/" class="btn btn-secondary">Cancel</a>
+                            <input name="save-ldap-config" type="submit" value="Save LDAP configuration"
+                                class="btn btn-default float-right">
+                        </div>
+                    </div>
 
         </form>
     </section>

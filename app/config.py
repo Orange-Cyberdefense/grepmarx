@@ -5,6 +5,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import os
+
 from decouple import config
 
 

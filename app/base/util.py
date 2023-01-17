@@ -7,18 +7,18 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import binascii
 import hashlib
 import os
+import shutil
 from calendar import monthrange
 from datetime import date, datetime, timedelta
-import shutil
-import ssl
 
-from ldap3 import Server, Connection, Tls, SIMPLE, SYNC, ASYNC, SUBTREE, ALL_ATTRIBUTES
+from sqlalchemy import and_, func
 
 from app import db
+from app.administration.models import LdapConfiguration
 from app.analysis.models import Analysis
-from app.rules.models import SupportedLanguage
 from app.base import models
-from sqlalchemy import and_, func
+from app.rules.models import SupportedLanguage
+
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_pass(password):
@@ -134,72 +134,17 @@ def remove_dir_content(directory):
             print("Failed to delete %s. Reason: %s" % (file_path, e))
 
 
-def ldap_authenticate_user(ldap_config, username, password):
-
-    if ldap_config.use_tls:
-        tls_config = Tls(
-            ciphers="ALL",
-            validate=ssl.CERT_REQUIRED,
-            ca_certs_file="/opt/grepmarx/ldap-cert/ca.crt",
-        )
-    else:
-        tls_config = None
-
-    server = Server(
-        ldap_config.server_host, port=ldap_config.server_port, get_info=ALL_ATTRIBUTES,  tls=tls_config
-    )
-
-    conn = Connection(
-        server,
-        version=3,
-        client_strategy=SYNC,
-        raise_exceptions=True,
-    )
-    if not ldap_config.anonymous_bind:
-        conn.user=ldap_config.bind_dn
-        conn.password=ldap_config.bind_password
-        conn.authentication=SIMPLE
-        conn.check_names=True,
-        conn.lazy=False,
-    conn.bind()
-
-    # Search for the user in the specified base DN
-    search_filter = f"(uid={username})"
-    conn.search(
-        search_base=ldap_config.base_dn,
-        search_filter=search_filter,
-        search_scope=SUBTREE,
-    )
-    if not conn.entries:
-        raise Exception("User not found in LDAP directory")
-
-    user_dn = conn.entries[0].entry_dn
-
-    search_filter_group = "(&({0})(memberOf={1}))".format(search_filter, ldap_config.base_dn)
-    if not conn.search(
-        search_base=ldap_config.base_dn,
-        search_filter=search_filter_group,
-        search_scope=SUBTREE,
-    ):
-        raise Exception("User is not member of the required group")
-
-    # Authenticate the user by binding to the server with their DN and password
-    conn.unbind()
-    conn.bind()
-    conn = Connection(
-        server,
-        user=user_dn,
-        password=password,
-        auto_bind=True,
-        version=3,
-        authentication=SIMPLE,
-        check_names=True,
-        lazy=False,
-        tls=tls_config,
-        client_strategy=SYNC,
-        raise_exceptions=True,
-    )
-    if conn.bind():
-        return True
-    else:
-        return False
+def ldap_config_dict():
+    ldap_config = LdapConfiguration.query.first()
+    config = dict()
+    config["LDAP_HOST"] = ldap_config.server_host
+    config["LDAP_PORT"] = ldap_config.server_port
+    config["LDAP_BASE_DN"] = ldap_config.base_dn
+    config["LDAP_USER_DN"] = ldap_config.users_dn
+    config["LDAP_GROUP_DN"] = ldap_config.groups_dn
+    config["LDAP_USER_RDN_ATTR"] = ldap_config.user_rdn_attr
+    config["LDAP_USER_LOGIN_ATTR"] = ldap_config.user_login_attr
+    config["LDAP_BIND_USER_DN"] = ldap_config.bind_dn
+    config["LDAP_BIND_USER_PASSWORD"] = ldap_config.bind_password
+    config["LDAP_ADD_SERVER"] = False
+    return config

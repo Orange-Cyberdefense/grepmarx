@@ -4,29 +4,26 @@ Copyright (c) 2019 - present AppSeed.us
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from sqlalchemy.orm.exc import NoResultFound
-from datetime import datetime
-from operator import concat
-from os import path
-from is_safe_url import is_safe_url
-from ldap3 import Server, Connection, Tls, ALL
 import ssl
+from datetime import datetime
+from os import path
 
-from flask import current_app, redirect, render_template, request, session, url_for
+from flask import (current_app, redirect, render_template, request, session,
+                   url_for)
 from flask_login import current_user, login_required, login_user, logout_user
-from app import db, login_manager
+from is_safe_url import is_safe_url
+from ldap3 import Tls
+from sqlalchemy.orm.exc import NoResultFound
+
+from app import db, ldap_manager, login_manager
 from app.administration.models import LdapConfiguration
 from app.base import blueprint
-from app.constants import AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH, RULES_PATH
 from app.base.forms import LoginForm
 from app.base.models import User
-from app.base.util import (
-    init_db,
-    last_12_months_analysis_count,
-    ldap_authenticate_user,
-    remove_dir_content,
-    verify_pass,
-)
+from app.base.util import (init_db, last_12_months_analysis_count,
+                           ldap_config_dict, remove_dir_content, verify_pass)
+from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH,
+                           ROLE_GUEST, ROLE_USER, RULES_PATH)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
 
@@ -67,65 +64,82 @@ def login():
                     msg="LDAP authentication is not enabled",
                     form=login_form,
                 )
-            print(ldap_authenticate_user(ldap_config, username, password))
-            # ldap_server = ldap_conf.url
-            # ldap_search = ldap_conf.search_base
-            # user = "uid=" + username + ","
-            # all = concat(user, ldap_search)
-            # # LDAP server setup
-            # if ldap_config.use_tls:
-            #     tls = Tls(
-            #         ciphers="ALL",
-            #         validate=ssl.CERT_REQUIRED,
-            #         ca_certs_file="/opt/grepmarx/ldap-cert/ca.crt",
-            #     )
-            # else:
-            #     tls = None
-            # server = Server(
-            #     host=ldap_config.server_host,
-            #     port=ldap_config.server_port,
-            #     use_ssl=ldap_config.use_tls,
-            #     tls=tls,
-            #     get_info=ALL,
-            # )
-            # # LDAP connection setup
-            # ldap_user = "uid=" + username + "," + ldap_config.base_dn # LDAP injection shouldn't be possible due to form validator regex
-            # c = Connection(server, user=ldap_user, password=password, read_only=True)
-            # test = c.bind()
-            # if test == True:
-
-            #     user = User.query.filter_by(username=username, local=AUTH_LDAP).first()
-
-            #     if user:
-            #         db.session.commit()
-            #         login_user(user)
-            #         current_app.logger.info(
-            #             "Authentication successful (user.id=%i)", user.id
-            #         )
-            #         return redirect(url_for("base_blueprint.route_default"))
-            #     else:
-            #         user = User(
-            #             username=username,
-            #             local=False,
-            #         )
-            #         db.session.add(user)
-            #         db.session.commit()
-            #         current_app.logger.info(
-            #             "New user configuration added (user.id=%i)", user.id
-            #         )
-            #         login_user(user)
-            #         current_app.logger.info(
-            #             "Authentication successful (user.id=%i)", user.id
-            #         )
-            #         return redirect(url_for("base_blueprint.route_default"))
-
-            # else:
-            #     current_app.logger.info(
-            #         "Authentication failure (username was '%s')", username
-            #     )
-            #     return render_template(
-            #         "login.html", msg="Wrong user or password", form=login_form
-            #     )
+            # Define TLS context if encryption is enabled
+            if ldap_config.use_tls:
+                tls = Tls(
+                    ciphers="ALL",
+                    validate=ssl.CERT_REQUIRED,
+                    ca_certs_file=ldap_config.cacert_path,
+                )
+            else:
+                tls = None
+            # LDAP server setup
+            ldap_manager.add_server(
+                ldap_config.server_host,
+                ldap_config.server_port,
+                ldap_config.use_tls,
+                tls_ctx=tls,
+            )
+            # Init the LDAP manager with the config
+            ldap_manager.init_config(ldap_config_dict())
+            # Check if the credentials are correct
+            response = ldap_manager.authenticate(username, password)
+            # LDAP auth failed
+            if response.status.value != 2:
+                current_app.logger.info(
+                    "LDAP Authentication failure (username was '%s')", username
+                )
+                return render_template(
+                    "login.html", msg="LDAP authentication failed", form=login_form
+                )
+            user = User.query.filter_by(username=username, local=AUTH_LDAP).first()
+            # LDAP user already exists in DB
+            if user:
+                # User is not approved (guest)
+                if user.role == ROLE_GUEST:
+                    current_app.logger.info(
+                        "Guest user authenticated (user.id=%i)", user.id
+                    )
+                    return render_template(
+                        "login.html",
+                        msg="Your account is pending administrator approval",
+                        form=login_form,
+                    )
+                else:
+                    login_user(user)
+                    current_app.logger.info(
+                        "LDAP authentication successful (user.id=%i)", user.id
+                    )
+                    return redirect(url_for("base_blueprint.route_default"))
+            # Create a new LDAP user in DB
+            else:
+                user = User(
+                    username=username,
+                    first_name=response.user_info["givenName"][0],
+                    last_name=response.user_info["sn"][0],
+                    email=response.user_info["mail"][0],
+                    # If user approval is enabled, set the guest role
+                    role=ROLE_GUEST if ldap_config.users_approval else ROLE_USER,
+                    local=AUTH_LDAP,
+                )
+                db.session.add(user)
+                db.session.commit()
+                current_app.logger.info(
+                    "New user configuration added (user.id=%i)", user.id
+                )
+                # Login only if admin approval is not required
+                if not ldap_config.users_approval:
+                    login_user(user)
+                    current_app.logger.info(
+                        "Authentication successful (user.id=%i)", user.id
+                    )
+                    return redirect(url_for("base_blueprint.route_default"))
+                else:
+                    return render_template(
+                        "login.html",
+                        msg="Your account is pending administrator approval",
+                        form=login_form,
+                    )
         # Local user
         else:
             user = User.query.filter_by(username=username, local=AUTH_LOCAL).first()

@@ -6,28 +6,20 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 import pathlib
-from glob import glob
 from zipfile import BadZipFile, ZipFile
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
+from werkzeug.utils import secure_filename
+
 from app import db
-from app.constants import (
-    EXTRACT_FOLDER_NAME,
-    LANGUAGES_DEVICONS,
-    PROJECTS_SRC_PATH,
-)
+from app.constants import (EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS,
+                           PROJECTS_SRC_PATH)
 from app.projects import blueprint
 from app.projects.forms import ProjectForm
 from app.projects.models import Project
-from app.projects.util import (
-    check_zipfile,
-    count_lines,
-    remove_project,
-    sha256sum,
-    top_supported_language_lines_counts,
-)
-from werkzeug.utils import secure_filename
+from app.projects.util import (check_zipfile, count_lines, remove_project,
+                               sha256sum, top_supported_language_lines_counts)
 
 
 @blueprint.route("/projects")

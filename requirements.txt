@@ -5,6 +5,7 @@ flask_admin==1.6.0
 flask_login==0.6.0
 flask_sqlalchemy==2.5.1
 flask_migrate==3.1.0
+flask_ldap3_login
 gitpython==3.1.27
 gunicorn==20.1.0
 is_safe_url==1.0
@@ -19,4 +20,3 @@ flask_wtf==1.0.0
 wtforms==2.3.3
 redis==3.5.3
 semgrep==1.2.1
-ldap3==2.9.1

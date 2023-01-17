@@ -42,26 +42,8 @@ def validate_ldap_form(form):
         # Check base DN not empty
         if form.base_dn.data == "":
             err = "Please define a base DN"
-         # Check bind DN and password
-        if not form.anonymous_bind.data:
-            if form.bind_dn.data == "":
-                err = "Please define bind DN"
+         # Check password if Bind DN is no empty
+        if form.bind_dn.data != "":
             if form.bind_password.data == "":
                 err = "Please define bind password"
     return err
-
-# def bind(password, url, dnd):
-
-#     ldap_server =url
-
-#     tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
-#     server = Server(ldap_server,port=636, use_ssl=True,get_info=ALL, tls=tls)
-#     c = Connection(server, user=dnd, password=password,auto_bind=True)
-#     print(c)
-#     if not c.bind():
-#         tested =0
-#     else:
-#         tested = 1
- 
-#     return tested
-

@@ -2,27 +2,23 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from sqlalchemy.orm.exc import NoResultFound
-from app.administration.models import LdapConfiguration
-from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 import json
 
-from flask import (
-    current_app,
-    flash,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask_login import current_user, login_required
+from sqlalchemy.orm.exc import NoResultFound
+
 from app import db
 from app.administration import blueprint
-from app.administration.forms import RepositoryForm, UserForm, LdapForm
-from app.rules.models import RuleRepository
+from app.administration.forms import LdapForm, RepositoryForm, UserForm
+from app.administration.models import LdapConfiguration
 from app.administration.util import validate_ldap_form, validate_user_form
 from app.base import util
 from app.base.models import User
+from app.constants import ROLE_USER
+from app.rules.models import RuleRepository
+from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
 
 
 @blueprint.route("/users")
@@ -178,6 +174,21 @@ def users_remove(user_id):
         return render_template("403.html"), 403
 
 
+@blueprint.route("/users/approve/<user_id>")
+@login_required
+def users_approve(user_id):
+    admin = util.is_admin(current_user.role)
+    if admin:
+        user = User.query.filter_by(id=user_id).first_or_404()
+        user.role = ROLE_USER
+        db.session.commit()
+        current_app.logger.info("Guest user approved (user.id=%i)", user.id)
+        flash("User successfully approved", "success")
+        return redirect(url_for("administration_blueprint.users_list"))
+    else:
+        return render_template("403.html"), 403
+
+
 @blueprint.route("/ldap/configuration", methods=["GET", "POST"])
 @login_required
 def ldap_configuration():
@@ -232,39 +243,6 @@ def ldap_configuration():
             )
     else:
         return render_template("403.html"), 403
-
-
-# @blueprint.route("/ldap/testing",methods=["GET", "POST"])
-# @login_required
-# def ldap_testing():
-#     admin = util.is_admin(current_user.role)
-#     if admin:
-#         name = request.args.get('name')
-#         password = request.args.get('passwd')
-#         url = request.args.get('url')
-#         Dnd = request.args.get('Dnd')
-#         base = request.args.get('base')
-
-#         result_test = bind(password,url,Dnd)
-#         print(result_test)
-#         if result_test == 1 :
-#             #export into bdd
-#             # Create the rule pack
-#             ldap_conf = LdapConf(
-#                 title=name,
-#                 url=url,
-#                 bind_Dnd=Dnd,
-#                 search_base=base,
-#             )
-#             db.session.add(ldap_conf)
-#             db.session.commit()
-#             current_app.logger.info(
-#                 "New ldap configuration added (ldap_conf.id=%i)", ldap_conf.id
-#             )
-#             flash("Ldap configuration has been successfully created", "success")
-#         return jsonify(result_test)
-#     else :
-#         return render_template("403.html"),403
 
 
 @blueprint.route("/repos")

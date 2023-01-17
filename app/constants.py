@@ -3,10 +3,13 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-# Authentification
+# User / authentication constants
 
 AUTH_LOCAL = True
 AUTH_LDAP = False
+ROLE_USER = "0"
+ROLE_ADMIN = "1"
+ROLE_GUEST = "2"
 
 # Analysis constants
 
