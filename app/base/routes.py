@@ -8,13 +8,6 @@ import ssl
 from datetime import datetime
 from os import path
 
-from flask import (current_app, redirect, render_template, request, session,
-                   url_for)
-from flask_login import current_user, login_required, login_user, logout_user
-from is_safe_url import is_safe_url
-from ldap3 import Tls
-from sqlalchemy.orm.exc import NoResultFound
-
 from app import db, ldap_manager, login_manager
 from app.administration.models import LdapConfiguration
 from app.base import blueprint
@@ -26,6 +19,11 @@ from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH,
                            ROLE_GUEST, ROLE_USER, RULES_PATH)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
+from flask import (current_app, redirect, render_template, request, session,
+                   url_for)
+from flask_login import current_user, login_required, login_user, logout_user
+from is_safe_url import is_safe_url
+from ldap3 import Tls
 
 
 @blueprint.route("/")
@@ -44,17 +42,18 @@ def route_default():
 @blueprint.route("/login", methods=["GET", "POST"])
 def login():
     login_form = LoginForm(request.form)
+    # Flag if LDAP is configured
+    ldap_config = LdapConfiguration.query.first()
+    ldap_activated = (
+        True if ldap_config is not None and ldap_config.ldap_activated else False
+    )
     if "login" in request.form:
         # read form data
         username = request.form["username"]
         password = request.form["password"]
         # LDAP user
         if request.form.get("ldap"):
-            # Ensure LDAP is configured
-            try:
-                # Existing LDAP configuration in DB
-                ldap_config = LdapConfiguration.query.one()
-            except NoResultFound:
+            if not ldap_activated:
                 # No LDAP config in DB, return an error
                 current_app.logger.info(
                     "LDAP authentication is not enabled (username was '%s')", username
@@ -90,7 +89,10 @@ def login():
                     "LDAP Authentication failure (username was '%s')", username
                 )
                 return render_template(
-                    "login.html", msg="LDAP authentication failed", form=login_form
+                    "login.html",
+                    msg="LDAP authentication failed",
+                    form=login_form,
+                    ldap_activated=ldap_activated,
                 )
             user = User.query.filter_by(username=username, local=AUTH_LDAP).first()
             # LDAP user already exists in DB
@@ -104,6 +106,7 @@ def login():
                         "login.html",
                         msg="Your account is pending administrator approval",
                         form=login_form,
+                        ldap_activated=ldap_activated,
                     )
                 else:
                     login_user(user)
@@ -157,10 +160,15 @@ def login():
                 "Authentication failure (username was '%s')", username
             )
             return render_template(
-                "login.html", msg="Wrong user or password", form=login_form
+                "login.html",
+                msg="Wrong user or password",
+                form=login_form,
+                ldap_activated=ldap_activated,
             )
     if not current_user.is_authenticated:
-        return render_template("login.html", form=login_form)
+        return render_template(
+            "login.html", form=login_form, ldap_activated=ldap_activated
+        )
     return redirect(url_for("base_blueprint.index"))
 
 
