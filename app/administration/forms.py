@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import (BooleanField, HiddenField, IntegerField, PasswordField,
                      SelectField, TextField)
 from wtforms.fields.simple import TextAreaField
-from wtforms.validators import DataRequired, Email, Regexp
+from wtforms.validators import DataRequired, Optional, Email, Regexp
 
 
 class UserForm(FlaskForm):
@@ -60,20 +60,22 @@ class LdapForm(FlaskForm):
         "LDAP server host",
         id="ldap-server-uri",
         validators=[
+            Optional(),
             Regexp(
                 "^[a-zA-Z0-9-_\.]+$",
                 message="Server host must contain only letters, numbers, dash (-), dot (.), or underscore (_) characters",
             )
         ],
     )
-    server_port = IntegerField("Port", id="ldap-server-port")
+    server_port = IntegerField("Port", id="ldap-server-port", validators=[Optional()])
     use_tls = BooleanField("Activate TLS", id="ldap-use-tls")
     cacert_path = TextField(
         "CA certificate path",
         id="ldap-cacert-path",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9/\\-_\. ]*$",
+                "^[a-zA-Z0-9/\\-_\. ]+$",
                 message="CA certificate path must contain only letters, numbers, dash (-), slash (/), equals (=), dot (.), slash (\/), space ( ) and comma (,) characters",
             )
         ],
@@ -82,8 +84,9 @@ class LdapForm(FlaskForm):
         "Bind DN",
         id="ldap-bind-dn",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_,=]*$",
+                "^[a-zA-Z0-9-_,=]+$",
                 message="Bind DN must contain only letters, numbers, dash (-), underscore (_), slash (/), equals (=) and comma (,) characters",
             )
         ],
@@ -93,8 +96,9 @@ class LdapForm(FlaskForm):
         "Base DN",
         id="ldap-base-dn",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_,=]*$",
+                "^[a-zA-Z0-9-_,=]+$",
                 message="Base DN must contain only letters, numbers, dash (-), underscore (_), slash (/), equals (=) and comma (,) characters",
             )
         ],
@@ -103,8 +107,9 @@ class LdapForm(FlaskForm):
         "Users DN",
         id="ldap-users-dn",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_,=]*$",
+                "^[a-zA-Z0-9-_,=]+$",
                 message="Users DN must contain only letters, numbers, dash (-), underscore (_), equals (=) and comma (,) characters",
             )
         ],
@@ -113,8 +118,9 @@ class LdapForm(FlaskForm):
         "Groups DN",
         id="ldap-groups-dn",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_,=]*$",
+                "^[a-zA-Z0-9-_,=]+$",
                 message="Groups DN must contain only letters, numbers, dash (-), underscore (_), equals (=) and comma (,) characters",
             )
         ],
@@ -123,8 +129,9 @@ class LdapForm(FlaskForm):
         "User RDN Attribute",
         id="ldap-user-rdn-attr",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9]*$",
+                "^[a-zA-Z0-9]+$",
                 message="User RDN attribute must contain only letters and numbers characters",
             )
         ],
@@ -133,8 +140,9 @@ class LdapForm(FlaskForm):
         "User login attribute",
         id="ldap-user-login-attr",
         validators=[
+            Optional(),
             Regexp(
-                "^[a-zA-Z0-9]*$",
+                "^[a-zA-Z0-9]+$",
                 message="User login attribute must contain only letters and numbers characters",
             )
         ],
