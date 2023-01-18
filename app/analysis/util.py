@@ -3,47 +3,31 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from difflib import Match
-from fileinput import filename
 import json
 import multiprocessing
 import os
 import re
 from datetime import datetime
+from difflib import Match
 from glob import glob
 from shutil import copyfile, rmtree
 
 from flask import current_app
-from git import Tag
-from app import celery, db
-from app.analysis.models import (
-    Analysis,
-    AppInspector,
-    Match,
-    InspectorTag,
-    Occurence,
-    Position,
-    Vulnerability,
-)
-from app.constants import (
-    EXTRACT_FOLDER_NAME,
-    PROJECTS_SRC_PATH,
-    RULE_EXTENSIONS,
-    RULES_PATH,
-    SEVERITY_HIGH,
-    SEVERITY_MEDIUM,
-    STATUS_ABORTED,
-    STATUS_ANALYZING,
-    STATUS_ERROR,
-    STATUS_FINISHED,
-)
-from app.rules.util import generate_severity
-from app.projects.util import application_inspector_scan,calculate_risk_level, count_occurences
-from semgrep import semgrep_main, util
+from semgrep import semgrep_main
 from semgrep.constants import OutputFormat
-
-from semgrep.output import OutputHandler, OutputSettings
 from semgrep.error import SemgrepError
+from semgrep.output import OutputHandler, OutputSettings
+
+from app import celery, db
+from app.analysis.models import (Analysis, AppInspector, InspectorTag, Match,
+                                 Occurence, Position, Vulnerability)
+from app.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
+                           RULE_EXTENSIONS, RULES_PATH, SEVERITY_HIGH,
+                           SEVERITY_MEDIUM, STATUS_ABORTED, STATUS_ANALYZING,
+                           STATUS_ERROR, STATUS_FINISHED)
+from app.projects.util import (application_inspector_scan,
+                               calculate_risk_level, count_occurences)
+from app.rules.util import generate_severity
 
 ##
 ## Analysis utils

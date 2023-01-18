@@ -8,25 +8,25 @@ from importlib import import_module
 
 from celery import Celery
 from flask import Flask
+from flask_ldap3_login import LDAP3LoginManager
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
 
 # load the extension
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-
+ldap_manager = LDAP3LoginManager()
 
 # Instantiate Celery
 celery = Celery(__name__)
 
 
-
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    ldap_manager.app = app
 
 
 def register_blueprints(app):
@@ -61,7 +61,7 @@ def create_app(config):
 
     # Configure DB
     configure_database(app)
-    Migrate(app, db)
+    Migrate(app=app, db=db, compare_type=True)
 
     return app
 

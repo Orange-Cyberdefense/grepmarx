@@ -7,15 +7,18 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import binascii
 import hashlib
 import os
+import shutil
 from calendar import monthrange
 from datetime import date, datetime, timedelta
-import shutil
+
+from sqlalchemy import and_, func
 
 from app import db
+from app.administration.models import LdapConfiguration
 from app.analysis.models import Analysis
-from app.rules.models import SupportedLanguage
 from app.base import models
-from sqlalchemy import and_, func
+from app.rules.models import SupportedLanguage
+
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_pass(password):
@@ -129,3 +132,19 @@ def remove_dir_content(directory):
                 shutil.rmtree(file_path)
         except Exception as e:
             print("Failed to delete %s. Reason: %s" % (file_path, e))
+
+
+def ldap_config_dict():
+    ldap_config = LdapConfiguration.query.first()
+    config = dict()
+    config["LDAP_HOST"] = ldap_config.server_host
+    config["LDAP_PORT"] = ldap_config.server_port
+    config["LDAP_BASE_DN"] = ldap_config.base_dn
+    config["LDAP_USER_DN"] = ldap_config.users_dn
+    config["LDAP_GROUP_DN"] = ldap_config.groups_dn
+    config["LDAP_USER_RDN_ATTR"] = ldap_config.user_rdn_attr
+    config["LDAP_USER_LOGIN_ATTR"] = ldap_config.user_login_attr
+    config["LDAP_BIND_USER_DN"] = ldap_config.bind_dn
+    config["LDAP_BIND_USER_PASSWORD"] = ldap_config.bind_password
+    config["LDAP_ADD_SERVER"] = False
+    return config

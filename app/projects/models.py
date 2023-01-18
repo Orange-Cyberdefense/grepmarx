@@ -3,10 +3,11 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from app import db
-from app.constants import STATUS_NEW
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql.schema import ForeignKey
+
+from app import db
+from app.constants import STATUS_NEW
 
 
 class Project(db.Model):

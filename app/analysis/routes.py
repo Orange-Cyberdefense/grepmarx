@@ -3,35 +3,27 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from importlib.metadata import files
 import json
 import os
 import time
 
 from flask import current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
+from pygments.lexers import guess_lexer_for_filename
+from pygments.util import ClassNotFound
+
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
-from app.analysis.models import Analysis, AppInspector, InspectorTag, Occurence, Vulnerability, Match
-from app.analysis.util import (
-    async_scan,
-    import_rules,
-    stop_analysis,
-    vulnerabilities_sorted_by_severity,
-
-)
-from app.constants import (
-    EXTRACT_FOLDER_NAME,
-    OWASP_TOP10_LINKS,
-    PROJECTS_SRC_PATH,
-    STATUS_PENDING,
-)
+from app.analysis.models import (Analysis, AppInspector, InspectorTag, Match,
+                                 Occurence, Vulnerability)
+from app.analysis.util import (async_scan, import_rules, stop_analysis,
+                               vulnerabilities_sorted_by_severity)
+from app.constants import (EXTRACT_FOLDER_NAME, OWASP_TOP10_LINKS,
+                           PROJECTS_SRC_PATH, STATUS_PENDING)
 from app.projects.models import Project
 from app.projects.util import top_language_lines_counts
 from app.rules.models import RulePack
-from pygments.lexers import guess_lexer_for_filename
-from pygments.util import ClassNotFound
 
 ##
 ## Analysis utils

@@ -3,9 +3,10 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from sqlalchemy import Column, Integer, String
+
 from app import db
 from app.rules.models import analysis_to_rule_pack_association_table
-from sqlalchemy import Column, Integer, String
 
 
 class Analysis(db.Model):

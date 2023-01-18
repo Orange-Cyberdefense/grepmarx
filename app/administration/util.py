@@ -3,12 +3,8 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from multiprocessing import connection
 from app.base.models import User
-from ldap3 import Server, Connection,Tls, ALL
-from ldap3.core.exceptions import LDAPException, LDAPBindError
-import re
-import ssl
+
 
 def validate_user_form(
     form, skip_username=False, skip_email=False, skip_password=False
@@ -33,18 +29,21 @@ def validate_user_form(
             err = "Passwords does not match"
     return err
 
-def bind(password, url, dnd):
-
-    ldap_server =url
-
-    tls = Tls(ciphers='ALL', validate = ssl.CERT_REQUIRED,ca_certs_file = '/opt/grepmarx/ldap-cert/ca.crt')
-    server = Server(ldap_server,port=636, use_ssl=True,get_info=ALL, tls=tls)
-    c = Connection(server, user=dnd, password=password,auto_bind=True)
-    print(c)
-    if not c.bind():
-        tested =0
-    else:
-        tested = 1
- 
-    return tested
-
+def validate_ldap_form(form):
+    err = None
+    # Fields are mandatory only if LDAP is enabled
+    if form.ldap_activated.data:
+        # Check server not empty
+        if form.server_host.data == "":
+            err = "Please define LDAP server"
+        # Check port not empty
+        if form.server_port.data == "":
+            err = "Please define LDAP server port"
+        # Check base DN not empty
+        if form.base_dn.data == "":
+            err = "Please define a base DN"
+         # Check password if Bind DN is no empty
+        if form.bind_dn.data != "":
+            if form.bind_password.data == "":
+                err = "Please define bind password"
+    return err

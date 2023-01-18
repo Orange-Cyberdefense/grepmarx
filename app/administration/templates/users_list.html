@@ -98,14 +98,19 @@
                                             
                                             {% if c_user.role == '0'  %}
                                             User
-                                            {% else %}
+                                            {% elif c_user.role == '1' %}
                                             Admin
+                                            {% elif c_user.role == '2' %}
+                                            Guest
                                             {% endif %}
                                         </td>
                                         <td class="text-right py-0 align-middle">
                                             <div class="btn-group btn-group-sm">
+                                                {% if c_user.role == '2' %}
+                                                <a href="/users/approve/{{ c_user.id }}" class="btn btn-default text-success"><i class="fas fa-check"></i></a>
+                                                {% endif %}
                                                 <a href="/users/edit/{{ c_user.id }}" class="btn btn-default"><i class="fas fa-pencil-alt"></i></a>
-                                                <a class="btn btn-default" href="#"
+                                                <a class="btn btn-default text-danger" href="#"
                                                 onclick="setConfirmAction('confirm-user-removal-button', '/users/remove/{{ c_user.id }}')"
                                                 data-toggle="modal" data-target="#confirm-removal"><i class="fas fa-trash"></i></a>
                                             </div>

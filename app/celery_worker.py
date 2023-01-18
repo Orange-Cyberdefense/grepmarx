@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-from app import create_app
 from sys import exit
-from decouple import config
-from app.config import config_dict
 
+from decouple import config
+
+from app import create_app
+from app.config import config_dict
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 get_config_mode = 'Debug' if DEBUG else 'Production'

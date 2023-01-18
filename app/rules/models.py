@@ -102,7 +102,6 @@ class RuleRepository(db.Model):
     last_update_on = Column(DateTime())
 
 
-
 class SupportedLanguage(db.Model):
 
     __tablename__ = "SupportedLanguage"

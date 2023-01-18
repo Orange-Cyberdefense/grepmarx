@@ -2,19 +2,26 @@
 """
 Copyright (c) 2021 - present Orange Cyberdefense
 """
+from sqlalchemy import Boolean, Column, Integer, String
+
 from app import db
-from sqlalchemy import Column, Integer, String
 
 
-class LdapConf(db.Model):
+class LdapConfiguration(db.Model):
 
-    __tablename__ = "LdapConf"
+    __tablename__ = "LdapConfiguration"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    url = Column(String, nullable=False)
-    bind_Dnd = Column(String, nullable=False)
-    search_base = Column(String, nullable=False)
-
-
-
+    ldap_activated = Column(Boolean, nullable=False)
+    server_host = Column(String, nullable=True)
+    server_port = Column(Integer, nullable=True)
+    use_tls = Column(Boolean, nullable=True)
+    cacert_path = Column(String, nullable=True)
+    users_approval = Column(Boolean, nullable=True)
+    bind_dn = Column(String, nullable=True)
+    bind_password = Column(String, nullable=True)
+    base_dn = Column(String, nullable=True)
+    users_dn = Column(String, nullable=True)
+    groups_dn = Column(String, nullable=True)
+    user_rdn_attr = Column(String, nullable=True)
+    user_login_attr =  Column(String, nullable=True)
