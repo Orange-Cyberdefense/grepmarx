@@ -5,7 +5,7 @@ flask_admin==1.6.0
 flask_login==0.6.0
 flask_sqlalchemy==2.5.1
 flask_migrate==3.1.0
-flask_ldap3_login==0.9.18
+flask-ldap3-login==0.9.18
 gitpython==3.1.27
 gunicorn==20.1.0
 is_safe_url==1.0
