@@ -147,3 +147,25 @@ class LdapForm(FlaskForm):
             )
         ],
     )
+    user_object_filter = TextField(
+        "User object filter",
+        id="ldap-user-object-filter",
+        validators=[
+            Optional(),
+            Regexp(
+                "^[a-zA-Z0-9-_\(\)=&|*:! ]+$",
+                message="User object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), ampersand (&), pipe (|) ans star (*) characters",
+            )
+        ],
+    )
+    group_object_filter = TextField(
+        "Group object filter",
+        id="ldap-group-object-filter",
+        validators=[
+            Optional(),
+            Regexp(
+                "^[a-zA-Z0-9-_\(\)=&|*:! ]+$",
+                message="Group object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), ampersand (&), pipe (|) ans star (*) characters",
+            )
+        ],
+    )

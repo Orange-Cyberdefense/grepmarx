@@ -25,3 +25,5 @@ class LdapConfiguration(db.Model):
     groups_dn = Column(String, nullable=True)
     user_rdn_attr = Column(String, nullable=True)
     user_login_attr =  Column(String, nullable=True)
+    user_object_filter =  Column(String, nullable=True)
+    group_object_filter =  Column(String, nullable=True)

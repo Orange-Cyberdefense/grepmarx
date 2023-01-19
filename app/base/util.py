@@ -146,5 +146,7 @@ def ldap_config_dict():
     config["LDAP_USER_LOGIN_ATTR"] = ldap_config.user_login_attr
     config["LDAP_BIND_USER_DN"] = ldap_config.bind_dn
     config["LDAP_BIND_USER_PASSWORD"] = ldap_config.bind_password
+    config["LDAP_USER_OBJECT_FILTER"] = ldap_config.user_object_filter
+    config["LDAP_GROUP_OBJECT_FILTER"] = ldap_config.group_object_filter
     config["LDAP_ADD_SERVER"] = False
     return config
