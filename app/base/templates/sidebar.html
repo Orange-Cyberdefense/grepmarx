@@ -77,17 +77,19 @@
             </a>
           </li>
 
-          <li class="nav-item">
-            <a href="/repos" class="nav-link {% if 'rule_repos' in segment %} active {% endif %}">
-              <i class="fas fa-server"></i>
-              <p>
-                Repositories
-              </p>
-            </a>
-          </li>
           <!-- Administration -->
-          {%  if current_user.username == "admin" %}
+          {%  if current_user.role == "1" %}
             <li class="nav-header">ADMINISTRATION</li>
+
+            <li class="nav-item">
+              <a href="/repos" class="nav-link {% if 'rule_repos' in segment %} active {% endif %}">
+                <i class="fas fa-server"></i>
+                <p>
+                  Repositories
+                </p>
+              </a>
+            </li>
+
             <li class="nav-item" >
               <a href="/users" class="nav-link {% if 'users' in segment %} active {% endif %}">
                 <i class="fas fa-user" ></i>
@@ -96,6 +98,7 @@
                 </p>
               </a>
             </li>
+
             <li class=" nav-item">
               <a href="/ldap/configuration" class="nav-link {% if 'ldap' in segment %} active {% endif %}">
                 <i class="fas fa-network-wired"></i>
