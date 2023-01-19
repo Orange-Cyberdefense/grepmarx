@@ -111,6 +111,7 @@ def init_db():
     db.session.add(SupportedLanguage(name="Solidity", extensions=".sol"))
     db.session.add(SupportedLanguage(name="Terraform", extensions=".tf"))
     db.session.add(SupportedLanguage(name="Generic", extensions=""))
+    db.session.add(SupportedLanguage(name="Swift", extensions=".swift,.SWIFT"))
     db.session.commit()
 
 

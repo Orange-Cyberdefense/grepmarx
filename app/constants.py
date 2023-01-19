@@ -112,5 +112,6 @@ LANGUAGES_DEVICONS = {
     "Scala": "devicon-scala-plain",
     "Solidity": "devicon-solidity-plain",
     "Terraform": "devicon-terraform-plain",
-    "Generic": "devicon-devicon-plain"
+    "Generic": "devicon-devicon-plain",
+    "Swift": "devicon-swift-plain"
 }
