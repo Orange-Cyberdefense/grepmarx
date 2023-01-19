@@ -13,6 +13,7 @@ import git
 from flask import current_app
 from app import db
 from app.constants import (
+    LOCAL_RULES,
     RULE_EXTENSIONS,
     RULES_PATH,
     LOCAL_RULES_PATH,
@@ -42,26 +43,32 @@ def sync_db(rules_folder):
         rules_filenames += glob(
             pathname=os.path.join(rules_folder, "**", "*" + c_ext), recursive=True
         )
-    supported_languages = SupportedLanguage.query.all()
     # Parse rules in these files
     for c_filename in rules_filenames:
-        with open(c_filename, "r") as yml_stream:
-            file_path = c_filename.replace(RULES_PATH, "")
-            repository = file_path.split(os.path.sep)[0]
-            # Check if the folder matches an existing repository
-            if RuleRepository.query.filter_by(name=repository).first() is None:
-                current_app.logger.debug(
-                    "Folder does not match a registered rule repository. You should manually remove the unused `%s' folder.",
-                    repository,
-                )
-            else:
-                # Parse yaml content
-                try:
-                    yml_rules = safe_load(yml_stream)
-                # Skip file if not parseable
-                except YAMLError as e:
-                    current_app.logger.debug(e)
-                    continue
+        save_rule_in_db(c_filename)
+
+
+def save_rule_in_db(filename):
+    with open(filename, "r") as yml_stream:
+        # Repository name is the folder name of the rule file
+        file_path = filename.replace(RULES_PATH, "")
+        repository = file_path.split(os.path.sep)[0]
+        # Check if the folder matches an existing repository
+        if RuleRepository.query.filter_by(name=repository).first() and repository != LOCAL_RULES is None:
+            current_app.logger.debug(
+                "Folder does not match a registered rule repository. You should manually remove the unused `%s' folder.",
+                repository,
+            )
+        else:
+            # Parse yaml content
+            yml_ok = True
+            try:
+                yml_rules = safe_load(yml_stream)
+            # Skip file if not parseable
+            except YAMLError as e:
+                current_app.logger.debug(e)
+                yml_ok = False
+            if yml_ok:
                 category = ".".join(file_path.split(os.path.sep)[1:][:-1])
                 # Extract rules from the file, if any
                 if "rules" in yml_rules:
@@ -85,6 +92,7 @@ def sync_db(rules_folder):
                             db.session.add(rule)
                         # Associate the rule with a known, supported language
                         if "languages" in c_rule:
+                            supported_languages = SupportedLanguage.query.all()
                             for c_language in c_rule["languages"]:
                                 for c_sl in supported_languages:
                                     if c_sl.name.lower() == c_language.lower():
@@ -107,7 +115,7 @@ def sync_db(rules_folder):
                         rule.severity = generate_severity(rule.cwe)
                         current_app.logger.debug(
                             "Rule imported in DB: %s",
-                            rule.repository.name
+                            repository
                             + "/"
                             + rule.category
                             + "/"
@@ -115,6 +123,18 @@ def sync_db(rules_folder):
                         )
                         db.session.commit()
 
+def add_new_rule(name, code):
+    # Make sure the local rule directory exists
+    if not os.path.exists(LOCAL_RULES_PATH):
+        os.mkdir(LOCAL_RULES_PATH)
+    # Normalize rule name for the file name
+    name = name.replace(" ", "_").lower()
+    rule_path = os.path.join(LOCAL_RULES_PATH, name + ".yml")
+    # Save the rule file
+    new_rule = open(rule_path, "w")
+    new_rule.write(code)
+    new_rule.close()
+    return rule_path
 
 def generate_severity(cwe_string):
     """Generates a severity level from a CWE full name.
@@ -253,16 +273,3 @@ def remove_rule_repo(repo):
         rmtree(repo_path)
     db.session.delete(repo)
     db.session.commit()
-
-
-def add_new_rule(name, code):
-    # Make sure the local rule directory exists
-    if not os.path.exists(LOCAL_RULES_PATH):
-        os.mkdir(LOCAL_RULES_PATH)
-    # Normalize rule name for the file name
-    name = name.replace(" ", "_").lower()
-    rule_path = os.path.join(LOCAL_RULES_PATH, name + ".yml")
-    # Save the rule file
-    new_rule = open(rule_path, "w")
-    new_rule.write(code)
-    new_rule.close()

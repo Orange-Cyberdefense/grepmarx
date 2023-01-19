@@ -15,6 +15,7 @@ from app.rules.forms import RulePackForm, RulesAddForm
 from app.rules.models import Rule, RulePack, SupportedLanguage
 from app.rules.util import (
     comma_separated_to_list,
+    save_rule_in_db,
     validate_languages_rules,
     sync_db,
     add_new_rule,
@@ -222,7 +223,8 @@ def rules_add():
     # POST / Form submitted
     if "save-local-rule" in request.form:
         if rule_form.validate_on_submit():
-            add_new_rule(rule_form.name.data, rule_form.rule.data)
+            rule_path = add_new_rule(rule_form.name.data, rule_form.rule.data)
+            save_rule_in_db(rule_path)
             flash("New rule has been successfully added.", "success")
         else:
             current_app.logger.warning(

@@ -49,7 +49,7 @@ class Rule(db.Model):
     cwe = Column(String)
     owasp = Column(String)
     repository_id = db.Column(
-        db.Integer, db.ForeignKey("RuleRepository.id"), nullable=False
+        db.Integer, db.ForeignKey("RuleRepository.id"), nullable=True
     )
     repository = db.relationship(
         "RuleRepository",
