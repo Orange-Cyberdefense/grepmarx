@@ -22,7 +22,7 @@ services:
     restart: always
     volumes: 
       - gpx-data:/opt/grepmarx/data
-      - ./ldap-cert:/opt/grepmarx/ldap-cert/
+    #  - ./ldap-cert:/opt/grepmarx/ldap-cert/
     build: .
     links:
       - redis
