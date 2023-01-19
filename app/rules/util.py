@@ -15,7 +15,7 @@ from app import db
 from app.constants import (
     RULE_EXTENSIONS,
     RULES_PATH,
-    RULES_ADMIN_PATH,
+    LOCAL_RULES_PATH,
     SEVERITY_LOW,
     SEVERITY_MEDIUM,
     TOP40_CWE_SEVERITIES,
@@ -256,8 +256,13 @@ def remove_rule_repo(repo):
 
 
 def add_new_rule(name, code):
-    repo_path = os.path.join(RULES_ADMIN_PATH)
-    print(repo_path + str(name[0]) + ".yml")
-    new_rule = open(repo_path + str(name[0]) + ".yml", "w")
-    new_rule.write(str(code[0]))
+    # Make sure the local rule directory exists
+    if not os.path.exists(LOCAL_RULES_PATH):
+        os.mkdir(LOCAL_RULES_PATH)
+    # Normalize rule name for the file name
+    name = name.replace(" ", "_").lower()
+    rule_path = os.path.join(LOCAL_RULES_PATH, name + ".yml")
+    # Save the rule file
+    new_rule = open(rule_path, "w")
+    new_rule.write(code)
     new_rule.close()

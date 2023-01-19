@@ -35,7 +35,7 @@ SEVERITY_HIGH = "high"
 SEVERITY_MEDIUM = "medium"
 SEVERITY_LOW = "low"
 RULES_PATH = "data/rules/"
-RULES_ADMIN_PATH ="data/rules/AdminRules/"
+LOCAL_RULES_PATH ="data/rules/local_rules/"
 RULE_EXTENSIONS = {".yaml", ".yml"}
 OWASP_TOP10_LINKS = {
     "A01": "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",

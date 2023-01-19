@@ -6,7 +6,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SelectMultipleField, widgets
 from wtforms.fields.simple import HiddenField, TextField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Regexp
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -23,5 +23,8 @@ class RulePackForm(FlaskForm):
 
 
 class RulesAddForm(FlaskForm):
-    name = TextField("Name of rule", id="rule-name", validators=[DataRequired()])
-    rule = TextAreaField("Rule code", id="rule-code")
+    name = TextField("Name of rule", id="rule-name", validators=[DataRequired(),Regexp(
+                "^[a-zA-Z0-9-_ ]+$",
+                message="Rule name must contain only letters, numbers, dash (-), underscore (_) or space ( ) characters",
+            ),])
+    rule = TextAreaField("Rule code", id="rule-code", validators=[DataRequired()])

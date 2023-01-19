@@ -12,7 +12,6 @@ from app import db
 from app.constants import OWASP_TOP10_LINKS, RULES_PATH
 from app.rules import blueprint
 from app.rules.forms import RulePackForm, RulesAddForm
-from app.base import util
 from app.rules.models import Rule, RulePack, SupportedLanguage
 from app.rules.util import (
     comma_separated_to_list,
@@ -219,15 +218,16 @@ def rules_packs_remove(rule_pack_id):
 @blueprint.route("/rules/add", methods=["GET", "POST"])
 @login_required
 def rules_add():
-    admin = util.is_admin(current_user.role)
-    if admin:
-        rule_form = RulesAddForm()
+    rule_form = RulesAddForm()
+    # POST / Form submitted
+    if "save-local-rule" in request.form:
         if rule_form.validate_on_submit():
-            name = (rule_form.name.data,)
-            code = (rule_form.rule.data,)
-            print(name)
-
-            add_new_rule(name, code)
-        return render_template("add_rules.html", form=rule_form)
-    else:
-        return render_template("403.html"), 403
+            add_new_rule(rule_form.name.data, rule_form.rule.data)
+            flash("New rule has been successfully added.", "success")
+        else:
+            current_app.logger.warning(
+                "Invalid rule form entries: %s",
+                json.dumps(rule_form.errors),
+            )
+            flash(rule_form.errors, "error")
+    return render_template("add_rules.html", form=rule_form, user=current_user,)
