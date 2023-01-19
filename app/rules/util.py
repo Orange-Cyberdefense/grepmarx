@@ -54,7 +54,10 @@ def save_rule_in_db(filename):
         file_path = filename.replace(RULES_PATH, "")
         repository = file_path.split(os.path.sep)[0]
         # Check if the folder matches an existing repository
-        if RuleRepository.query.filter_by(name=repository).first() and repository != LOCAL_RULES is None:
+        if (
+            RuleRepository.query.filter_by(name=repository).first()
+            and repository != LOCAL_RULES is None
+        ):
             current_app.logger.debug(
                 "Folder does not match a registered rule repository. You should manually remove the unused `%s' folder.",
                 repository,
@@ -115,13 +118,10 @@ def save_rule_in_db(filename):
                         rule.severity = generate_severity(rule.cwe)
                         current_app.logger.debug(
                             "Rule imported in DB: %s",
-                            repository
-                            + "/"
-                            + rule.category
-                            + "/"
-                            + rule.title,
+                            repository + "/" + rule.category + "/" + rule.title,
                         )
                         db.session.commit()
+
 
 def add_new_rule(name, code):
     # Make sure the local rule directory exists
@@ -135,6 +135,7 @@ def add_new_rule(name, code):
     new_rule.write(code)
     new_rule.close()
     return rule_path
+
 
 def generate_severity(cwe_string):
     """Generates a severity level from a CWE full name.
@@ -210,38 +211,22 @@ def comma_separated_to_list(comma_separated):
 ##
 
 
-def clone_rule_repo(repo, username, token):
+def clone_rule_repo(repo, username='', token=''):
     """Perform a 'clone' operation on the rule repository.
     The rule repository's 'last_update_on' attribute will be updated.
 
     Args:
         repo (RuleRepository): rule repository to clone
+        username (String): optional username for private repos
+        token (String): optional token for private repos
     """
-    print("username = " + username + "password =" + token + "repo= " + repo.uri[0:18])
     repo_path = os.path.join(RULES_PATH, repo.name)
-    if (
-        username == ""
-        and token == ""
-        or username != ""
-        and token == ""
-        or username == ""
-        and token != ""
-    ):
-        git.Repo.clone_from(repo.uri, repo_path)
+    if username == "" or token == "":
+        clone_uri = repo.uri
+    else:
+        clone_uri = re.sub(r'(https?://)([a-zA-Z0-9].*)', r'\1' + username + ':' + token + '@\2', repo.uri)
 
-    elif username != "" and token != "":
-
-        if repo.uri[0:18] == "https://github.com":
-            remote = f"https://{username}:{token}@github.com/" + repo.uri[19:]
-            git.Repo.clone_from(remote, repo_path)
-
-        elif repo.uri[0:18] == "https://git.pentes":
-            remote = f"https://{username}:{token}@git.pentest.itm.lan/" + repo.uri[28:]
-            git.Repo.clone_from(remote, repo_path)
-
-        elif repo.uri[0:18] == "https://172.18.15.":
-            remote = f"https://{username}:{token}@172.18.15.188/" + repo.uri[22:]
-            git.Repo.clone_from(remote, repo_path)
+    git.Repo.clone_from(clone_uri, repo_path)
 
     repo.last_update_on = datetime.now()
     db.session.commit()

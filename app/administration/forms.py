@@ -48,7 +48,7 @@ class RepositoryForm(FlaskForm):
     description = TextAreaField("Repository description", id="repo-description")
     uri = TextField("Repository URI", id="repo-uri", validators=[DataRequired()])
     git_username = TextField("Git username", id="repo-username")
-    git_token = TextField("Git Access Token", id="repo-token")
+    git_token = PasswordField("Git access token", id="repo-token")
 
 
 class LdapForm(FlaskForm):
