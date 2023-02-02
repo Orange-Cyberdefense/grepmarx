@@ -75,6 +75,26 @@ class Position(db.Model):
     column_start = Column(Integer)
     column_end = Column(Integer)
 
+class VulnerableDependency(db.Model):
+
+    __tablename__ = "VulnerableDependency"
+    id = Column(Integer, primary_key=True)
+    analysis_id = db.Column(db.Integer, db.ForeignKey("Analysis.id"), nullable=False)
+    analysis = db.relationship(
+        "Analysis",
+        backref=db.backref("vulnerable_dependencies", lazy=True, cascade="all, delete-orphan"),
+    )
+    common_id = Column(String)
+    package = Column(String)
+    purl = Column(String)
+    package_type = Column(String)
+    package_usage = Column(String)
+    version = Column(String)
+    fix_version = Column(String)
+    severity = Column(String)
+    cvss_score = Column(String)
+    short_description = Column(String)
+    related_urls = Column(String)
 
 class AppInspector(db.Model):
 
@@ -83,8 +103,6 @@ class AppInspector(db.Model):
     id = Column(Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("Project.id"))
     project = db.relationship("Project", back_populates="appinspector")
-
-
 
 class Match(db.Model):
 
