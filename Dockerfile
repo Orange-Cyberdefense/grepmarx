@@ -4,7 +4,10 @@ WORKDIR /opt/grepmarx
 
 ENV FLASK_APP run.py
 
-RUN apt-get update && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y supervisor npm openjdk-17-jdk maven gradle golang
+RUN rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /var/log/supervisor
 COPY supervisord-docker.conf /etc/supervisor/conf.d/supervisord.conf
 

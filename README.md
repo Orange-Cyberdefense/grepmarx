@@ -79,6 +79,10 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 
 ## Build from sources
 
+sudo apt install npm openjdk-17-jdk maven gradle golang
+sudo npm install -g @appthreat/cdxgen
+pip install appthreat-depscan
+
 > A Redis server is required to queue security scans. Install the `redis` package with your favorite distro package manager, then:
 
 ```bash
