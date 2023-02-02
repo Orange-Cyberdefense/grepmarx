@@ -15,6 +15,10 @@ ROLE_GUEST = "2"
 
 IGNORE_EXTENSIONS = {".min.js"}
 IGNORE_FOLDERS = {"vendor", "test", "Test"}
+CDXGEN = "cdxgen"
+DEPSCAN_RESULT_FILE = "depscan-bom.json"
+BOM_FILE="bom.json"
+DEPSCAN = "depscan"
 
 # Project constants
 

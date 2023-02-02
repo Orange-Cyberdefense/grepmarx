@@ -18,6 +18,7 @@ COPY app app
 COPY migrations migrations
 RUN mkdir data
 
+RUN npm install -g @appthreat/cdxgen
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements-pgsql.txt
 

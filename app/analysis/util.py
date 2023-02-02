@@ -11,6 +11,7 @@ from datetime import datetime
 from difflib import Match
 from glob import glob
 from shutil import copyfile, rmtree
+import subprocess
 
 from flask import current_app
 from semgrep import semgrep_main
@@ -19,14 +20,36 @@ from semgrep.error import SemgrepError
 from semgrep.output import OutputHandler, OutputSettings
 
 from app import celery, db
-from app.analysis.models import (Analysis, AppInspector, InspectorTag, Match,
-                                 Occurence, Position, Vulnerability)
-from app.constants import (EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH,
-                           RULE_EXTENSIONS, RULES_PATH, SEVERITY_HIGH,
-                           SEVERITY_MEDIUM, STATUS_ABORTED, STATUS_ANALYZING,
-                           STATUS_ERROR, STATUS_FINISHED)
-from app.projects.util import (application_inspector_scan,
-                               calculate_risk_level, count_occurences)
+from app.analysis.models import (
+    Analysis,
+    AppInspector,
+    InspectorTag,
+    Match,
+    Occurence,
+    Position,
+    Vulnerability,
+)
+from app.constants import (
+    BOM_FILE,
+    CDXGEN,
+    DEPSCAN,
+    DEPSCAN_RESULT_FILE,
+    EXTRACT_FOLDER_NAME,
+    PROJECTS_SRC_PATH,
+    RULE_EXTENSIONS,
+    RULES_PATH,
+    SEVERITY_HIGH,
+    SEVERITY_MEDIUM,
+    STATUS_ABORTED,
+    STATUS_ANALYZING,
+    STATUS_ERROR,
+    STATUS_FINISHED,
+)
+from app.projects.util import (
+    application_inspector_scan,
+    calculate_risk_level,
+    count_occurences,
+)
 from app.rules.util import generate_severity
 
 ##
@@ -34,7 +57,7 @@ from app.rules.util import generate_severity
 ##
 
 
-@celery.task(name="grepmarx-scan", bind = True)
+@celery.task(name="grepmarx-scan", bind=True)
 def async_scan(self, analysis_id, app_inspector_id):
     """Launch a new code scan on the project corresponding to the given analysis ID, asynchronously through celery.
 
@@ -53,10 +76,11 @@ def async_scan(self, analysis_id, app_inspector_id):
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     # Invoke semgrep
     try:
+        #sca_result = sca_scan(analysis.project)
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
         app_inspector_result = application_inspector_scan(app_inspector.project.id)
         save_result(analysis, semgrep_result)
-        load_scan_app_inspector(app_inspector,app_inspector_result)
+        load_scan_app_inspector(app_inspector, app_inspector_result)
         load_scan_results(analysis, semgrep_result)
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
@@ -75,12 +99,51 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis.project.risk_level = calculate_risk_level(analysis.project)
     db.session.commit()
 
+
 def stop_analysis(analysis):
     task_id = analysis.task_id
-    celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
+    celery.control.revoke(task_id, terminate=True, signal="SIGKILL")
     analysis.project.status = STATUS_ABORTED
     analysis.task_id = ""
     db.session.commit()
+
+
+def sca_scan(project):
+    """Launch a depscan analysis. SBOM (Software Bill Of Material) will firstly be generated
+    using `cdxgen'. The resulting BOM file will then be analyzed with depscan.
+
+    Args:
+        project (Project): corresponding target projet
+
+    Returns:
+        [str]: Depscan JSON output
+    """
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
+    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id))
+    # Generate SBOM with cdxgen
+    bom_file = os.path.join(output_folder, BOM_FILE)
+    subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
+    # Launch depscan analysis
+    subprocess.run(
+        [
+            DEPSCAN,
+            "--no-banner",
+            "--no-error",
+            "--src",
+            source_path,
+            "--bom",
+            bom_file,
+            "--reports-dir",
+            output_folder,
+        ]
+    )
+    # Return depscan JSON result
+    result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
+    f = open(result_file)
+    result = json.load(f) # bad JSON here
+    f.close()
+    return result
+
 
 def semgrep_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
@@ -95,7 +158,7 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         [str]: Semgrep JSON output
     """
     cpu_count = multiprocessing.cpu_count()
-    #util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
+    # util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
     output_settings = OutputSettings(
         output_format=OutputFormat.JSON,
         output_destination=None,
@@ -103,7 +166,7 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         verbose_errors=False,
         strict=False,
         timeout_threshold=3,
-        #json_stats=False,
+        # json_stats=False,
         output_per_finding_max_lines_limit=None,
     )
     try:
@@ -137,7 +200,10 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         ]
         return output_handler._build_output()
     except SemgrepError as e:
-        raise Exception("SemgrepError", output_handler.semgrep_structured_errors[0].long_msg) 
+        raise Exception(
+            "SemgrepError", output_handler.semgrep_structured_errors[0].long_msg
+        )
+
 
 def save_result(analysis, semgrep_result):
     """Save Semgrep JSON results as a file in the project's directory.
@@ -193,29 +259,29 @@ def load_scan_app_inspector(app_inspector, app_inspector_result):
         app_inspector_result (str): Application Inspector JSON output.
         app_inspector(oonject): Application Inspector object filter by ID.
     """
-    match  = list()
+    match = list()
 
-    if app_inspector_result != "" :
-        if "metaData" in app_inspector_result :
-            data = app_inspector_result['metaData']
-            if "detailedMatchList" in data :
-                detailed = data['detailedMatchList']
-                #we go through the dictionary again and again
-                for data_in_detailed in detailed :
-                    title = data_in_detailed['ruleName']
+    if app_inspector_result != "":
+        if "metaData" in app_inspector_result:
+            data = app_inspector_result["metaData"]
+            if "detailedMatchList" in data:
+                detailed = data["detailedMatchList"]
+                # we go through the dictionary again and again
+                for data_in_detailed in detailed:
+                    title = data_in_detailed["ruleName"]
                     e_match = [m for m in match if m.title == title]
                     if len(e_match) == 0:
-                        #creation of a match and an associated tag
+                        # creation of a match and an associated tag
                         n_match = load_match(title, data_in_detailed)
                         n_match.tag.append(load_tags(data_in_detailed))
                         match.append(n_match)
-                    else :
+                    else:
                         e_matchs = e_match[0]
                         e_matchs.tag.append(load_tags(data_in_detailed))
                         app_inspector.match = match
 
 
-def  load_match(title, detailed):
+def load_match(title, detailed):
     """Create a match object from a 'result' element of app_inspector JSON results.
 
     Args:
@@ -226,19 +292,18 @@ def  load_match(title, detailed):
         Match: fully populated match
     """
 
-    match  = Match(title=title)
-    if detailed != "" :
-        if "ruleDescription" in detailed :
-            match.description = detailed['ruleDescription']
-        if "pattern" in detailed :
-            match.pattern = detailed['pattern']
-        if "fileName" in detailed :
-            match.filename = detailed['fileName']
-        if "tags" in detailed and len(detailed['tags']):
-            match.tags = detailed['tags'][0]
-            
-    return match
+    match = Match(title=title)
+    if detailed != "":
+        if "ruleDescription" in detailed:
+            match.description = detailed["ruleDescription"]
+        if "pattern" in detailed:
+            match.pattern = detailed["pattern"]
+        if "fileName" in detailed:
+            match.filename = detailed["fileName"]
+        if "tags" in detailed and len(detailed["tags"]):
+            match.tags = detailed["tags"][0]
 
+    return match
 
 
 def load_tags(data_in_detailed):
@@ -251,19 +316,16 @@ def load_tags(data_in_detailed):
         Occurence: fully populated occurence
     """
     tags = InspectorTag(
-        start_line = data_in_detailed['startLocationLine'],
-        start_column = data_in_detailed['startLocationColumn'],
-        end_column = data_in_detailed['endLocationColumn'],
-        end_line = data_in_detailed['endLocationLine'],
-        excerpt = data_in_detailed['excerpt'],
-        filename = data_in_detailed['fileName']
+        start_line=data_in_detailed["startLocationLine"],
+        start_column=data_in_detailed["startLocationColumn"],
+        end_column=data_in_detailed["endLocationColumn"],
+        end_line=data_in_detailed["endLocationLine"],
+        excerpt=data_in_detailed["excerpt"],
+        filename=data_in_detailed["fileName"],
     )
-    if "severity" in data_in_detailed :
-            tags.severity = data_in_detailed['severity']
+    if "severity" in data_in_detailed:
+        tags.severity = data_in_detailed["severity"]
     return tags
-        
-
-        
 
 
 def load_vulnerability(title, semgrep_result):

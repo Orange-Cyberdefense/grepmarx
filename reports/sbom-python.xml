@@ -1,0 +1,1433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.4" serialNumber="urn:uuid:e4ebb125-6d18-4b51-962b-42f9ada03ab7" version="1">
+  <metadata>
+    <timestamp>2023-02-02T20:45:49.011Z</timestamp>
+    <tools>
+      <tool>
+        <vendor>AppThreat</vendor>
+        <name>cdxgen</name>
+        <version>7.0.1</version>
+      </tool>
+    </tools>
+    <authors>
+      <author>
+        <name>Team AppThreat</name>
+        <email>cloud@appthreat.com</email>
+      </author>
+    </authors>
+  </metadata>
+  <components>
+    <component type="library" bom-ref="pkg:pypi/alembic@1.9.1">
+      <publisher>Mike Bayer</publisher>
+      <group/>
+      <name>alembic</name>
+      <version>1.9.1</version>
+      <description><![CDATA[A database migration tool for SQLAlchemy.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/alembic@1.9.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://alembic.sqlalchemy.org</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/amqp@5.1.1">
+      <publisher>Barry Pederson</publisher>
+      <group/>
+      <name>amqp</name>
+      <version>5.1.1</version>
+      <description><![CDATA[Low-level AMQP client for Python (fork of amqplib).]]></description>
+      <licenses/>
+      <purl>pkg:pypi/amqp@5.1.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://github.com/celery/py-amqp</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/anyio@3.6.2">
+      <publisher>Alex Grönholm</publisher>
+      <group/>
+      <name>anyio</name>
+      <version>3.6.2</version>
+      <description><![CDATA[High level compatibility layer for multiple asynchronous event loop implementations]]></description>
+      <licenses/>
+      <purl>pkg:pypi/anyio@3.6.2</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/appdirs@1.4.4">
+      <publisher>Trent Mick</publisher>
+      <group/>
+      <name>appdirs</name>
+      <version>1.4.4</version>
+      <description><![CDATA[A small Python module for determining appropriate platform-specific dirs, e.g. a "user data dir".]]></description>
+      <licenses/>
+      <purl>pkg:pypi/appdirs@1.4.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://github.com/ActiveState/appdirs</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/appthreat-depscan@3.5.3">
+      <publisher>Team AppThreat</publisher>
+      <group/>
+      <name>appthreat-depscan</name>
+      <version>3.5.3</version>
+      <description><![CDATA[Fully open-source security audit for project dependencies based on known vulnerabilities and advisories.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/appthreat-depscan@3.5.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/appthreat/dep-scan</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/appthreat-vulnerability-db@4.3.1">
+      <publisher>Team AppThreat</publisher>
+      <group/>
+      <name>appthreat-vulnerability-db</name>
+      <version>4.3.1</version>
+      <description><![CDATA[AppThreat's vulnerability database and package search library with a built-in file based storage. OSV, CVE, GitHub, npm are the primary sources of vulnerabilities.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/appthreat-vulnerability-db@4.3.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/appthreat/vulnerability-db</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/attrs@21.4.0">
+      <publisher>Hynek Schlawack</publisher>
+      <group/>
+      <name>attrs</name>
+      <version>21.4.0</version>
+      <description><![CDATA[Classes Without Boilerplate]]></description>
+      <licenses/>
+      <purl>pkg:pypi/attrs@21.4.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://www.attrs.org/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/python-attrs/attrs</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/billiard@3.6.4.0">
+      <publisher>R Oudkerk / Python Software Foundation</publisher>
+      <group/>
+      <name>billiard</name>
+      <version>3.6.4.0</version>
+      <description><![CDATA[Python multiprocessing fork with improvements and bugfixes]]></description>
+      <licenses/>
+      <purl>pkg:pypi/billiard@3.6.4.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/celery/billiard</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/black@22.12.0">
+      <publisher/>
+      <group/>
+      <name>black</name>
+      <version>22.12.0</version>
+      <description><![CDATA[The uncompromising code formatter.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/black@22.12.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/blinker@1.5">
+      <publisher>Jason Kirtland</publisher>
+      <group/>
+      <name>blinker</name>
+      <version>1.5</version>
+      <description><![CDATA[Fast, simple object-to-object and broadcast signaling]]></description>
+      <licenses/>
+      <purl>pkg:pypi/blinker@1.5</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://blinker.readthedocs.io</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/boltons@21.0.0">
+      <publisher>Mahmoud Hashemi</publisher>
+      <group/>
+      <name>boltons</name>
+      <version>21.0.0</version>
+      <description><![CDATA[When they're not builtins, they're boltons.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/boltons@21.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/mahmoud/boltons</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/bracex@2.3.post1">
+      <publisher/>
+      <group/>
+      <name>bracex</name>
+      <version>2.3.post1</version>
+      <description><![CDATA[Bash style brace expander.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/bracex@2.3.post1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/celery@5.2.3 (dawn-chorus)">
+      <publisher>Ask Solem</publisher>
+      <group/>
+      <name>celery</name>
+      <version>5.2.3 (dawn-chorus)</version>
+      <description><![CDATA[Distributed Task Queue.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/celery@5.2.3 (dawn-chorus)</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://celeryproject.org</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/certifi@2022.12.7">
+      <publisher>Kenneth Reitz</publisher>
+      <group/>
+      <name>certifi</name>
+      <version>2022.12.7</version>
+      <description><![CDATA[Python package for providing Mozilla's CA Bundle.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/certifi@2022.12.7</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/certifi/python-certifi</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/charset-normalizer@2.1.1">
+      <publisher>Ahmed TAHRI @Ousret</publisher>
+      <group/>
+      <name>charset-normalizer</name>
+      <version>2.1.1</version>
+      <description><![CDATA[The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/charset-normalizer@2.1.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/ousret/charset_normalizer</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/click-didyoumean@0.3.0">
+      <publisher>Timo Furrer</publisher>
+      <group/>
+      <name>click-didyoumean</name>
+      <version>0.3.0</version>
+      <description><![CDATA[Enables git-like *did-you-mean* feature in click]]></description>
+      <licenses/>
+      <purl>pkg:pypi/click-didyoumean@0.3.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/click-option-group@0.5.5">
+      <publisher>Eugene Prilepin</publisher>
+      <group/>
+      <name>click-option-group</name>
+      <version>0.5.5</version>
+      <description><![CDATA[Option groups missing in Click]]></description>
+      <licenses/>
+      <purl>pkg:pypi/click-option-group@0.5.5</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/click-contrib/click-option-group</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/click-plugins@1.1.1">
+      <publisher>Kevin Wurster, Sean Gillies</publisher>
+      <group/>
+      <name>click-plugins</name>
+      <version>1.1.1</version>
+      <description><![CDATA[An extension module for click to enable registering CLI commands via setuptools entry-points.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/click-plugins@1.1.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/click-contrib/click-plugins</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/click-repl@0.2.0">
+      <publisher>Markus Unterwaditzer</publisher>
+      <group/>
+      <name>click-repl</name>
+      <version>0.2.0</version>
+      <description><![CDATA[REPL plugin for Click]]></description>
+      <licenses/>
+      <purl>pkg:pypi/click-repl@0.2.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/untitaker/click-repl</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/click@8.1.3">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>click</name>
+      <version>8.1.3</version>
+      <description><![CDATA[Composable command line interface toolkit]]></description>
+      <licenses/>
+      <purl>pkg:pypi/click@8.1.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/click/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/click/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/colorama@0.4.6">
+      <publisher/>
+      <group/>
+      <name>colorama</name>
+      <version>0.4.6</version>
+      <description><![CDATA[Cross-platform colored terminal text.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/colorama@0.4.6</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/cvss@2.6">
+      <publisher>Stanislav Kontar, Red Hat Product Security</publisher>
+      <group/>
+      <name>cvss</name>
+      <version>2.6</version>
+      <description><![CDATA[CVSS2/3 library with interactive calculator for Python 2 and Python 3]]></description>
+      <licenses/>
+      <purl>pkg:pypi/cvss@2.6</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/RedHatProductSecurity/cvss</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/defusedxml@0.7.1">
+      <publisher>Christian Heimes</publisher>
+      <group/>
+      <name>defusedxml</name>
+      <version>0.7.1</version>
+      <description><![CDATA[XML bomb protection for Python stdlib modules]]></description>
+      <licenses/>
+      <purl>pkg:pypi/defusedxml@0.7.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/tiran/defusedxml</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/dnspython@2.2.1">
+      <publisher>Bob Halley</publisher>
+      <group/>
+      <name>dnspython</name>
+      <version>2.2.1</version>
+      <description><![CDATA[DNS toolkit]]></description>
+      <licenses/>
+      <purl>pkg:pypi/dnspython@2.2.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://www.dnspython.org</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/email-validator@1.1.3">
+      <publisher>Joshua Tauberer</publisher>
+      <group/>
+      <name>email-validator</name>
+      <version>1.1.3</version>
+      <description><![CDATA[A robust email syntax and deliverability validation library for Python 2.x/3.x.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/email-validator@1.1.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/JoshData/python-email-validator</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/face@22.0.0">
+      <publisher>Mahmoud Hashemi</publisher>
+      <group/>
+      <name>face</name>
+      <version>22.0.0</version>
+      <description><![CDATA[A command-line application framework (and CLI parser). Friendly for users, full-featured for developers.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/face@22.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/mahmoud/face</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-admin@1.6.0">
+      <publisher>Flask-Admin team</publisher>
+      <group/>
+      <name>Flask-Admin</name>
+      <version>1.6.0</version>
+      <description><![CDATA[Simple and extensible admin interface framework for Flask]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-admin@1.6.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/flask-admin/flask-admin/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-authorize@0.2.6">
+      <publisher>Blake Printy</publisher>
+      <group/>
+      <name>Flask-Authorize</name>
+      <version>0.2.6</version>
+      <description><![CDATA[Flask plugin for content authorization and access control]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-authorize@0.2.6</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/bprinty/Flask-Authorize</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-ldap3-login@0.9.18">
+      <publisher>Nick Whyte</publisher>
+      <group/>
+      <name>flask-ldap3-login</name>
+      <version>0.9.18</version>
+      <description><![CDATA[LDAP Support for Flask in Python3/2]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-ldap3-login@0.9.18</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/nickw444/flask-ldap3-login</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-login@0.6.0">
+      <publisher>Matthew Frazier</publisher>
+      <group/>
+      <name>Flask-Login</name>
+      <version>0.6.0</version>
+      <description><![CDATA[User authentication and session management for Flask.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-login@0.6.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/maxcountryman/flask-login</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/maxcountryman/flask-login</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-migrate@3.1.0">
+      <publisher>Miguel Grinberg</publisher>
+      <group/>
+      <name>Flask-Migrate</name>
+      <version>3.1.0</version>
+      <description><![CDATA[SQLAlchemy database migrations for Flask applications using Alembic.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-migrate@3.1.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/miguelgrinberg/flask-migrate</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-principal@0.4.0">
+      <publisher>Ali Afshar</publisher>
+      <group/>
+      <name>Flask-Principal</name>
+      <version>0.4.0</version>
+      <description><![CDATA[Identity management for flask]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-principal@0.4.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://packages.python.org/Flask-Principal/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-sqlalchemy@2.5.1">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>Flask-SQLAlchemy</name>
+      <version>2.5.1</version>
+      <description><![CDATA[Adds SQLAlchemy support to your Flask application.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-sqlalchemy@2.5.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/pallets/flask-sqlalchemy</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask-wtf@1.0.0">
+      <publisher>Dan Jacob</publisher>
+      <group/>
+      <name>Flask-WTF</name>
+      <version>1.0.0</version>
+      <description><![CDATA[Form rendering, validation, and CSRF protection for Flask with WTForms.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask-wtf@1.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/wtforms/flask-wtf/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/wtforms/flask-wtf/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flask@2.0.2">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>Flask</name>
+      <version>2.0.2</version>
+      <description><![CDATA[A simple framework for building complex web applications.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flask@2.0.2</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/flask</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/flask/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/flaskcode@0.0.8">
+      <publisher>Sujeet Kumar</publisher>
+      <group/>
+      <name>flaskcode</name>
+      <version>0.0.8</version>
+      <description><![CDATA[Web based code editor on python flask framework]]></description>
+      <licenses/>
+      <purl>pkg:pypi/flaskcode@0.0.8</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/sujeetkv/flaskcode</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/gitdb@4.0.10">
+      <publisher>Sebastian Thiel</publisher>
+      <group/>
+      <name>gitdb</name>
+      <version>4.0.10</version>
+      <description><![CDATA[Git Object Database]]></description>
+      <licenses/>
+      <purl>pkg:pypi/gitdb@4.0.10</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/gitpython-developers/gitdb</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/gitpython@3.1.27">
+      <publisher>Sebastian Thiel, Michael Trier</publisher>
+      <group/>
+      <name>GitPython</name>
+      <version>3.1.27</version>
+      <description><![CDATA[GitPython is a python library used to interact with Git repositories]]></description>
+      <licenses/>
+      <purl>pkg:pypi/gitpython@3.1.27</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/gitpython-developers/GitPython</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/glom@22.1.0">
+      <publisher>Mahmoud Hashemi and Kurt Rose</publisher>
+      <group/>
+      <name>glom</name>
+      <version>22.1.0</version>
+      <description><![CDATA[A declarative object transformer and formatter, for conglomerating nested data.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/glom@22.1.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/mahmoud/glom</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/greenlet@2.0.1">
+      <publisher>Alexey Borzenkov</publisher>
+      <group/>
+      <name>greenlet</name>
+      <version>2.0.1</version>
+      <description><![CDATA[Lightweight in-process concurrent programming]]></description>
+      <licenses/>
+      <purl>pkg:pypi/greenlet@2.0.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://greenlet.readthedocs.io/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/python-greenlet/greenlet/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/gunicorn@20.1.0">
+      <publisher>Benoit Chesneau</publisher>
+      <group/>
+      <name>gunicorn</name>
+      <version>20.1.0</version>
+      <description><![CDATA[WSGI HTTP Server for UNIX]]></description>
+      <licenses/>
+      <purl>pkg:pypi/gunicorn@20.1.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://gunicorn.org</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/h11@0.14.0">
+      <publisher>Nathaniel J. Smith</publisher>
+      <group/>
+      <name>h11</name>
+      <version>0.14.0</version>
+      <description><![CDATA[A pure-Python, bring-your-own-I/O implementation of HTTP/1.1]]></description>
+      <licenses/>
+      <purl>pkg:pypi/h11@0.14.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-hyper/h11</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/h2@4.1.0">
+      <publisher>Cory Benfield</publisher>
+      <group/>
+      <name>h2</name>
+      <version>4.1.0</version>
+      <description><![CDATA[HTTP/2 State-Machine based protocol implementation]]></description>
+      <licenses/>
+      <purl>pkg:pypi/h2@4.1.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-hyper/h2</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/hpack@4.0.0">
+      <publisher>Cory Benfield</publisher>
+      <group/>
+      <name>hpack</name>
+      <version>4.0.0</version>
+      <description><![CDATA[Pure-Python HPACK header compression]]></description>
+      <licenses/>
+      <purl>pkg:pypi/hpack@4.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-hyper/hpack</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/httpcore@0.16.3">
+      <publisher>Tom Christie</publisher>
+      <group/>
+      <name>httpcore</name>
+      <version>0.16.3</version>
+      <description><![CDATA[A minimal low-level HTTP client.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/httpcore@0.16.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/encode/httpcore</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/httpx@0.23.3">
+      <publisher/>
+      <group/>
+      <name>httpx</name>
+      <version>0.23.3</version>
+      <description><![CDATA[The next generation HTTP client.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/httpx@0.23.3</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/hyperframe@6.0.1">
+      <publisher>Cory Benfield</publisher>
+      <group/>
+      <name>hyperframe</name>
+      <version>6.0.1</version>
+      <description><![CDATA[HTTP/2 framing layer for Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/hyperframe@6.0.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-hyper/hyperframe/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/idna@3.4">
+      <publisher/>
+      <group/>
+      <name>idna</name>
+      <version>3.4</version>
+      <description><![CDATA[Internationalized Domain Names in Applications (IDNA)]]></description>
+      <licenses/>
+      <purl>pkg:pypi/idna@3.4</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/is-safe-url@1.0">
+      <publisher>Markus Holtermann, Django Software Foundation and individual contributors</publisher>
+      <group/>
+      <name>is-safe-url</name>
+      <version>1.0</version>
+      <description><![CDATA[Django's is_safe_url() bundled as a standalone package.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/is-safe-url@1.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://gitlab.com/MarkusH/is_safe_url</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/itsdangerous@2.1.2">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>itsdangerous</name>
+      <version>2.1.2</version>
+      <description><![CDATA[Safely pass data to untrusted environments and back.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/itsdangerous@2.1.2</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/itsdangerous/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/itsdangerous/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/jinja2@3.0.3">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>Jinja2</name>
+      <version>3.0.3</version>
+      <description><![CDATA[A very fast and expressive template engine.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/jinja2@3.0.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/jinja/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/jinja/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/jsonschema@4.6.0">
+      <publisher>Julian Berman</publisher>
+      <group/>
+      <name>jsonschema</name>
+      <version>4.6.0</version>
+      <description><![CDATA[An implementation of JSON Schema validation for Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/jsonschema@4.6.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/kombu@5.2.4">
+      <publisher>Ask Solem</publisher>
+      <group/>
+      <name>kombu</name>
+      <version>5.2.4</version>
+      <description><![CDATA[Messaging library for Python.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/kombu@5.2.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://kombu.readthedocs.io</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/ldap3@2.9.1">
+      <publisher>Giovanni Cannata</publisher>
+      <group/>
+      <name>ldap3</name>
+      <version>2.9.1</version>
+      <description><![CDATA[A strictly RFC 4510 conforming LDAP V3 pure Python client library]]></description>
+      <licenses/>
+      <purl>pkg:pypi/ldap3@2.9.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/cannatag/ldap3</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/mako@1.2.4">
+      <publisher>Mike Bayer</publisher>
+      <group/>
+      <name>Mako</name>
+      <version>1.2.4</version>
+      <description><![CDATA[A super-fast templating language that borrows the best ideas from the existing templating languages.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/mako@1.2.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://www.makotemplates.org/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/markdown-it-py@2.1.0">
+      <publisher/>
+      <group/>
+      <name>markdown-it-py</name>
+      <version>2.1.0</version>
+      <description><![CDATA[Python port of markdown-it. Markdown parsing, done right!]]></description>
+      <licenses/>
+      <purl>pkg:pypi/markdown-it-py@2.1.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/markupsafe@2.1.1">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>MarkupSafe</name>
+      <version>2.1.1</version>
+      <description><![CDATA[Safely add untrusted strings to HTML/XML markup.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/markupsafe@2.1.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/markupsafe/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/markupsafe/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/mdurl@0.1.2">
+      <publisher/>
+      <group/>
+      <name>mdurl</name>
+      <version>0.1.2</version>
+      <description><![CDATA[Markdown URL utilities]]></description>
+      <licenses/>
+      <purl>pkg:pypi/mdurl@0.1.2</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/msgpack@1.0.4">
+      <publisher>Inada Naoki</publisher>
+      <group/>
+      <name>msgpack</name>
+      <version>1.0.4</version>
+      <description><![CDATA[MessagePack serializer]]></description>
+      <licenses/>
+      <purl>pkg:pypi/msgpack@1.0.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://msgpack.org/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/mypy-extensions@0.4.3">
+      <publisher>The mypy developers</publisher>
+      <group/>
+      <name>mypy-extensions</name>
+      <version>0.4.3</version>
+      <description><![CDATA[Experimental type system extensions for programs checked with the mypy typechecker.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/mypy-extensions@0.4.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python/mypy_extensions</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/orjson@3.8.5">
+      <publisher>ijl &lt;ijl@mailbox.org&gt;</publisher>
+      <group/>
+      <name>orjson</name>
+      <version>3.8.5</version>
+      <description><![CDATA[Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy]]></description>
+      <licenses/>
+      <purl>pkg:pypi/orjson@3.8.5</purl>
+      <externalReferences>
+        <reference type="vcs">
+          <url>https://github.com/ijl/orjson</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/packageurl-python@0.10.4">
+      <publisher>the purl authors</publisher>
+      <group/>
+      <name>packageurl-python</name>
+      <version>0.10.4</version>
+      <description><![CDATA[A purl aka. Package URL parser and builder]]></description>
+      <licenses/>
+      <purl>pkg:pypi/packageurl-python@0.10.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/package-url/packageurl-python</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/packaging@21.3">
+      <publisher>Donald Stufft and individual contributors</publisher>
+      <group/>
+      <name>packaging</name>
+      <version>21.3</version>
+      <description><![CDATA[Core utilities for Python packages]]></description>
+      <licenses/>
+      <purl>pkg:pypi/packaging@21.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/pypa/packaging</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pathspec@0.10.3">
+      <publisher>Caleb P. Burns</publisher>
+      <group/>
+      <name>pathspec</name>
+      <version>0.10.3</version>
+      <description><![CDATA[Utility library for gitignore style pattern matching of file paths.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pathspec@0.10.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/cpburnz/python-pathspec</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/cpburnz/python-pathspec</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/peewee@3.15.4">
+      <publisher>Charles Leifer</publisher>
+      <group/>
+      <name>peewee</name>
+      <version>3.15.4</version>
+      <description><![CDATA[a little orm]]></description>
+      <licenses/>
+      <purl>pkg:pypi/peewee@3.15.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/coleifer/peewee/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pip@22.0.2">
+      <publisher>The pip developers</publisher>
+      <group/>
+      <name>pip</name>
+      <version>22.0.2</version>
+      <description><![CDATA[The PyPA recommended tool for installing Python packages.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pip@22.0.2</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://pip.pypa.io/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/platformdirs@2.6.2">
+      <publisher/>
+      <group/>
+      <name>platformdirs</name>
+      <version>2.6.2</version>
+      <description><![CDATA[A small Python package for determining appropriate platform-specific dirs, e.g. a "user data dir".]]></description>
+      <licenses/>
+      <purl>pkg:pypi/platformdirs@2.6.2</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/prompt-toolkit@3.0.36">
+      <publisher>Jonathan Slenders</publisher>
+      <group/>
+      <name>prompt-toolkit</name>
+      <version>3.0.36</version>
+      <description><![CDATA[Library for building powerful interactive command lines in Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/prompt-toolkit@3.0.36</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/prompt-toolkit/python-prompt-toolkit</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pyasn1@0.4.8">
+      <publisher>Ilya Etingof</publisher>
+      <group/>
+      <name>pyasn1</name>
+      <version>0.4.8</version>
+      <description><![CDATA[ASN.1 types and codecs]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pyasn1@0.4.8</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/etingof/pyasn1</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pygments@2.11.2">
+      <publisher>Georg Brandl</publisher>
+      <group/>
+      <name>Pygments</name>
+      <version>2.11.2</version>
+      <description><![CDATA[Pygments is a syntax highlighting package written in Python.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pygments@2.11.2</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://pygments.org/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pyparsing@3.0.9">
+      <publisher/>
+      <group/>
+      <name>pyparsing</name>
+      <version>3.0.9</version>
+      <description><![CDATA[pyparsing module - Classes and methods to define and execute parsing grammars]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pyparsing@3.0.9</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pyrsistent@0.19.3">
+      <publisher>Tobias Gustafsson</publisher>
+      <group/>
+      <name>pyrsistent</name>
+      <version>0.19.3</version>
+      <description><![CDATA[Persistent/Functional/Immutable data structures]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pyrsistent@0.19.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/tobgu/pyrsistent/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/python-decouple@3.5">
+      <publisher>Henrique Bastos</publisher>
+      <group/>
+      <name>python-decouple</name>
+      <version>3.5</version>
+      <description><![CDATA[Strict separation of settings from code.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/python-decouple@3.5</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://github.com/henriquebastos/python-decouple/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/python-lsp-jsonrpc@1.0.0">
+      <publisher>Python Language Server Contributors</publisher>
+      <group/>
+      <name>python-lsp-jsonrpc</name>
+      <version>1.0.0</version>
+      <description><![CDATA[JSON RPC 2.0 server library]]></description>
+      <licenses/>
+      <purl>pkg:pypi/python-lsp-jsonrpc@1.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-lsp/python-lsp-jsonrpc</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pytz@2022.7">
+      <publisher>Stuart Bishop &lt;stuart@stuartbishop.net&gt;</publisher>
+      <group/>
+      <name>pytz</name>
+      <version>2022.7</version>
+      <description><![CDATA[World timezone definitions, modern and historical]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pytz@2022.7</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://pythonhosted.org/pytz</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/pyyaml@6.0">
+      <publisher>Kirill Simonov</publisher>
+      <group/>
+      <name>PyYAML</name>
+      <version>6.0</version>
+      <description><![CDATA[YAML parser and emitter for Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/pyyaml@6.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://pyyaml.org/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/yaml/pyyaml</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/redis@3.5.3">
+      <publisher>Andy McCurdy</publisher>
+      <group/>
+      <name>redis</name>
+      <version>3.5.3</version>
+      <description><![CDATA[Python client for Redis key-value store]]></description>
+      <licenses/>
+      <purl>pkg:pypi/redis@3.5.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/andymccurdy/redis-py</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/requests@2.28.1">
+      <publisher>Kenneth Reitz</publisher>
+      <group/>
+      <name>requests</name>
+      <version>2.28.1</version>
+      <description><![CDATA[Python HTTP for Humans.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/requests@2.28.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://requests.readthedocs.io</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/rfc3986@1.5.0">
+      <publisher>Ian Stapleton Cordasco</publisher>
+      <group/>
+      <name>rfc3986</name>
+      <version>1.5.0</version>
+      <description><![CDATA[Validating URI References per RFC 3986]]></description>
+      <licenses/>
+      <purl>pkg:pypi/rfc3986@1.5.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://rfc3986.readthedocs.io</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/rich@13.2.0">
+      <publisher>Will McGugan</publisher>
+      <group/>
+      <name>rich</name>
+      <version>13.2.0</version>
+      <description><![CDATA[Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal]]></description>
+      <licenses/>
+      <purl>pkg:pypi/rich@13.2.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/Textualize/rich</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/ruamel.yaml@0.17.21">
+      <publisher>Anthon van der Neut</publisher>
+      <group/>
+      <name>ruamel.yaml</name>
+      <version>0.17.21</version>
+      <description><![CDATA[ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order]]></description>
+      <licenses/>
+      <purl>pkg:pypi/ruamel.yaml@0.17.21</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/ruamel.yaml.clib@0.2.7">
+      <publisher>Anthon van der Neut</publisher>
+      <group/>
+      <name>ruamel.yaml.clib</name>
+      <version>0.2.7</version>
+      <description><![CDATA[C version of reader, parser and emitter for ruamel.yaml derived from libyaml]]></description>
+      <licenses/>
+      <purl>pkg:pypi/ruamel.yaml.clib@0.2.7</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/semgrep@1.2.1">
+      <publisher>Return To Corporation</publisher>
+      <group/>
+      <name>semgrep</name>
+      <version>1.2.1</version>
+      <description><![CDATA[Lightweight static analysis for many languages. Find bug variants with patterns that look like source code.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/semgrep@1.2.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/returntocorp/semgrep</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/semver@2.13.0">
+      <publisher>Kostiantyn Rybnikov</publisher>
+      <group/>
+      <name>semver</name>
+      <version>2.13.0</version>
+      <description><![CDATA[Python helper for Semantic Versioning (http://semver.org/)]]></description>
+      <licenses/>
+      <purl>pkg:pypi/semver@2.13.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-semver/python-semver</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/setuptools@59.6.0">
+      <publisher>Python Packaging Authority</publisher>
+      <group/>
+      <name>setuptools</name>
+      <version>59.6.0</version>
+      <description><![CDATA[Easily download, build, install, upgrade, and uninstall Python packages]]></description>
+      <licenses/>
+      <purl>pkg:pypi/setuptools@59.6.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/pypa/setuptools</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/six@1.16.0">
+      <publisher>Benjamin Peterson</publisher>
+      <group/>
+      <name>six</name>
+      <version>1.16.0</version>
+      <description><![CDATA[Python 2 and 3 compatibility utilities]]></description>
+      <licenses/>
+      <purl>pkg:pypi/six@1.16.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/benjaminp/six</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/smmap@5.0.0">
+      <publisher>Sebastian Thiel</publisher>
+      <group/>
+      <name>smmap</name>
+      <version>5.0.0</version>
+      <description><![CDATA[A pure Python implementation of a sliding window memory map manager]]></description>
+      <licenses/>
+      <purl>pkg:pypi/smmap@5.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/gitpython-developers/smmap</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/sniffio@1.3.0">
+      <publisher>Nathaniel J. Smith</publisher>
+      <group/>
+      <name>sniffio</name>
+      <version>1.3.0</version>
+      <description><![CDATA[Sniff out which async library your code is running under]]></description>
+      <licenses/>
+      <purl>pkg:pypi/sniffio@1.3.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/python-trio/sniffio</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/sqlalchemy@1.4.31">
+      <publisher>Mike Bayer</publisher>
+      <group/>
+      <name>SQLAlchemy</name>
+      <version>1.4.31</version>
+      <description><![CDATA[Database Abstraction Library]]></description>
+      <licenses/>
+      <purl>pkg:pypi/sqlalchemy@1.4.31</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://www.sqlalchemy.org</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/supervisor@4.2.4">
+      <publisher>Chris McDonough</publisher>
+      <group/>
+      <name>supervisor</name>
+      <version>4.2.4</version>
+      <description><![CDATA[A system for controlling process state under UNIX]]></description>
+      <licenses/>
+      <purl>pkg:pypi/supervisor@4.2.4</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://supervisord.org/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/tabulate@0.9.0">
+      <publisher/>
+      <group/>
+      <name>tabulate</name>
+      <version>0.9.0</version>
+      <description><![CDATA[Pretty-print tabular data]]></description>
+      <licenses/>
+      <purl>pkg:pypi/tabulate@0.9.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/tomli@2.0.1">
+      <publisher/>
+      <group/>
+      <name>tomli</name>
+      <version>2.0.1</version>
+      <description><![CDATA[A lil' TOML parser]]></description>
+      <licenses/>
+      <purl>pkg:pypi/tomli@2.0.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/tqdm@4.64.1">
+      <publisher/>
+      <group/>
+      <name>tqdm</name>
+      <version>4.64.1</version>
+      <description><![CDATA[Fast, Extensible Progress Meter]]></description>
+      <licenses/>
+      <purl>pkg:pypi/tqdm@4.64.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://tqdm.github.io</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/typing-extensions@4.4.0">
+      <publisher/>
+      <group/>
+      <name>typing_extensions</name>
+      <version>4.4.0</version>
+      <description><![CDATA[Backported and Experimental Type Hints for Python 3.7+]]></description>
+      <licenses/>
+      <purl>pkg:pypi/typing-extensions@4.4.0</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/ujson@5.7.0">
+      <publisher>Jonas Tarnstrom</publisher>
+      <group/>
+      <name>ujson</name>
+      <version>5.7.0</version>
+      <description><![CDATA[Ultra fast JSON encoder and decoder for Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/ujson@5.7.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/ultrajson/ultrajson</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/urllib3@1.26.13">
+      <publisher>Andrey Petrov</publisher>
+      <group/>
+      <name>urllib3</name>
+      <version>1.26.13</version>
+      <description><![CDATA[HTTP library with thread-safe connection pooling, file post, and more.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/urllib3@1.26.13</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://urllib3.readthedocs.io/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/vine@5.0.0">
+      <publisher>Ask Solem</publisher>
+      <group/>
+      <name>vine</name>
+      <version>5.0.0</version>
+      <description><![CDATA[Promises, promises, promises.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/vine@5.0.0</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>http://github.com/celery/vine</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/wcmatch@8.4.1">
+      <publisher/>
+      <group/>
+      <name>wcmatch</name>
+      <version>8.4.1</version>
+      <description><![CDATA[Wildcard/glob file name matcher.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/wcmatch@8.4.1</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/wcwidth@0.2.5">
+      <publisher>Jeff Quast</publisher>
+      <group/>
+      <name>wcwidth</name>
+      <version>0.2.5</version>
+      <description><![CDATA[Measures the displayed width of unicode strings in a terminal]]></description>
+      <licenses/>
+      <purl>pkg:pypi/wcwidth@0.2.5</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/jquast/wcwidth</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/werkzeug@2.2.2">
+      <publisher>Armin Ronacher</publisher>
+      <group/>
+      <name>Werkzeug</name>
+      <version>2.2.2</version>
+      <description><![CDATA[The comprehensive WSGI web application library.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/werkzeug@2.2.2</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://palletsprojects.com/p/werkzeug/</url>
+        </reference>
+        <reference type="vcs">
+          <url>https://github.com/pallets/werkzeug/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/wheel@0.37.1">
+      <publisher>Daniel Holth</publisher>
+      <group/>
+      <name>wheel</name>
+      <version>0.37.1</version>
+      <description><![CDATA[A built-package format for Python]]></description>
+      <licenses/>
+      <purl>pkg:pypi/wheel@0.37.1</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://github.com/pypa/wheel</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/wtforms@2.3.3">
+      <publisher/>
+      <group/>
+      <name>WTForms</name>
+      <version>2.3.3</version>
+      <description><![CDATA[A flexible forms validation and rendering library for Python web development.]]></description>
+      <licenses/>
+      <purl>pkg:pypi/wtforms@2.3.3</purl>
+      <externalReferences>
+        <reference type="website">
+          <url>https://wtforms.readthedocs.io/</url>
+        </reference>
+      </externalReferences>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/celery@5.2.3">
+      <publisher/>
+      <group/>
+      <name>celery</name>
+      <version>5.2.3</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:pypi/celery@5.2.3</purl>
+    </component>
+    <component type="library" bom-ref="pkg:pypi/jsonschema@4.6">
+      <publisher/>
+      <group/>
+      <name>jsonschema</name>
+      <version>4.6</version>
+      <description/>
+      <licenses/>
+      <purl>pkg:pypi/jsonschema@4.6</purl>
+    </component>
+  </components>
+  <externalReferences>
+    <reference type="other">
+      <url>/home/fxb/grepmarx</url>
+      <comment>Base path</comment>
+    </reference>
+    <reference type="other">
+      <url>/home/fxb/grepmarx/requirements.txt</url>
+      <comment>Package file</comment>
+    </reference>
+  </externalReferences>
+</bom>

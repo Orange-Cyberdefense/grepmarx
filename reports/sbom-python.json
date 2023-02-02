@@ -1,0 +1,1751 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:e4ebb125-6d18-4b51-962b-42f9ada03ab7",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-02-02T20:45:49.004Z",
+    "tools": [
+      {
+        "vendor": "AppThreat",
+        "name": "cdxgen",
+        "version": "7.0.1"
+      }
+    ],
+    "authors": [
+      {
+        "name": "Team AppThreat",
+        "email": "cloud@appthreat.com"
+      }
+    ],
+    "component": {
+      "group": "",
+      "name": "grepmarx",
+      "version": "",
+      "type": "application"
+    }
+  },
+  "components": [
+    {
+      "publisher": "Mike Bayer",
+      "group": "",
+      "name": "alembic",
+      "version": "1.9.1",
+      "description": "A database migration tool for SQLAlchemy.",
+      "licenses": [],
+      "purl": "pkg:pypi/alembic@1.9.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://alembic.sqlalchemy.org"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/alembic@1.9.1"
+    },
+    {
+      "publisher": "Barry Pederson",
+      "group": "",
+      "name": "amqp",
+      "version": "5.1.1",
+      "description": "Low-level AMQP client for Python (fork of amqplib).",
+      "licenses": [],
+      "purl": "pkg:pypi/amqp@5.1.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/celery/py-amqp"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/amqp@5.1.1"
+    },
+    {
+      "publisher": "Alex Grönholm",
+      "group": "",
+      "name": "anyio",
+      "version": "3.6.2",
+      "description": "High level compatibility layer for multiple asynchronous event loop implementations",
+      "licenses": [],
+      "purl": "pkg:pypi/anyio@3.6.2",
+      "type": "library",
+      "bom-ref": "pkg:pypi/anyio@3.6.2"
+    },
+    {
+      "publisher": "Trent Mick",
+      "group": "",
+      "name": "appdirs",
+      "version": "1.4.4",
+      "description": "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\".",
+      "licenses": [],
+      "purl": "pkg:pypi/appdirs@1.4.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/ActiveState/appdirs"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/appdirs@1.4.4"
+    },
+    {
+      "publisher": "Team AppThreat",
+      "group": "",
+      "name": "appthreat-depscan",
+      "version": "3.5.3",
+      "description": "Fully open-source security audit for project dependencies based on known vulnerabilities and advisories.",
+      "licenses": [],
+      "purl": "pkg:pypi/appthreat-depscan@3.5.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/appthreat/dep-scan"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/appthreat-depscan@3.5.3"
+    },
+    {
+      "publisher": "Team AppThreat",
+      "group": "",
+      "name": "appthreat-vulnerability-db",
+      "version": "4.3.1",
+      "description": "AppThreat's vulnerability database and package search library with a built-in file based storage. OSV, CVE, GitHub, npm are the primary sources of vulnerabilities.",
+      "licenses": [],
+      "purl": "pkg:pypi/appthreat-vulnerability-db@4.3.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/appthreat/vulnerability-db"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/appthreat-vulnerability-db@4.3.1"
+    },
+    {
+      "publisher": "Hynek Schlawack",
+      "group": "",
+      "name": "attrs",
+      "version": "21.4.0",
+      "description": "Classes Without Boilerplate",
+      "licenses": [],
+      "purl": "pkg:pypi/attrs@21.4.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.attrs.org/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/python-attrs/attrs"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/attrs@21.4.0"
+    },
+    {
+      "publisher": "R Oudkerk / Python Software Foundation",
+      "group": "",
+      "name": "billiard",
+      "version": "3.6.4.0",
+      "description": "Python multiprocessing fork with improvements and bugfixes",
+      "licenses": [],
+      "purl": "pkg:pypi/billiard@3.6.4.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/celery/billiard"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/billiard@3.6.4.0"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "black",
+      "version": "22.12.0",
+      "description": "The uncompromising code formatter.",
+      "licenses": [],
+      "purl": "pkg:pypi/black@22.12.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/black@22.12.0"
+    },
+    {
+      "publisher": "Jason Kirtland",
+      "group": "",
+      "name": "blinker",
+      "version": "1.5",
+      "description": "Fast, simple object-to-object and broadcast signaling",
+      "licenses": [],
+      "purl": "pkg:pypi/blinker@1.5",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://blinker.readthedocs.io"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/blinker@1.5"
+    },
+    {
+      "publisher": "Mahmoud Hashemi",
+      "group": "",
+      "name": "boltons",
+      "version": "21.0.0",
+      "description": "When they're not builtins, they're boltons.",
+      "licenses": [],
+      "purl": "pkg:pypi/boltons@21.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/mahmoud/boltons"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/boltons@21.0.0"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "bracex",
+      "version": "2.3.post1",
+      "description": "Bash style brace expander.",
+      "licenses": [],
+      "purl": "pkg:pypi/bracex@2.3.post1",
+      "type": "library",
+      "bom-ref": "pkg:pypi/bracex@2.3.post1"
+    },
+    {
+      "publisher": "Ask Solem",
+      "group": "",
+      "name": "celery",
+      "version": "5.2.3 (dawn-chorus)",
+      "description": "Distributed Task Queue.",
+      "licenses": [],
+      "purl": "pkg:pypi/celery@5.2.3 (dawn-chorus)",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://celeryproject.org"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/celery@5.2.3 (dawn-chorus)"
+    },
+    {
+      "publisher": "Kenneth Reitz",
+      "group": "",
+      "name": "certifi",
+      "version": "2022.12.7",
+      "description": "Python package for providing Mozilla's CA Bundle.",
+      "licenses": [],
+      "purl": "pkg:pypi/certifi@2022.12.7",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/certifi/python-certifi"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/certifi@2022.12.7"
+    },
+    {
+      "publisher": "Ahmed TAHRI @Ousret",
+      "group": "",
+      "name": "charset-normalizer",
+      "version": "2.1.1",
+      "description": "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet.",
+      "licenses": [],
+      "purl": "pkg:pypi/charset-normalizer@2.1.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/ousret/charset_normalizer"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/charset-normalizer@2.1.1"
+    },
+    {
+      "publisher": "Timo Furrer",
+      "group": "",
+      "name": "click-didyoumean",
+      "version": "0.3.0",
+      "description": "Enables git-like *did-you-mean* feature in click",
+      "licenses": [],
+      "purl": "pkg:pypi/click-didyoumean@0.3.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/click-didyoumean@0.3.0"
+    },
+    {
+      "publisher": "Eugene Prilepin",
+      "group": "",
+      "name": "click-option-group",
+      "version": "0.5.5",
+      "description": "Option groups missing in Click",
+      "licenses": [],
+      "purl": "pkg:pypi/click-option-group@0.5.5",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/click-contrib/click-option-group"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/click-option-group@0.5.5"
+    },
+    {
+      "publisher": "Kevin Wurster, Sean Gillies",
+      "group": "",
+      "name": "click-plugins",
+      "version": "1.1.1",
+      "description": "An extension module for click to enable registering CLI commands via setuptools entry-points.",
+      "licenses": [],
+      "purl": "pkg:pypi/click-plugins@1.1.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/click-contrib/click-plugins"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/click-plugins@1.1.1"
+    },
+    {
+      "publisher": "Markus Unterwaditzer",
+      "group": "",
+      "name": "click-repl",
+      "version": "0.2.0",
+      "description": "REPL plugin for Click",
+      "licenses": [],
+      "purl": "pkg:pypi/click-repl@0.2.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/untitaker/click-repl"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/click-repl@0.2.0"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "click",
+      "version": "8.1.3",
+      "description": "Composable command line interface toolkit",
+      "licenses": [],
+      "purl": "pkg:pypi/click@8.1.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/click/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/click/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/click@8.1.3"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "colorama",
+      "version": "0.4.6",
+      "description": "Cross-platform colored terminal text.",
+      "licenses": [],
+      "purl": "pkg:pypi/colorama@0.4.6",
+      "type": "library",
+      "bom-ref": "pkg:pypi/colorama@0.4.6"
+    },
+    {
+      "publisher": "Stanislav Kontar, Red Hat Product Security",
+      "group": "",
+      "name": "cvss",
+      "version": "2.6",
+      "description": "CVSS2/3 library with interactive calculator for Python 2 and Python 3",
+      "licenses": [],
+      "purl": "pkg:pypi/cvss@2.6",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/RedHatProductSecurity/cvss"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/cvss@2.6"
+    },
+    {
+      "publisher": "Christian Heimes",
+      "group": "",
+      "name": "defusedxml",
+      "version": "0.7.1",
+      "description": "XML bomb protection for Python stdlib modules",
+      "licenses": [],
+      "purl": "pkg:pypi/defusedxml@0.7.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/tiran/defusedxml"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/defusedxml@0.7.1"
+    },
+    {
+      "publisher": "Bob Halley",
+      "group": "",
+      "name": "dnspython",
+      "version": "2.2.1",
+      "description": "DNS toolkit",
+      "licenses": [],
+      "purl": "pkg:pypi/dnspython@2.2.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.dnspython.org"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/dnspython@2.2.1"
+    },
+    {
+      "publisher": "Joshua Tauberer",
+      "group": "",
+      "name": "email-validator",
+      "version": "1.1.3",
+      "description": "A robust email syntax and deliverability validation library for Python 2.x/3.x.",
+      "licenses": [],
+      "purl": "pkg:pypi/email-validator@1.1.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/JoshData/python-email-validator"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/email-validator@1.1.3"
+    },
+    {
+      "publisher": "Mahmoud Hashemi",
+      "group": "",
+      "name": "face",
+      "version": "22.0.0",
+      "description": "A command-line application framework (and CLI parser). Friendly for users, full-featured for developers.",
+      "licenses": [],
+      "purl": "pkg:pypi/face@22.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/mahmoud/face"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/face@22.0.0"
+    },
+    {
+      "publisher": "Flask-Admin team",
+      "group": "",
+      "name": "Flask-Admin",
+      "version": "1.6.0",
+      "description": "Simple and extensible admin interface framework for Flask",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-admin@1.6.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/flask-admin/flask-admin/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-admin@1.6.0"
+    },
+    {
+      "publisher": "Blake Printy",
+      "group": "",
+      "name": "Flask-Authorize",
+      "version": "0.2.6",
+      "description": "Flask plugin for content authorization and access control",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-authorize@0.2.6",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/bprinty/Flask-Authorize"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-authorize@0.2.6"
+    },
+    {
+      "publisher": "Nick Whyte",
+      "group": "",
+      "name": "flask-ldap3-login",
+      "version": "0.9.18",
+      "description": "LDAP Support for Flask in Python3/2",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-ldap3-login@0.9.18",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/nickw444/flask-ldap3-login"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-ldap3-login@0.9.18"
+    },
+    {
+      "publisher": "Matthew Frazier",
+      "group": "",
+      "name": "Flask-Login",
+      "version": "0.6.0",
+      "description": "User authentication and session management for Flask.",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-login@0.6.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/maxcountryman/flask-login"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/maxcountryman/flask-login"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-login@0.6.0"
+    },
+    {
+      "publisher": "Miguel Grinberg",
+      "group": "",
+      "name": "Flask-Migrate",
+      "version": "3.1.0",
+      "description": "SQLAlchemy database migrations for Flask applications using Alembic.",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-migrate@3.1.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/miguelgrinberg/flask-migrate"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-migrate@3.1.0"
+    },
+    {
+      "publisher": "Ali Afshar",
+      "group": "",
+      "name": "Flask-Principal",
+      "version": "0.4.0",
+      "description": "Identity management for flask",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-principal@0.4.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://packages.python.org/Flask-Principal/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-principal@0.4.0"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "Flask-SQLAlchemy",
+      "version": "2.5.1",
+      "description": "Adds SQLAlchemy support to your Flask application.",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-sqlalchemy@2.5.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pallets/flask-sqlalchemy"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-sqlalchemy@2.5.1"
+    },
+    {
+      "publisher": "Dan Jacob",
+      "group": "",
+      "name": "Flask-WTF",
+      "version": "1.0.0",
+      "description": "Form rendering, validation, and CSRF protection for Flask with WTForms.",
+      "licenses": [],
+      "purl": "pkg:pypi/flask-wtf@1.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/wtforms/flask-wtf/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/wtforms/flask-wtf/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask-wtf@1.0.0"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "Flask",
+      "version": "2.0.2",
+      "description": "A simple framework for building complex web applications.",
+      "licenses": [],
+      "purl": "pkg:pypi/flask@2.0.2",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/flask"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/flask/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask@2.0.2"
+    },
+    {
+      "publisher": "Sujeet Kumar",
+      "group": "",
+      "name": "flaskcode",
+      "version": "0.0.8",
+      "description": "Web based code editor on python flask framework",
+      "licenses": [],
+      "purl": "pkg:pypi/flaskcode@0.0.8",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/sujeetkv/flaskcode"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/flaskcode@0.0.8"
+    },
+    {
+      "publisher": "Sebastian Thiel",
+      "group": "",
+      "name": "gitdb",
+      "version": "4.0.10",
+      "description": "Git Object Database",
+      "licenses": [],
+      "purl": "pkg:pypi/gitdb@4.0.10",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/gitpython-developers/gitdb"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/gitdb@4.0.10"
+    },
+    {
+      "publisher": "Sebastian Thiel, Michael Trier",
+      "group": "",
+      "name": "GitPython",
+      "version": "3.1.27",
+      "description": "GitPython is a python library used to interact with Git repositories",
+      "licenses": [],
+      "purl": "pkg:pypi/gitpython@3.1.27",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/gitpython-developers/GitPython"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/gitpython@3.1.27"
+    },
+    {
+      "publisher": "Mahmoud Hashemi and Kurt Rose",
+      "group": "",
+      "name": "glom",
+      "version": "22.1.0",
+      "description": "A declarative object transformer and formatter, for conglomerating nested data.",
+      "licenses": [],
+      "purl": "pkg:pypi/glom@22.1.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/mahmoud/glom"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/glom@22.1.0"
+    },
+    {
+      "publisher": "Alexey Borzenkov",
+      "group": "",
+      "name": "greenlet",
+      "version": "2.0.1",
+      "description": "Lightweight in-process concurrent programming",
+      "licenses": [],
+      "purl": "pkg:pypi/greenlet@2.0.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://greenlet.readthedocs.io/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/python-greenlet/greenlet/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/greenlet@2.0.1"
+    },
+    {
+      "publisher": "Benoit Chesneau",
+      "group": "",
+      "name": "gunicorn",
+      "version": "20.1.0",
+      "description": "WSGI HTTP Server for UNIX",
+      "licenses": [],
+      "purl": "pkg:pypi/gunicorn@20.1.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://gunicorn.org"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/gunicorn@20.1.0"
+    },
+    {
+      "publisher": "Nathaniel J. Smith",
+      "group": "",
+      "name": "h11",
+      "version": "0.14.0",
+      "description": "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1",
+      "licenses": [],
+      "purl": "pkg:pypi/h11@0.14.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-hyper/h11"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/h11@0.14.0"
+    },
+    {
+      "publisher": "Cory Benfield",
+      "group": "",
+      "name": "h2",
+      "version": "4.1.0",
+      "description": "HTTP/2 State-Machine based protocol implementation",
+      "licenses": [],
+      "purl": "pkg:pypi/h2@4.1.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-hyper/h2"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/h2@4.1.0"
+    },
+    {
+      "publisher": "Cory Benfield",
+      "group": "",
+      "name": "hpack",
+      "version": "4.0.0",
+      "description": "Pure-Python HPACK header compression",
+      "licenses": [],
+      "purl": "pkg:pypi/hpack@4.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-hyper/hpack"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/hpack@4.0.0"
+    },
+    {
+      "publisher": "Tom Christie",
+      "group": "",
+      "name": "httpcore",
+      "version": "0.16.3",
+      "description": "A minimal low-level HTTP client.",
+      "licenses": [],
+      "purl": "pkg:pypi/httpcore@0.16.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/encode/httpcore"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/httpcore@0.16.3"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "httpx",
+      "version": "0.23.3",
+      "description": "The next generation HTTP client.",
+      "licenses": [],
+      "purl": "pkg:pypi/httpx@0.23.3",
+      "type": "library",
+      "bom-ref": "pkg:pypi/httpx@0.23.3"
+    },
+    {
+      "publisher": "Cory Benfield",
+      "group": "",
+      "name": "hyperframe",
+      "version": "6.0.1",
+      "description": "HTTP/2 framing layer for Python",
+      "licenses": [],
+      "purl": "pkg:pypi/hyperframe@6.0.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-hyper/hyperframe/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/hyperframe@6.0.1"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "idna",
+      "version": "3.4",
+      "description": "Internationalized Domain Names in Applications (IDNA)",
+      "licenses": [],
+      "purl": "pkg:pypi/idna@3.4",
+      "type": "library",
+      "bom-ref": "pkg:pypi/idna@3.4"
+    },
+    {
+      "publisher": "Markus Holtermann, Django Software Foundation and individual contributors",
+      "group": "",
+      "name": "is-safe-url",
+      "version": "1.0",
+      "description": "Django's is_safe_url() bundled as a standalone package.",
+      "licenses": [],
+      "purl": "pkg:pypi/is-safe-url@1.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://gitlab.com/MarkusH/is_safe_url"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/is-safe-url@1.0"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "itsdangerous",
+      "version": "2.1.2",
+      "description": "Safely pass data to untrusted environments and back.",
+      "licenses": [],
+      "purl": "pkg:pypi/itsdangerous@2.1.2",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/itsdangerous/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/itsdangerous/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/itsdangerous@2.1.2"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "Jinja2",
+      "version": "3.0.3",
+      "description": "A very fast and expressive template engine.",
+      "licenses": [],
+      "purl": "pkg:pypi/jinja2@3.0.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/jinja/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/jinja/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/jinja2@3.0.3"
+    },
+    {
+      "publisher": "Julian Berman",
+      "group": "",
+      "name": "jsonschema",
+      "version": "4.6.0",
+      "description": "An implementation of JSON Schema validation for Python",
+      "licenses": [],
+      "purl": "pkg:pypi/jsonschema@4.6.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/jsonschema@4.6.0"
+    },
+    {
+      "publisher": "Ask Solem",
+      "group": "",
+      "name": "kombu",
+      "version": "5.2.4",
+      "description": "Messaging library for Python.",
+      "licenses": [],
+      "purl": "pkg:pypi/kombu@5.2.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://kombu.readthedocs.io"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/kombu@5.2.4"
+    },
+    {
+      "publisher": "Giovanni Cannata",
+      "group": "",
+      "name": "ldap3",
+      "version": "2.9.1",
+      "description": "A strictly RFC 4510 conforming LDAP V3 pure Python client library",
+      "licenses": [],
+      "purl": "pkg:pypi/ldap3@2.9.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/cannatag/ldap3"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/ldap3@2.9.1"
+    },
+    {
+      "publisher": "Mike Bayer",
+      "group": "",
+      "name": "Mako",
+      "version": "1.2.4",
+      "description": "A super-fast templating language that borrows the best ideas from the existing templating languages.",
+      "licenses": [],
+      "purl": "pkg:pypi/mako@1.2.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.makotemplates.org/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/mako@1.2.4"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "markdown-it-py",
+      "version": "2.1.0",
+      "description": "Python port of markdown-it. Markdown parsing, done right!",
+      "licenses": [],
+      "purl": "pkg:pypi/markdown-it-py@2.1.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/markdown-it-py@2.1.0"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "MarkupSafe",
+      "version": "2.1.1",
+      "description": "Safely add untrusted strings to HTML/XML markup.",
+      "licenses": [],
+      "purl": "pkg:pypi/markupsafe@2.1.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/markupsafe/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/markupsafe/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/markupsafe@2.1.1"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "mdurl",
+      "version": "0.1.2",
+      "description": "Markdown URL utilities",
+      "licenses": [],
+      "purl": "pkg:pypi/mdurl@0.1.2",
+      "type": "library",
+      "bom-ref": "pkg:pypi/mdurl@0.1.2"
+    },
+    {
+      "publisher": "Inada Naoki",
+      "group": "",
+      "name": "msgpack",
+      "version": "1.0.4",
+      "description": "MessagePack serializer",
+      "licenses": [],
+      "purl": "pkg:pypi/msgpack@1.0.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://msgpack.org/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/msgpack@1.0.4"
+    },
+    {
+      "publisher": "The mypy developers",
+      "group": "",
+      "name": "mypy-extensions",
+      "version": "0.4.3",
+      "description": "Experimental type system extensions for programs checked with the mypy typechecker.",
+      "licenses": [],
+      "purl": "pkg:pypi/mypy-extensions@0.4.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python/mypy_extensions"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/mypy-extensions@0.4.3"
+    },
+    {
+      "publisher": "ijl <ijl@mailbox.org>",
+      "group": "",
+      "name": "orjson",
+      "version": "3.8.5",
+      "description": "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy",
+      "licenses": [],
+      "purl": "pkg:pypi/orjson@3.8.5",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/ijl/orjson"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/orjson@3.8.5"
+    },
+    {
+      "publisher": "the purl authors",
+      "group": "",
+      "name": "packageurl-python",
+      "version": "0.10.4",
+      "description": "A purl aka. Package URL parser and builder",
+      "licenses": [],
+      "purl": "pkg:pypi/packageurl-python@0.10.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/package-url/packageurl-python"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/packageurl-python@0.10.4"
+    },
+    {
+      "publisher": "Donald Stufft and individual contributors",
+      "group": "",
+      "name": "packaging",
+      "version": "21.3",
+      "description": "Core utilities for Python packages",
+      "licenses": [],
+      "purl": "pkg:pypi/packaging@21.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pypa/packaging"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/packaging@21.3"
+    },
+    {
+      "publisher": "Caleb P. Burns",
+      "group": "",
+      "name": "pathspec",
+      "version": "0.10.3",
+      "description": "Utility library for gitignore style pattern matching of file paths.",
+      "licenses": [],
+      "purl": "pkg:pypi/pathspec@0.10.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/cpburnz/python-pathspec"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/cpburnz/python-pathspec"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pathspec@0.10.3"
+    },
+    {
+      "publisher": "Charles Leifer",
+      "group": "",
+      "name": "peewee",
+      "version": "3.15.4",
+      "description": "a little orm",
+      "licenses": [],
+      "purl": "pkg:pypi/peewee@3.15.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/coleifer/peewee/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/peewee@3.15.4"
+    },
+    {
+      "publisher": "The pip developers",
+      "group": "",
+      "name": "pip",
+      "version": "22.0.2",
+      "description": "The PyPA recommended tool for installing Python packages.",
+      "licenses": [],
+      "purl": "pkg:pypi/pip@22.0.2",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pip.pypa.io/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pip@22.0.2"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "platformdirs",
+      "version": "2.6.2",
+      "description": "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\".",
+      "licenses": [],
+      "purl": "pkg:pypi/platformdirs@2.6.2",
+      "type": "library",
+      "bom-ref": "pkg:pypi/platformdirs@2.6.2"
+    },
+    {
+      "publisher": "Jonathan Slenders",
+      "group": "",
+      "name": "prompt-toolkit",
+      "version": "3.0.36",
+      "description": "Library for building powerful interactive command lines in Python",
+      "licenses": [],
+      "purl": "pkg:pypi/prompt-toolkit@3.0.36",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/prompt-toolkit/python-prompt-toolkit"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/prompt-toolkit@3.0.36"
+    },
+    {
+      "publisher": "Ilya Etingof",
+      "group": "",
+      "name": "pyasn1",
+      "version": "0.4.8",
+      "description": "ASN.1 types and codecs",
+      "licenses": [],
+      "purl": "pkg:pypi/pyasn1@0.4.8",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/etingof/pyasn1"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pyasn1@0.4.8"
+    },
+    {
+      "publisher": "Georg Brandl",
+      "group": "",
+      "name": "Pygments",
+      "version": "2.11.2",
+      "description": "Pygments is a syntax highlighting package written in Python.",
+      "licenses": [],
+      "purl": "pkg:pypi/pygments@2.11.2",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pygments.org/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pygments@2.11.2"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "pyparsing",
+      "version": "3.0.9",
+      "description": "pyparsing module - Classes and methods to define and execute parsing grammars",
+      "licenses": [],
+      "purl": "pkg:pypi/pyparsing@3.0.9",
+      "type": "library",
+      "bom-ref": "pkg:pypi/pyparsing@3.0.9"
+    },
+    {
+      "publisher": "Tobias Gustafsson",
+      "group": "",
+      "name": "pyrsistent",
+      "version": "0.19.3",
+      "description": "Persistent/Functional/Immutable data structures",
+      "licenses": [],
+      "purl": "pkg:pypi/pyrsistent@0.19.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/tobgu/pyrsistent/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pyrsistent@0.19.3"
+    },
+    {
+      "publisher": "Henrique Bastos",
+      "group": "",
+      "name": "python-decouple",
+      "version": "3.5",
+      "description": "Strict separation of settings from code.",
+      "licenses": [],
+      "purl": "pkg:pypi/python-decouple@3.5",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/henriquebastos/python-decouple/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/python-decouple@3.5"
+    },
+    {
+      "publisher": "Python Language Server Contributors",
+      "group": "",
+      "name": "python-lsp-jsonrpc",
+      "version": "1.0.0",
+      "description": "JSON RPC 2.0 server library",
+      "licenses": [],
+      "purl": "pkg:pypi/python-lsp-jsonrpc@1.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-lsp/python-lsp-jsonrpc"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/python-lsp-jsonrpc@1.0.0"
+    },
+    {
+      "publisher": "Stuart Bishop <stuart@stuartbishop.net>",
+      "group": "",
+      "name": "pytz",
+      "version": "2022.7",
+      "description": "World timezone definitions, modern and historical",
+      "licenses": [],
+      "purl": "pkg:pypi/pytz@2022.7",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://pythonhosted.org/pytz"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pytz@2022.7"
+    },
+    {
+      "publisher": "Kirill Simonov",
+      "group": "",
+      "name": "PyYAML",
+      "version": "6.0",
+      "description": "YAML parser and emitter for Python",
+      "licenses": [],
+      "purl": "pkg:pypi/pyyaml@6.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pyyaml.org/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/yaml/pyyaml"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/pyyaml@6.0"
+    },
+    {
+      "publisher": "Andy McCurdy",
+      "group": "",
+      "name": "redis",
+      "version": "3.5.3",
+      "description": "Python client for Redis key-value store",
+      "licenses": [],
+      "purl": "pkg:pypi/redis@3.5.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/andymccurdy/redis-py"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/redis@3.5.3"
+    },
+    {
+      "publisher": "Kenneth Reitz",
+      "group": "",
+      "name": "requests",
+      "version": "2.28.1",
+      "description": "Python HTTP for Humans.",
+      "licenses": [],
+      "purl": "pkg:pypi/requests@2.28.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://requests.readthedocs.io"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/requests@2.28.1"
+    },
+    {
+      "publisher": "Ian Stapleton Cordasco",
+      "group": "",
+      "name": "rfc3986",
+      "version": "1.5.0",
+      "description": "Validating URI References per RFC 3986",
+      "licenses": [],
+      "purl": "pkg:pypi/rfc3986@1.5.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://rfc3986.readthedocs.io"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/rfc3986@1.5.0"
+    },
+    {
+      "publisher": "Will McGugan",
+      "group": "",
+      "name": "rich",
+      "version": "13.2.0",
+      "description": "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal",
+      "licenses": [],
+      "purl": "pkg:pypi/rich@13.2.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/Textualize/rich"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/rich@13.2.0"
+    },
+    {
+      "publisher": "Anthon van der Neut",
+      "group": "",
+      "name": "ruamel.yaml",
+      "version": "0.17.21",
+      "description": "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order",
+      "licenses": [],
+      "purl": "pkg:pypi/ruamel.yaml@0.17.21",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/ruamel.yaml@0.17.21"
+    },
+    {
+      "publisher": "Anthon van der Neut",
+      "group": "",
+      "name": "ruamel.yaml.clib",
+      "version": "0.2.7",
+      "description": "C version of reader, parser and emitter for ruamel.yaml derived from libyaml",
+      "licenses": [],
+      "purl": "pkg:pypi/ruamel.yaml.clib@0.2.7",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/ruamel.yaml.clib@0.2.7"
+    },
+    {
+      "publisher": "Return To Corporation",
+      "group": "",
+      "name": "semgrep",
+      "version": "1.2.1",
+      "description": "Lightweight static analysis for many languages. Find bug variants with patterns that look like source code.",
+      "licenses": [],
+      "purl": "pkg:pypi/semgrep@1.2.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/returntocorp/semgrep"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/semgrep@1.2.1"
+    },
+    {
+      "publisher": "Kostiantyn Rybnikov",
+      "group": "",
+      "name": "semver",
+      "version": "2.13.0",
+      "description": "Python helper for Semantic Versioning (http://semver.org/)",
+      "licenses": [],
+      "purl": "pkg:pypi/semver@2.13.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-semver/python-semver"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/semver@2.13.0"
+    },
+    {
+      "publisher": "Python Packaging Authority",
+      "group": "",
+      "name": "setuptools",
+      "version": "59.6.0",
+      "description": "Easily download, build, install, upgrade, and uninstall Python packages",
+      "licenses": [],
+      "purl": "pkg:pypi/setuptools@59.6.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pypa/setuptools"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/setuptools@59.6.0"
+    },
+    {
+      "publisher": "Benjamin Peterson",
+      "group": "",
+      "name": "six",
+      "version": "1.16.0",
+      "description": "Python 2 and 3 compatibility utilities",
+      "licenses": [],
+      "purl": "pkg:pypi/six@1.16.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/benjaminp/six"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/six@1.16.0"
+    },
+    {
+      "publisher": "Sebastian Thiel",
+      "group": "",
+      "name": "smmap",
+      "version": "5.0.0",
+      "description": "A pure Python implementation of a sliding window memory map manager",
+      "licenses": [],
+      "purl": "pkg:pypi/smmap@5.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/gitpython-developers/smmap"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/smmap@5.0.0"
+    },
+    {
+      "publisher": "Nathaniel J. Smith",
+      "group": "",
+      "name": "sniffio",
+      "version": "1.3.0",
+      "description": "Sniff out which async library your code is running under",
+      "licenses": [],
+      "purl": "pkg:pypi/sniffio@1.3.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-trio/sniffio"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/sniffio@1.3.0"
+    },
+    {
+      "publisher": "Mike Bayer",
+      "group": "",
+      "name": "SQLAlchemy",
+      "version": "1.4.31",
+      "description": "Database Abstraction Library",
+      "licenses": [],
+      "purl": "pkg:pypi/sqlalchemy@1.4.31",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.sqlalchemy.org"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/sqlalchemy@1.4.31"
+    },
+    {
+      "publisher": "Chris McDonough",
+      "group": "",
+      "name": "supervisor",
+      "version": "4.2.4",
+      "description": "A system for controlling process state under UNIX",
+      "licenses": [],
+      "purl": "pkg:pypi/supervisor@4.2.4",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://supervisord.org/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/supervisor@4.2.4"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "tabulate",
+      "version": "0.9.0",
+      "description": "Pretty-print tabular data",
+      "licenses": [],
+      "purl": "pkg:pypi/tabulate@0.9.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/tabulate@0.9.0"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "tomli",
+      "version": "2.0.1",
+      "description": "A lil' TOML parser",
+      "licenses": [],
+      "purl": "pkg:pypi/tomli@2.0.1",
+      "type": "library",
+      "bom-ref": "pkg:pypi/tomli@2.0.1"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "tqdm",
+      "version": "4.64.1",
+      "description": "Fast, Extensible Progress Meter",
+      "licenses": [],
+      "purl": "pkg:pypi/tqdm@4.64.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://tqdm.github.io"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/tqdm@4.64.1"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "typing_extensions",
+      "version": "4.4.0",
+      "description": "Backported and Experimental Type Hints for Python 3.7+",
+      "licenses": [],
+      "purl": "pkg:pypi/typing-extensions@4.4.0",
+      "type": "library",
+      "bom-ref": "pkg:pypi/typing-extensions@4.4.0"
+    },
+    {
+      "publisher": "Jonas Tarnstrom",
+      "group": "",
+      "name": "ujson",
+      "version": "5.7.0",
+      "description": "Ultra fast JSON encoder and decoder for Python",
+      "licenses": [],
+      "purl": "pkg:pypi/ujson@5.7.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/ultrajson/ultrajson"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/ujson@5.7.0"
+    },
+    {
+      "publisher": "Andrey Petrov",
+      "group": "",
+      "name": "urllib3",
+      "version": "1.26.13",
+      "description": "HTTP library with thread-safe connection pooling, file post, and more.",
+      "licenses": [],
+      "purl": "pkg:pypi/urllib3@1.26.13",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://urllib3.readthedocs.io/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/urllib3@1.26.13"
+    },
+    {
+      "publisher": "Ask Solem",
+      "group": "",
+      "name": "vine",
+      "version": "5.0.0",
+      "description": "Promises, promises, promises.",
+      "licenses": [],
+      "purl": "pkg:pypi/vine@5.0.0",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/celery/vine"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/vine@5.0.0"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "wcmatch",
+      "version": "8.4.1",
+      "description": "Wildcard/glob file name matcher.",
+      "licenses": [],
+      "purl": "pkg:pypi/wcmatch@8.4.1",
+      "type": "library",
+      "bom-ref": "pkg:pypi/wcmatch@8.4.1"
+    },
+    {
+      "publisher": "Jeff Quast",
+      "group": "",
+      "name": "wcwidth",
+      "version": "0.2.5",
+      "description": "Measures the displayed width of unicode strings in a terminal",
+      "licenses": [],
+      "purl": "pkg:pypi/wcwidth@0.2.5",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/jquast/wcwidth"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/wcwidth@0.2.5"
+    },
+    {
+      "publisher": "Armin Ronacher",
+      "group": "",
+      "name": "Werkzeug",
+      "version": "2.2.2",
+      "description": "The comprehensive WSGI web application library.",
+      "licenses": [],
+      "purl": "pkg:pypi/werkzeug@2.2.2",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://palletsprojects.com/p/werkzeug/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/pallets/werkzeug/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/werkzeug@2.2.2"
+    },
+    {
+      "publisher": "Daniel Holth",
+      "group": "",
+      "name": "wheel",
+      "version": "0.37.1",
+      "description": "A built-package format for Python",
+      "licenses": [],
+      "purl": "pkg:pypi/wheel@0.37.1",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pypa/wheel"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/wheel@0.37.1"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "WTForms",
+      "version": "2.3.3",
+      "description": "A flexible forms validation and rendering library for Python web development.",
+      "licenses": [],
+      "purl": "pkg:pypi/wtforms@2.3.3",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://wtforms.readthedocs.io/"
+        }
+      ],
+      "type": "library",
+      "bom-ref": "pkg:pypi/wtforms@2.3.3"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "celery",
+      "version": "5.2.3",
+      "description": "",
+      "licenses": [],
+      "purl": "pkg:pypi/celery@5.2.3",
+      "type": "library",
+      "bom-ref": "pkg:pypi/celery@5.2.3"
+    },
+    {
+      "publisher": "",
+      "group": "",
+      "name": "jsonschema",
+      "version": "4.6",
+      "description": "",
+      "licenses": [],
+      "purl": "pkg:pypi/jsonschema@4.6",
+      "type": "library",
+      "bom-ref": "pkg:pypi/jsonschema@4.6"
+    }
+  ],
+  "dependencies": [],
+  "externalReferences": [
+    {
+      "type": "other",
+      "url": "/home/fxb/grepmarx",
+      "comment": "Base path"
+    },
+    {
+      "type": "other",
+      "url": "/home/fxb/grepmarx/requirements.txt",
+      "comment": "Package file"
+    }
+  ]
+}
