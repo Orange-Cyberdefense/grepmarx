@@ -31,6 +31,7 @@ from app.analysis.models import (
     VulnerableDependency,
 )
 from app.constants import (
+    APPLICATION_INSPECTOR,
     BOM_FILE,
     CDXGEN,
     DEPSCAN,
@@ -47,7 +48,6 @@ from app.constants import (
     STATUS_FINISHED,
 )
 from app.projects.util import (
-    application_inspector_scan,
     calculate_risk_level,
     count_occurences,
 )
@@ -77,11 +77,11 @@ def async_scan(self, analysis_id, app_inspector_id):
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     try:
         # SAST scan: invoke semgrep
-        sca_result = sca_scan(analysis.project)
+        sast_result = sast_scan(files_to_scan, project_rules_path, ignore)
         # SCA scan: invoke depscan
-        semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
+        sca_result = sca_scan(analysis.project)
         # Inspector scan: invoke ApplicationInspector
-        app_inspector_result = application_inspector_scan(app_inspector.project.id)
+        inspector_result = inspector_scan(app_inspector.project.id)
     except Exception as e:
         analysis.project.error_message = repr(e)
         analysis.project.status = STATUS_ERROR
@@ -90,11 +90,11 @@ def async_scan(self, analysis_id, app_inspector_id):
         )
     else:
         # Everything went fine: load results into the analysis object
-        load_scan_results(analysis, semgrep_result)
+        load_sast_scan_results(analysis, sast_result)
         load_sca_scan_results(analysis, sca_result)
-        load_scan_app_inspector(app_inspector, app_inspector_result)
+        load_inspector_results(app_inspector, inspector_result)
         # Also save SAST results into a file
-        save_result(analysis, semgrep_result)
+        save_sast_result(analysis, sast_result)
         analysis.project.status = STATUS_FINISHED
     # Done
     analysis.finished_on = datetime.now()
@@ -113,44 +113,12 @@ def stop_analysis(analysis):
     db.session.commit()
 
 
-def sca_scan(project):
-    """Launch a depscan analysis. SBOM (Software Bill Of Material) will firstly be generated
-    using `cdxgen'. The resulting BOM file will then be analyzed with depscan.
-
-    Args:
-        project (Project): corresponding target projet
-
-    Returns:
-        [str]: A list of depscan results as dicts
-    """
-    source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
-    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id))
-    # Generate SBOM with cdxgen
-    bom_file = os.path.join(output_folder, BOM_FILE)
-    subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
-    # Launch depscan analysis
-    subprocess.run(
-        [
-            DEPSCAN,
-            "--no-banner",
-            "--no-error",
-            "--src",
-            source_path,
-            "--bom",
-            bom_file,
-            "--reports-dir",
-            output_folder,
-        ]
-    )
-    # Return depscan JSON result
-    result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
-    results = []
-    for line in open(result_file, "r"):
-        results.append(json.loads(line))
-    return results
+##
+## SAST scan utils
+##
 
 
-def semgrep_scan(files_to_scan, project_rules_path, ignore):
+def sast_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
     https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
 
@@ -210,24 +178,24 @@ def semgrep_scan(files_to_scan, project_rules_path, ignore):
         )
 
 
-def save_result(analysis, semgrep_result):
+def save_sast_result(analysis, sast_result):
     """Save Semgrep JSON results as a file in the project's directory.
 
     Args:
         analysis (Analysis): corresponding analysis
-        semgrep_result (str): Semgrep JSON results as string
+        sast_result (str): Semgrep JSON results as string
     """
     filename = os.path.join(
         PROJECTS_SRC_PATH,
         str(analysis.project.id),
-        "analysis_" + str(analysis.id) + ".json",
+        "sast_analysis_" + str(analysis.id) + ".json",
     )
     f = open(filename, "a")
-    f.write(semgrep_result)
+    f.write(sast_result)
     f.close()
 
 
-def load_scan_results(analysis, semgrep_output):
+def load_sast_scan_results(analysis, semgrep_output):
     """Populate an Analysis object with the result of a Semgrep scan.
 
     Args:
@@ -257,121 +225,18 @@ def load_scan_results(analysis, semgrep_output):
                         analysis.vulnerabilities = vulns
 
 
-def load_sca_scan_results(analysis, sca_results):
-    """Populate an Analysis object with the result of an SCA (depscan) scan.
-
-    Args:
-        analysis (Analysis): corresponding analysis
-        semgrep_output (str): List of depscan results as dicts
-    """
-    vuln_deps = list()
-    for c_result in sca_results:
-        vuln_deps.append(
-            VulnerableDependency(
-                common_id=c_result["id"],
-                package=c_result["package"],
-                purl=c_result["purl"],
-                package_type=c_result["package_type"],
-                package_usage=c_result["package_usage"],
-                version=c_result["version"],
-                fix_version=c_result["fix_version"],
-                severity=c_result["severity"],
-                cvss_score=c_result["cvss_score"],
-                short_description=c_result["short_description"],
-                related_urls=",".join(c_result["related_urls"]),
-            )
-        )
-        analysis.vulnerable_dependencies = vuln_deps
-
-
-def load_scan_app_inspector(app_inspector, app_inspector_result):
-    """Populate an AppInspector object with the result of a Application Inspector scan.
-
-    Args:
-        app_inspector_result (str): Application Inspector JSON output.
-        app_inspector(oonject): Application Inspector object filter by ID.
-    """
-    match = list()
-
-    if app_inspector_result != "":
-        if "metaData" in app_inspector_result:
-            data = app_inspector_result["metaData"]
-            if "detailedMatchList" in data:
-                detailed = data["detailedMatchList"]
-                # we go through the dictionary again and again
-                for data_in_detailed in detailed:
-                    title = data_in_detailed["ruleName"]
-                    e_match = [m for m in match if m.title == title]
-                    if len(e_match) == 0:
-                        # creation of a match and an associated tag
-                        n_match = load_match(title, data_in_detailed)
-                        n_match.tag.append(load_tags(data_in_detailed))
-                        match.append(n_match)
-                    else:
-                        e_matchs = e_match[0]
-                        e_matchs.tag.append(load_tags(data_in_detailed))
-                        app_inspector.match = match
-
-
-def load_match(title, detailed):
-    """Create a match object from a 'result' element of app_inspector JSON results.
-
-    Args:
-        title (string): finding's title
-        app_inspector_result (dict): 'result' elements with its properties
-
-    Returns:
-        Match: fully populated match
-    """
-
-    match = Match(title=title)
-    if detailed != "":
-        if "ruleDescription" in detailed:
-            match.description = detailed["ruleDescription"]
-        if "pattern" in detailed:
-            match.pattern = detailed["pattern"]
-        if "fileName" in detailed:
-            match.filename = detailed["fileName"]
-        if "tags" in detailed and len(detailed["tags"]):
-            match.tags = detailed["tags"][0]
-
-    return match
-
-
-def load_tags(data_in_detailed):
-    """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
-
-    Args:
-        data_in_detailed (dict): 'data' elements with its properties
-
-    Returns:
-        Occurence: fully populated occurence
-    """
-    tags = InspectorTag(
-        start_line=data_in_detailed["startLocationLine"],
-        start_column=data_in_detailed["startLocationColumn"],
-        end_column=data_in_detailed["endLocationColumn"],
-        end_line=data_in_detailed["endLocationLine"],
-        excerpt=data_in_detailed["excerpt"],
-        filename=data_in_detailed["fileName"],
-    )
-    if "severity" in data_in_detailed:
-        tags.severity = data_in_detailed["severity"]
-    return tags
-
-
-def load_vulnerability(title, semgrep_result):
+def load_vulnerability(title, sast_result):
     """Create a vulnerability object from a 'result' element of semgrep JSON results.
 
     Args:
         title (string): finding's title
-        semgrep_result (dict): 'result' elements with its properties
+        sast_result (dict): 'result' elements with its properties
 
     Returns:
         Vulnerability: fully populated vulnerability
     """
     vuln = Vulnerability(title=title)
-    extra = semgrep_result["extra"]
+    extra = sast_result["extra"]
     if "message" in extra:
         vuln.description = extra["message"]
     if "metadata" in extra:
@@ -394,25 +259,25 @@ def load_vulnerability(title, semgrep_result):
     return vuln
 
 
-def load_occurence(semgrep_result):
+def load_occurence(sast_result):
     """Create an occurence object from a 'result' element of semgrep JSON results.
 
     Args:
-        semgrep_result (dict): 'result' elements with its properties
+        sast_result (dict): 'result' elements with its properties
 
     Returns:
         Occurence: fully populated occurence
     """
     pattern = PROJECTS_SRC_PATH + "[\\/]?\d+[\\/]" + EXTRACT_FOLDER_NAME + "[\\/]?"
-    clean_path = re.sub(pattern, "", semgrep_result["path"])
+    clean_path = re.sub(pattern, "", sast_result["path"])
     occurence = Occurence(
-        file_path=clean_path, match_string=semgrep_result["extra"]["lines"]
+        file_path=clean_path, match_string=sast_result["extra"]["lines"]
     )
     occurence.position = Position(
-        line_start=semgrep_result["start"]["line"],
-        line_end=semgrep_result["end"]["line"],
-        column_start=semgrep_result["start"]["col"],
-        column_end=semgrep_result["end"]["col"],
+        line_start=sast_result["start"]["line"],
+        line_end=sast_result["end"]["line"],
+        column_start=sast_result["start"]["col"],
+        column_end=sast_result["end"]["col"],
     )
     return occurence
 
@@ -504,3 +369,183 @@ def vulnerabilities_sorted_by_severity(analysis):
             low_vulns.append(c_vulns)
     r_vulns.extend(low_vulns)
     return r_vulns
+
+
+##
+## SCA scan utils
+##
+
+
+def sca_scan(project):
+    """Launch a depscan analysis. SBOM (Software Bill Of Material) will firstly be generated
+    using `cdxgen'. The resulting BOM file will then be analyzed with depscan.
+
+    Args:
+        project (Project): corresponding target projet
+
+    Returns:
+        [str]: A list of depscan results as dicts
+    """
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
+    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id))
+    # Generate SBOM with cdxgen
+    bom_file = os.path.join(output_folder, BOM_FILE)
+    subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
+    # Launch depscan analysis
+    subprocess.run(
+        [
+            DEPSCAN,
+            "--no-banner",
+            "--no-error",
+            "--src",
+            source_path,
+            "--bom",
+            bom_file,
+            "--reports-dir",
+            output_folder,
+        ]
+    )
+    # Return depscan JSON result
+    result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
+    results = []
+    for line in open(result_file, "r"):
+        results.append(json.loads(line))
+    return results
+
+
+def load_sca_scan_results(analysis, sca_results):
+    """Populate an Analysis object with the result of an SCA (depscan) scan.
+
+    Args:
+        analysis (Analysis): corresponding analysis
+        semgrep_output (str): List of depscan results as dicts
+    """
+    vuln_deps = list()
+    for c_result in sca_results:
+        vuln_deps.append(
+            VulnerableDependency(
+                common_id=c_result["id"],
+                package=c_result["package"],
+                purl=c_result["purl"],
+                package_type=c_result["package_type"],
+                package_usage=c_result["package_usage"],
+                version=c_result["version"],
+                fix_version=c_result["fix_version"],
+                severity=c_result["severity"],
+                cvss_score=c_result["cvss_score"],
+                short_description=c_result["short_description"],
+                related_urls=",".join(c_result["related_urls"]),
+            )
+        )
+        analysis.vulnerable_dependencies = vuln_deps
+
+
+##
+## Inspector scan utils
+##
+
+
+def inspector_scan(project_id):
+    """Microsoft Application Inspector is a software source code characterization tool
+    that helps identify coding features of first or third party software components based
+    on well-known library/API calls and is helpful in security and non-security use cases.
+
+    Args:
+        project_id (Project): project.id
+    """
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
+    # Call to external binary: ApplicationInspector.CLI
+    cwd = os.getcwd()
+    subprocess.run(
+        [
+            APPLICATION_INSPECTOR,
+            "analyze",
+            "-s",
+            f"{source_path}/",
+            "-f",
+            "json",
+            "-o",
+            f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json",
+        ],
+        capture_output=True,
+    ).stdout
+    f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
+    json_result = json.load(f)
+    f.close()
+    return json_result
+
+
+def load_inspector_results(app_inspector, inspector_result):
+    """Populate an AppInspector object with the result of a Application Inspector scan.
+
+    Args:
+        inspector_result (str): Application Inspector JSON output.
+        app_inspector(AppInspector): Application Inspector object filter by ID.
+    """
+    match = list()
+
+    if inspector_result != "":
+        if "metaData" in inspector_result:
+            data = inspector_result["metaData"]
+            if "detailedMatchList" in data:
+                detailed = data["detailedMatchList"]
+                # we go through the dictionary again and again
+                for data_in_detailed in detailed:
+                    title = data_in_detailed["ruleName"]
+                    e_match = [m for m in match if m.title == title]
+                    if len(e_match) == 0:
+                        # Creation of a match and an associated tag
+                        n_match = load_match(title, data_in_detailed)
+                        n_match.tag.append(load_tags(data_in_detailed))
+                        match.append(n_match)
+                    else:
+                        e_matchs = e_match[0]
+                        e_matchs.tag.append(load_tags(data_in_detailed))
+                        app_inspector.match = match
+
+
+def load_match(title, detailed):
+    """Create a match object from a 'result' element of app_inspector JSON results.
+
+    Args:
+        title (string): finding's title
+        inspector_result (dict): 'result' elements with its properties
+
+    Returns:
+        Match: fully populated match
+    """
+
+    match = Match(title=title)
+    if detailed != "":
+        if "ruleDescription" in detailed:
+            match.description = detailed["ruleDescription"]
+        if "pattern" in detailed:
+            match.pattern = detailed["pattern"]
+        if "fileName" in detailed:
+            match.filename = detailed["fileName"]
+        if "tags" in detailed and len(detailed["tags"]):
+            match.tags = detailed["tags"][0]
+
+    return match
+
+
+def load_tags(data_in_detailed):
+    """Create an tags and occurencde object from a 'data' element of application inspector JSON results.
+
+    Args:
+        data_in_detailed (dict): 'data' elements with its properties
+
+    Returns:
+        Occurence: fully populated occurence
+    """
+    tags = InspectorTag(
+        start_line=data_in_detailed["startLocationLine"],
+        start_column=data_in_detailed["startLocationColumn"],
+        end_column=data_in_detailed["endLocationColumn"],
+        end_line=data_in_detailed["endLocationLine"],
+        excerpt=data_in_detailed["excerpt"],
+        filename=data_in_detailed["fileName"],
+    )
+    if "severity" in data_in_detailed:
+        tags.severity = data_in_detailed["severity"]
+    return tags

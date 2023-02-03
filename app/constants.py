@@ -19,6 +19,7 @@ CDXGEN = "cdxgen"
 DEPSCAN_RESULT_FILE = "depscan-bom.json"
 BOM_FILE="bom.json"
 DEPSCAN = "depscan"
+APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
 
 # Project constants
 
@@ -29,9 +30,8 @@ STATUS_ERROR = 3
 STATUS_PENDING = 4
 STATUS_ABORTED = 5
 PROJECTS_SRC_PATH = "data/projects/"
-APP_INSP_PATH="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
 EXTRACT_FOLDER_NAME = "extract"
-SCC_PATH = "app/third-party/scc/scc"
+SCC = "app/third-party/scc/scc"
 
 # Rule constants
 
