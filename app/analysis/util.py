@@ -28,6 +28,7 @@ from app.analysis.models import (
     Occurence,
     Position,
     Vulnerability,
+    VulnerableDependency,
 )
 from app.constants import (
     BOM_FILE,
@@ -76,7 +77,8 @@ def async_scan(self, analysis_id, app_inspector_id):
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     # Invoke semgrep
     try:
-        #sca_result = sca_scan(analysis.project)
+        sca_result = sca_scan(analysis.project)
+        load_sca_scan_results(analysis, sca_result)
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
         app_inspector_result = application_inspector_scan(app_inspector.project.id)
         save_result(analysis, semgrep_result)
@@ -116,7 +118,7 @@ def sca_scan(project):
         project (Project): corresponding target projet
 
     Returns:
-        [str]: Depscan JSON output
+        [str]: A list of depscan results as dicts
     """
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
     output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id))
@@ -139,10 +141,10 @@ def sca_scan(project):
     )
     # Return depscan JSON result
     result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
-    f = open(result_file)
-    result = json.load(f) # bad JSON here
-    f.close()
-    return result
+    results = []
+    for line in open(result_file, "r"):
+        results.append(json.loads(line))
+    return results
 
 
 def semgrep_scan(files_to_scan, project_rules_path, ignore):
@@ -250,6 +252,33 @@ def load_scan_results(analysis, semgrep_output):
                         e_vuln = e_vulns[0]
                         e_vuln.occurences.append(load_occurence(c_result))
                         analysis.vulnerabilities = vulns
+
+
+def load_sca_scan_results(analysis, sca_results):
+    """Populate an Analysis object with the result of an SCA (depscan) scan.
+
+    Args:
+        analysis (Analysis): corresponding analysis
+        semgrep_output (str): List of depscan results as dicts
+    """
+    vuln_deps = list()
+    for c_result in sca_results:
+        vuln_deps.append(
+            VulnerableDependency(
+                common_id=c_result["id"],
+                package=c_result["package"],
+                purl=c_result["purl"],
+                package_type=c_result["package_type"],
+                package_usage=c_result["package_usage"],
+                version=c_result["version"],
+                fix_version=c_result["fix_version"],
+                severity=c_result["severity"],
+                cvss_score=c_result["cvss_score"],
+                short_description=c_result["short_description"],
+                related_urls=",".join(c_result["related_urls"]),
+            )
+        )
+        analysis.vulnerable_dependencies = vuln_deps
 
 
 def load_scan_app_inspector(app_inspector, app_inspector_result):
