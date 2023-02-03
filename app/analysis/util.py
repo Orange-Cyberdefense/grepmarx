@@ -75,24 +75,27 @@ def async_scan(self, analysis_id, app_inspector_id):
     db.session.commit()
     # Prepare semgrep options
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
-    # Invoke semgrep
     try:
+        # SAST scan: invoke semgrep
         sca_result = sca_scan(analysis.project)
-        load_sca_scan_results(analysis, sca_result)
+        # SCA scan: invoke depscan
         semgrep_result = semgrep_scan(files_to_scan, project_rules_path, ignore)
+        # Inspector scan: invoke ApplicationInspector
         app_inspector_result = application_inspector_scan(app_inspector.project.id)
-        save_result(analysis, semgrep_result)
-        load_scan_app_inspector(app_inspector, app_inspector_result)
-        load_scan_results(analysis, semgrep_result)
-        analysis.project.status = STATUS_FINISHED
     except Exception as e:
         analysis.project.error_message = repr(e)
         analysis.project.status = STATUS_ERROR
         current_app.logger.error(
             "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
         )
-        # Uncomment for debugging purposes
-        # raise e
+    else:
+        # Everything went fine: load results into the analysis object
+        load_scan_results(analysis, semgrep_result)
+        load_sca_scan_results(analysis, sca_result)
+        load_scan_app_inspector(app_inspector, app_inspector_result)
+        # Also save SAST results into a file
+        save_result(analysis, semgrep_result)
+        analysis.project.status = STATUS_FINISHED
     # Done
     analysis.finished_on = datetime.now()
     analysis.task_id = ""
