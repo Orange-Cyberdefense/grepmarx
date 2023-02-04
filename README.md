@@ -79,7 +79,7 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 
 ## Build from sources
 
-sudo apt install npm openjdk-17-jdk maven gradle golang
+sudo apt install npm openjdk-17-jdk maven gradle golang composer
 sudo npm install -g @appthreat/cdxgen
 pip install appthreat-depscan
 

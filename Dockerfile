@@ -24,7 +24,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements-pgsql.txt
 
 # Dependency scan (cdxgen / depscan) requirements
-RUN apt-get install -y npm openjdk-17-jdk maven gradle golang
+RUN apt-get install -y npm openjdk-17-jdk maven gradle golang composer
 RUN npm install -g @appthreat/cdxgen
 
 # Downloaded packages cleaning
