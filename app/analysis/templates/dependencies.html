@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %} User accounts {% endblock %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Vulnerable dependencies</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
+                        <li class="breadcrumb-item"><a href="/projects/{{ analysis.project.id }}">{{ analysis.project.name }}</a></li>
+                        <li class="breadcrumb-item active">Dependencies</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        The following table shows all vulnerable dependencies.
+                    </p>
+                </div>
+            </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        {% include 'messages.html' %}
+
+        <!-- Vulnerable dependencies card -->
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">User list</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="users-list-table" class="table table-hover"
+                                role="grid">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Package</th>
+                                        <th>Version</th>
+                                        <th>Fix version</th>
+                                        <th>Severity</th>
+                                        <th>CVSS Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c_vuln in analysis.vulnerable_dependencies %}
+                                    <tr>
+                                        <td>
+                                            {{ c_vuln.common_id }}
+                                        </td>
+                                        <td>
+                                            {{ c_vuln.package.split(":")[1] }}
+                                        </td>
+                                        <td>
+                                            {{ c_vuln.version }}
+                                        </td>
+                                        <td>
+                                            {{ c_vuln.fix_version }}
+                                        </td>
+                                        <td>
+                                            {{ c_vuln.severity }}
+                                        </td>
+                                        <td>
+                                            {{ c_vuln.cvss_score }}
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}
+{% endblock javascripts %}
