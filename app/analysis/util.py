@@ -167,6 +167,8 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
             timeout=0,
             timeout_threshold=3,
             exclude=ignore,
+            # I don't give a f*** about your .semgrepignore
+            disable_nosem=True,
         )
         output_handler.rule_matches = [
             m for ms in filtered_matches_by_rule.values() for m in ms
@@ -408,8 +410,13 @@ def sca_scan(project):
     # Return depscan JSON result
     result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
     results = []
-    for line in open(result_file, "r"):
-        results.append(json.loads(line))
+    try:
+        for line in open(result_file, "r"):
+            results.append(json.loads(line))
+    except IOError as e:
+        current_app.logger.error(
+            "Error trying to read JSON depscan resut file (%s): %s", result_file, str(e)
+        )
     return results
 
 
