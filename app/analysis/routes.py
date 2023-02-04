@@ -15,12 +15,26 @@ from pygments.util import ClassNotFound
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
-from app.analysis.models import (Analysis, AppInspector, InspectorTag, Match,
-                                 Occurence, Vulnerability)
-from app.analysis.util import (async_scan, import_rules, stop_analysis,
-                               vulnerabilities_sorted_by_severity)
-from app.constants import (EXTRACT_FOLDER_NAME, OWASP_TOP10_LINKS,
-                           PROJECTS_SRC_PATH, STATUS_PENDING)
+from app.analysis.models import (
+    Analysis,
+    AppInspector,
+    InspectorTag,
+    Match,
+    Occurence,
+    Vulnerability,
+)
+from app.analysis.util import (
+    async_scan,
+    import_rules,
+    stop_analysis,
+    vulnerabilities_sorted_by_severity,
+)
+from app.constants import (
+    EXTRACT_FOLDER_NAME,
+    OWASP_TOP10_LINKS,
+    PROJECTS_SRC_PATH,
+    STATUS_PENDING,
+)
 from app.projects.models import Project
 from app.projects.util import top_language_lines_counts
 from app.rules.models import RulePack
@@ -28,6 +42,7 @@ from app.rules.models import RulePack
 #
 # Scans
 #
+
 
 @blueprint.route("/analysis/scans/new/<project_id>")
 @login_required
@@ -71,7 +86,7 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
-        #create a new app inspector
+        # create a new app inspector
         project.appinspector = AppInspector()
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
@@ -82,7 +97,7 @@ def scans_launch():
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id, project.appinspector.id)
-        #async_scan.apply_async(args=(project.analysis.id, project.appinspector.id))
+        # async_scan.apply_async(args=(project.analysis.id, project.appinspector.id))
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
         time.sleep(1.0)
         # Done
@@ -97,6 +112,7 @@ def scans_launch():
         flash(str(scan_form.errors), "error")
         return scans_new(project_id=project.id, scan_form=scan_form)
 
+
 @blueprint.route("/analysis/scans/stop/<analysis_id>")
 @login_required
 def scans_stop(analysis_id):
@@ -105,9 +121,11 @@ def scans_stop(analysis_id):
     flash("Analysis has successfully been stopped.", "success")
     return redirect(url_for("projects_blueprint.projects_list"))
 
+
 #
 # Workbench
 #
+
 
 @blueprint.route("/analysis/workbench/<analysis_id>")
 @login_required
@@ -125,6 +143,7 @@ def analysis_workbench(analysis_id):
         vulnerabilities=vulnerabilities,
         segment="",
     )
+
 
 @blueprint.route("/analysis/codeview/<occurence_id>")
 @login_required
@@ -183,40 +202,48 @@ def analysis_occurences_table(vulnerability_id):
         "analysis_occurences_table.html", vulnerability=vulnerability
     )
 
+
+#
+# Dependency scan
+#
+
+
+@blueprint.route("/analysis/dependencies/<analysis_id>")
+@login_required
+def analysis_dependencies(analysis_id):
+    analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    return render_template("dependencies.html", user=current_user, analysis=analysis)
+
+
 #
 # Inspector
 #
+
 
 @blueprint.route("/analysis/inspector/<inspector_id>")
 @login_required
 def analysis_inspector(inspector_id):
     appinspector = AppInspector.query.filter_by(id=inspector_id).first_or_404()
     return render_template(
-        "app_inspector.html",
-        user=current_user,
-        appinspector = appinspector )
+        "app_inspector.html", user=current_user, appinspector=appinspector
+    )
 
 
 @blueprint.route("/analysis/inspector/excerpt/<tag_id>")
 @login_required
 def analysis_inspector_excerpt(tag_id):
-    """ Retrieve the content of an inspectorTag object thanks to an id  """
+    """Retrieve the content of an inspectorTag object thanks to an id"""
     inspectortag = InspectorTag.query.filter_by(id=tag_id).first_or_404()
     print(inspectortag.excerpt)
-    return render_template(
-        "app_inspector_excerpt.html",
-        inspectortag = inspectortag
-        )
+    return render_template("app_inspector_excerpt.html", inspectortag=inspectortag)
+
 
 @blueprint.route("/analysis/inspector/occurence/<match_id>")
 @login_required
-def inspector_tag_view(match_id):
-    """ Retrieve all the filenames associated with a match  """
+def analysis_inspector_occurence(match_id):
+    """Retrieve all the filenames associated with a match"""
     match = Match.query.filter_by(id=match_id).first_or_404()
     inspectortag = InspectorTag.query.filter_by(match_id=match_id).all()
     return render_template(
-        "app_inspector_ocuurence_view.html",
-        inspectortag = inspectortag,
-        match=match
-        )
-
+        "app_inspector_ocuurence_view.html", inspectortag=inspectortag, match=match
+    )
