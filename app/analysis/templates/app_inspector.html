@@ -567,7 +567,7 @@
         document.getElementById('excerpt_base').style.visibility = 'visible';
       }
     };
-    reqInspDetails.open('GET', '/analysis/inspector_excerpt/' + id);
+    reqInspDetails.open('GET', '/analysis/inspector/excerpt/' + id);
     reqInspDetails.send();
   }
 
@@ -581,7 +581,7 @@
         document.getElementById('file_listing_modal').style.visibility = 'visible';
       }
     };
-    reqInspDetails.open('GET', '/analysis/inspector_occurence/' + match_id);
+    reqInspDetails.open('GET', '/analysis/inspector/occurence/' + match_id);
     reqInspDetails.send();
   }
 

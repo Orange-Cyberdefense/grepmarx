@@ -25,123 +25,9 @@ from app.projects.models import Project
 from app.projects.util import top_language_lines_counts
 from app.rules.models import RulePack
 
-##
-## Analysis utils
-##
-
-
-@blueprint.route("/analysis/workbench/<analysis_id>")
-@login_required
-def analysis_workbench(analysis_id):
-    analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
-    if len(analysis.vulnerabilities) <= 0:
-        flash(
-            "No findings were found for this project during the last analysis", "error"
-        )
-        return redirect(url_for("projects_blueprint.projects_list"))
-    vulnerabilities = vulnerabilities_sorted_by_severity(analysis)
-    return render_template(
-        "analysis_workbench.html",
-        user=current_user,
-        vulnerabilities=vulnerabilities,
-        segment="",
-    )
-
-
-
-@blueprint.route("/analysis/project_inspector/<appinspector_id>")
-@login_required
-def analysis_app_inspector(appinspector_id):
-    appinspector = AppInspector.query.filter_by(id=appinspector_id).first_or_404()
-    return render_template(
-        "app_inspector.html",
-        user=current_user,
-        appinspector = appinspector )
-
-
-#Inspector_excerpt allows to retrieve the content of an inspectorTag object thanks to an id 
-@blueprint.route("/analysis/inspector_excerpt/<inspector_id>")
-@login_required
-def inspector_view(inspector_id):
-    inspectortag = InspectorTag.query.filter_by(id=inspector_id).first_or_404()
-    print(inspectortag.excerpt)
-    return render_template(
-        "app_inspector_excerpt.html",
-        inspectortag = inspectortag
-        )
-
-
-#Inspector_excerpt allows you to retrieve all the filenames associated with a match 
-@blueprint.route("/analysis/inspector_occurence/<matched_id>")
-@login_required
-def inspector_tag_view(matched_id):
-    match = Match.query.filter_by(id=matched_id).first_or_404()
-    inspectortag = InspectorTag.query.filter_by(match_id=matched_id).all()
-
-
-    return render_template(
-        "app_inspector_ocuurence_view.html",
-        inspectortag = inspectortag,
-        match=match
-        )
-
-@blueprint.route("/analysis/codeview/<occurence_id>")
-@login_required
-def analysis_codeview(occurence_id):
-    # Get occurence infos
-    occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
-    project_id = occurence.vulnerability.analysis.project.id
-    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
-    file = os.path.join(source_path, occurence.file_path)
-    # Mitigate path traversal risk
-    common_prefix = os.path.commonprefix(
-        (os.path.realpath(file), os.path.realpath(source_path))
-    )
-    if common_prefix != os.path.realpath(source_path):
-        return "", 403
-    with open(file, "r") as f:
-        code = f.read()
-    # Try to guess file language for syntax highlighting
-    try:
-        language = guess_lexer_for_filename(file, code).name
-    except ClassNotFound as e:
-        language = "generic"
-    # Define lines to be highlighted
-    hl_lines = (
-        str(occurence.position.line_start) + "-" + str(occurence.position.line_end)
-        if occurence.position.line_end > occurence.position.line_start
-        else str(occurence.position.line_start)
-    )
-    # code = Markup(code)
-    return render_template(
-        "analysis_occurence_codeview.html",
-        code=code,
-        language=language,
-        hl_lines=hl_lines,
-        user=current_user,
-        path=occurence.file_path,
-    )
-
-
-@blueprint.route("/analysis/occurence_details/<occurence_id>")
-@login_required
-def analysis_occurence_details(occurence_id):
-    occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
-    return render_template(
-        "analysis_occurence_details.html",
-        occurence=occurence,
-        owasp_links=OWASP_TOP10_LINKS,
-    )
-
-
-@blueprint.route("/analysis/occurences_table/<vulnerability_id>")
-@login_required
-def analysis_occurences_table(vulnerability_id):
-    vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
-    return render_template(
-        "analysis_occurences_table.html", vulnerability=vulnerability
-    )
-
+#
+# Scans
+#
 
 @blueprint.route("/analysis/scans/new/<project_id>")
 @login_required
@@ -218,3 +104,119 @@ def scans_stop(analysis_id):
     stop_analysis(analysis)
     flash("Analysis has successfully been stopped.", "success")
     return redirect(url_for("projects_blueprint.projects_list"))
+
+#
+# Workbench
+#
+
+@blueprint.route("/analysis/workbench/<analysis_id>")
+@login_required
+def analysis_workbench(analysis_id):
+    analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    if len(analysis.vulnerabilities) <= 0:
+        flash(
+            "No findings were found for this project during the last analysis", "error"
+        )
+        return redirect(url_for("projects_blueprint.projects_list"))
+    vulnerabilities = vulnerabilities_sorted_by_severity(analysis)
+    return render_template(
+        "analysis_workbench.html",
+        user=current_user,
+        vulnerabilities=vulnerabilities,
+        segment="",
+    )
+
+@blueprint.route("/analysis/codeview/<occurence_id>")
+@login_required
+def analysis_codeview(occurence_id):
+    # Get occurence infos
+    occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
+    project_id = occurence.vulnerability.analysis.project.id
+    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
+    file = os.path.join(source_path, occurence.file_path)
+    # Mitigate path traversal risk
+    common_prefix = os.path.commonprefix(
+        (os.path.realpath(file), os.path.realpath(source_path))
+    )
+    if common_prefix != os.path.realpath(source_path):
+        return "", 403
+    with open(file, "r") as f:
+        code = f.read()
+    # Try to guess file language for syntax highlighting
+    try:
+        language = guess_lexer_for_filename(file, code).name
+    except ClassNotFound as e:
+        language = "generic"
+    # Define lines to be highlighted
+    hl_lines = (
+        str(occurence.position.line_start) + "-" + str(occurence.position.line_end)
+        if occurence.position.line_end > occurence.position.line_start
+        else str(occurence.position.line_start)
+    )
+    # code = Markup(code)
+    return render_template(
+        "analysis_occurence_codeview.html",
+        code=code,
+        language=language,
+        hl_lines=hl_lines,
+        user=current_user,
+        path=occurence.file_path,
+    )
+
+
+@blueprint.route("/analysis/occurence_details/<occurence_id>")
+@login_required
+def analysis_occurence_details(occurence_id):
+    occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
+    return render_template(
+        "analysis_occurence_details.html",
+        occurence=occurence,
+        owasp_links=OWASP_TOP10_LINKS,
+    )
+
+
+@blueprint.route("/analysis/occurences_table/<vulnerability_id>")
+@login_required
+def analysis_occurences_table(vulnerability_id):
+    vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
+    return render_template(
+        "analysis_occurences_table.html", vulnerability=vulnerability
+    )
+
+#
+# Inspector
+#
+
+@blueprint.route("/analysis/inspector/<inspector_id>")
+@login_required
+def analysis_inspector(inspector_id):
+    appinspector = AppInspector.query.filter_by(id=inspector_id).first_or_404()
+    return render_template(
+        "app_inspector.html",
+        user=current_user,
+        appinspector = appinspector )
+
+
+@blueprint.route("/analysis/inspector/excerpt/<tag_id>")
+@login_required
+def analysis_inspector_excerpt(tag_id):
+    """ Retrieve the content of an inspectorTag object thanks to an id  """
+    inspectortag = InspectorTag.query.filter_by(id=tag_id).first_or_404()
+    print(inspectortag.excerpt)
+    return render_template(
+        "app_inspector_excerpt.html",
+        inspectortag = inspectortag
+        )
+
+@blueprint.route("/analysis/inspector/occurence/<match_id>")
+@login_required
+def inspector_tag_view(match_id):
+    """ Retrieve all the filenames associated with a match  """
+    match = Match.query.filter_by(id=match_id).first_or_404()
+    inspectortag = InspectorTag.query.filter_by(match_id=match_id).all()
+    return render_template(
+        "app_inspector_ocuurence_view.html",
+        inspectortag = inspectortag,
+        match=match
+        )
+
