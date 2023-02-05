@@ -63,7 +63,6 @@
                                         <th>Package</th>
                                         <th>Version</th>
                                         <th>Fix version</th>
-                                        <th>Severity</th>
                                         <th>CVSS Score</th>
                                         <th>Actions</th>
                                     </tr>
@@ -71,25 +70,39 @@
                                 <tbody>
                                     {% for c_vuln in analysis.vulnerable_dependencies %}
                                     <tr>
-                                        <td>
-                                            {{ c_vuln.common_id }}
+                                        <td class="align-middle">
+                                            <a href="#">{{ c_vuln.common_id }}</a>
                                         </td>
-                                        <td>
-                                            {{ c_vuln.package.split(":")[1] }}
+                                        <td class="align-middle">
+                                            {% set pkg = c_vuln.package.split(":")[1].split("@")[0] %}
+                                            {% set type = pkg.split("/")[0] %}
+                                            {% set name = pkg.replace(type + "/", "") %}
+                                            <strong>{{ name }}</strong>
+                                            <br />
+                                            <span class="badge badge-sm bg-primary">
+                                                {{ type }}
+                                            </span>
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             {{ c_vuln.version }}
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             {{ c_vuln.fix_version }}
                                         </td>
-                                        <td>
-                                            {{ c_vuln.severity }}
+                                        <td class="align-middle">
+                                            {% if c_vuln.severity == "CRITICAL" %}
+                                            <span class="badge badge-lg bg-indigo p-2 pl-3 pr-3 text-lg">
+                                            {% elif c_vuln.severity == "HIGH" %}
+                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3 text-lg">
+                                            {% elif c_vuln.severity == "MEDIUM" %}
+                                            <span class="badge badge-lg bg-warning p-2 pl-3 pr-3 text-lg">
+                                            {% else %}
+                                            <span class="badge badge-lg bg-info p-2 pl-3 pr-3 text-lg">
+                                            {% endif %}
+                                                {{ c_vuln.cvss_score }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            {{ c_vuln.cvss_score }}
-                                        </td>
-                                        <td>
+                                        <td class="align-middle">
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -112,13 +125,13 @@
 <script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/static/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#users-list-table').DataTable({
-            paging: false,
-            searching: false,
-            info: false
-        });
-    });
+    $("#users-list-table").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#users-list-table .col-md-6:eq(0)');
 </script>
 {% endblock javascripts %}
