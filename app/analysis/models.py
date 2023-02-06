@@ -3,7 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String
 
 from app import db
 from app.rules.models import analysis_to_rule_pack_association_table
@@ -51,9 +51,7 @@ class Occurence(db.Model):
     __tablename__ = "Occurence"
 
     id = Column(Integer, primary_key=True)
-    vulnerability_id = db.Column(
-        db.Integer, db.ForeignKey("Vulnerability.id"), nullable=False
-    )
+    vulnerability_id = db.Column(db.Integer, db.ForeignKey("Vulnerability.id"), nullable=False)
     vulnerability = db.relationship(
         "Vulnerability",
         backref=db.backref("occurences", lazy=True, cascade="all, delete-orphan"),
@@ -75,26 +73,52 @@ class Position(db.Model):
     column_start = Column(Integer)
     column_end = Column(Integer)
 
-class VulnerableDependency(db.Model):
 
+class VulnerableDependency(db.Model):
     __tablename__ = "VulnerableDependency"
+
     id = Column(Integer, primary_key=True)
     analysis_id = db.Column(db.Integer, db.ForeignKey("Analysis.id"), nullable=False)
     analysis = db.relationship(
         "Analysis",
-        backref=db.backref("vulnerable_dependencies", lazy=True, cascade="all, delete-orphan"),
+        backref=db.backref(
+            "vulnerable_dependencies", lazy=True, cascade="all, delete-orphan"
+        ),
     )
-    common_id = Column(String)
-    package = Column(String)
-    purl = Column(String)
-    package_type = Column(String)
-    package_usage = Column(String)
-    version = Column(String)
-    fix_version = Column(String)
-    severity = Column(String)
+    common_id = Column(String, nullable=False)
+    bom_ref = Column(String, nullable=False)
+    pkg_type = Column(String, nullable=False)
+    pkg_ref = Column(String, nullable=False)
+    pkg_name = Column(String, nullable=False)
+    source = Column(String, nullable=False)
+    severity = Column(String, nullable=False)
     cvss_score = Column(String)
-    short_description = Column(String)
-    related_urls = Column(String)
+    cvss_version = Column(String)
+    cwes = Column(String)
+    description = Column(String)
+    recommendation = Column(String)
+    version = Column(String, nullable=False)
+    fix_version = Column(String)
+    prioritized = Column(Boolean)
+    vendor_confirmed = Column(Boolean)
+    has_poc = Column(Boolean)
+    has_exploit = Column(Boolean)
+
+
+class VulnerableDependencyReference(db.Model):
+    __tablename__ = "VulnerableDependencyReference"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    url = Column(String)
+    vulnerable_dependency_id = db.Column(
+        db.Integer, db.ForeignKey("VulnerableDependency.id"), nullable=True
+    )
+    vulnerable_dependency = db.relationship(
+        "VulnerableDependency",
+        backref=db.backref("advisories", lazy=True, cascade="all, delete-orphan"),
+    )
+
 
 class AppInspector(db.Model):
 
@@ -104,11 +128,14 @@ class AppInspector(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("Project.id"))
     project = db.relationship("Project", back_populates="appinspector")
 
+
 class Match(db.Model):
 
     __tablename__ = "Match"
     id = Column(Integer, primary_key=True)
-    app_inspector_id = db.Column(db.Integer, db.ForeignKey("AppInspector.id"), nullable=False)
+    app_inspector_id = db.Column(
+        db.Integer, db.ForeignKey("AppInspector.id"), nullable=False
+    )
     appinspector = db.relationship(
         "AppInspector",
         backref=db.backref("match", lazy=True, cascade="all, delete-orphan"),
@@ -126,9 +153,7 @@ class InspectorTag(db.Model):
     __tablename__ = "InspectorTag"
 
     id = Column(Integer, primary_key=True)
-    match_id = db.Column(
-        db.Integer, db.ForeignKey("Match.id"), nullable=False
-    )
+    match_id = db.Column(db.Integer, db.ForeignKey("Match.id"), nullable=False)
     match = db.relationship(
         "Match",
         backref=db.backref("tag", lazy=True, cascade="all, delete-orphan"),
@@ -140,7 +165,3 @@ class InspectorTag(db.Model):
     start_line = Column(Integer)
     end_column = Column(Integer)
     end_line = Column(Integer)
-
-
-
-    

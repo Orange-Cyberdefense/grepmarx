@@ -32,10 +32,9 @@ from app.analysis.models import (
 )
 from app.constants import (
     APPLICATION_INSPECTOR,
-    BOM_FILE,
-    CDXGEN,
     DEPSCAN,
     DEPSCAN_RESULT_FILE,
+    DEPSCAN_RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
@@ -386,13 +385,13 @@ def sca_scan(project):
         project (Project): corresponding target projet
 
     Returns:
-        [str]: A list of depscan results as dicts
+        [dict]: depscan results (CycloneDX BOM+VEX)
     """
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
-    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id))
+    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER)
     # Generate SBOM with cdxgen
-    bom_file = os.path.join(output_folder, BOM_FILE)
-    subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
+    #bom_file = os.path.join(output_folder, BOM_FILE)
+    #subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
     # Launch depscan analysis
     subprocess.run(
         [
@@ -401,50 +400,79 @@ def sca_scan(project):
             "--no-error",
             "--src",
             source_path,
-            "--bom",
-            bom_file,
+            #"--bom",
+            #bom_file,
             "--reports-dir",
             output_folder,
         ]
     )
-    # Return depscan JSON result
-    result_file = os.path.join(output_folder, DEPSCAN_RESULT_FILE)
-    results = []
-    try:
-        for line in open(result_file, "r"):
-            results.append(json.loads(line))
-    except IOError as e:
-        current_app.logger.error(
-            "Error trying to read JSON depscan resut file (%s): %s", result_file, str(e)
-        )
-    return results
+    # Return depscan JSON result as list of dicts
+    result = list()
+    vex_files = glob(pathname=os.path.join(output_folder, "*.vex.json"))
+    for file in vex_files:
+        with open(file) as f:
+            result.append(json.load(f))
+
+    #f = open(os.path.join(output_folder, DEPSCAN_RESULT_FILE))
+    #c = json.load(f)
+    #f.close()
+    return result
 
 
-def load_sca_scan_results(analysis, sca_results):
+def load_sca_scan_results(analysis, dict_sca_results):
     """Populate an Analysis object with the result of an SCA (depscan) scan.
 
     Args:
         analysis (Analysis): corresponding analysis
-        semgrep_output (str): List of depscan results as dicts
+        dict_sca_results (dict): depscan results (CycloneDX BOM+VEX)
     """
     vuln_deps = list()
-    for c_result in sca_results:
-        vuln_deps.append(
-            VulnerableDependency(
-                common_id=c_result["id"],
-                package=c_result["package"],
-                purl=c_result["purl"],
-                package_type=c_result["package_type"],
-                package_usage=c_result["package_usage"],
-                version=c_result["version"],
-                fix_version=c_result["fix_version"],
-                severity=c_result["severity"],
-                cvss_score=c_result["cvss_score"],
-                short_description=c_result["short_description"],
-                related_urls=",".join(c_result["related_urls"]),
+    for sca_results in dict_sca_results:
+        for c_vuln in sca_results["vulnerabilities"]:
+            # Identify affected dependency
+            bom_ref = c_vuln["bom-ref"]
+            pkg_type = bom_ref.split("/")[1].split(":")[1]
+            pkg_ref = bom_ref.split(":")[1].split("@")[0].replace(pkg_type + "/", "")
+            pkg_name = bom_ref.split(":")[1].split("@")[0].split("/")[-1]
+            # Search for affected and fixed versions    
+            for v in c_vuln["affects"][0]["versions"]:
+                if v["status"] == "affected":
+                    version = v["version"]
+                elif v["status"] == "unaffected":
+                    fix_version = v["version"]
+            # Search for insights
+            for v in c_vuln["properties"]:
+                if v["name"] == "depscan:prioritized":
+                    prioritized = True
+                elif v["name"] == "depscan:insights":
+                    vendor_confirmed = True if "Vendor Confirmed" in v["value"] else False
+                    has_poc = True if "Has PoC" in v["value"] else False
+                    has_exploit = True if "Known Exploits" in v["value"] else False
+            # Populate VulnerableDependency object
+            vuln_deps.append(   
+                VulnerableDependency(
+                    common_id=c_vuln["id"],
+                    bom_ref=bom_ref,
+                    pkg_type=pkg_type,
+                    pkg_ref=pkg_ref,
+                    pkg_name=pkg_name,
+                    source=c_vuln["source"]["url"],
+                    severity=c_vuln["ratings"][0]["severity"],
+                    cvss_score=c_vuln["ratings"][0]["score"],
+                    cvss_version=c_vuln["ratings"][0]["method"],
+                    cwes=c_vuln["cwes"][0],
+                    description=c_vuln["description"],
+                    recommendation=c_vuln["recommendation"],
+                    version=version,
+                    fix_version=fix_version,
+                    prioritized=prioritized,
+                    vendor_confirmed=vendor_confirmed,
+                    has_poc=has_poc,
+                    has_exploit=has_exploit
+                )
             )
-        )
-        analysis.vulnerable_dependencies = vuln_deps
+            # Add VulnerableDependency into the analysis
+            analysis.vulnerable_dependencies = vuln_deps
 
 
 ##
