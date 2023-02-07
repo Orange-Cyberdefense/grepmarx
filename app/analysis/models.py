@@ -103,7 +103,8 @@ class VulnerableDependency(db.Model):
     vendor_confirmed = Column(Boolean)
     has_poc = Column(Boolean)
     has_exploit = Column(Boolean)
-
+    direct  = Column(Boolean)
+    indirect = Column(Boolean)
 
 class VulnerableDependencyReference(db.Model):
     __tablename__ = "VulnerableDependencyReference"

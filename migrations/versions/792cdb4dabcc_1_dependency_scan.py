@@ -1,8 +1,8 @@
 """1 DEPENDENCY SCAN
 
-Revision ID: f0a26dea6245
+Revision ID: 792cdb4dabcc
 Revises: c9af49fc09c4
-Create Date: 2023-02-06 23:22:20.080027
+Create Date: 2023-02-07 22:33:36.690251
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f0a26dea6245'
+revision = '792cdb4dabcc'
 down_revision = 'c9af49fc09c4'
 branch_labels = None
 depends_on = None
@@ -39,6 +39,8 @@ def upgrade():
     sa.Column('vendor_confirmed', sa.Boolean(), nullable=True),
     sa.Column('has_poc', sa.Boolean(), nullable=True),
     sa.Column('has_exploit', sa.Boolean(), nullable=True),
+    sa.Column('direct', sa.Boolean(), nullable=True),
+    sa.Column('indirect', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['analysis_id'], ['Analysis.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

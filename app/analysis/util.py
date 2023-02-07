@@ -442,12 +442,19 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     fix_version = v["version"]
             # Search for insights
             for v in c_vuln["properties"]:
-                if v["name"] == "depscan:prioritized":
+                prioritized = False
+                if v["name"] == "depscan:prioritized" and v["value"] == "true":
                     prioritized = True
                 elif v["name"] == "depscan:insights":
                     vendor_confirmed = True if "Vendor Confirmed" in v["value"] else False
                     has_poc = True if "Has PoC" in v["value"] else False
                     has_exploit = True if "Known Exploits" in v["value"] else False
+                    direct = True if "Direct usage" in v["value"] else False
+                    indirect = True if "Indirect dependency" in v["value"] else False
+            # Register CWEs if any
+            cwes = ""
+            if "cwes" in c_vuln["ratings"]:
+                cwes = c_vuln["ratings"]["cwes"].join(",")
             # Populate VulnerableDependency object
             vuln_deps.append(   
                 VulnerableDependency(
@@ -460,7 +467,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     severity=c_vuln["ratings"][0]["severity"],
                     cvss_score=c_vuln["ratings"][0]["score"],
                     cvss_version=c_vuln["ratings"][0]["method"],
-                    cwes=c_vuln["cwes"][0],
+                    cwes=cwes,
                     description=c_vuln["description"],
                     recommendation=c_vuln["recommendation"],
                     version=version,
@@ -468,7 +475,9 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     prioritized=prioritized,
                     vendor_confirmed=vendor_confirmed,
                     has_poc=has_poc,
-                    has_exploit=has_exploit
+                    has_exploit=has_exploit,
+                    direct=direct,
+                    indirect=indirect
                 )
             )
             # Add VulnerableDependency into the analysis
