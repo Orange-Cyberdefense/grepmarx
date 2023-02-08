@@ -23,7 +23,8 @@
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
                         <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
-                        <li class="breadcrumb-item"><a href="/projects/{{ analysis.project.id }}">{{ analysis.project.name }}</a></li>
+                        <li class="breadcrumb-item"><a href="/projects/{{ analysis.project.id }}">{{
+                                analysis.project.name }}</a></li>
                         <li class="breadcrumb-item active">Dependencies</li>
                     </ol>
                 </div>
@@ -53,92 +54,103 @@
                 </div>
             </div>
             <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="vulnerable-deps-table" class="table table-hover dataTable"
-                                role="grid">
-                                <thead>
-                                    <tr>
-                                        <th>Reference</th>
-                                        <th>Dependency</th>
-                                        <th>Version</th>
-                                        <th>Insights</th>
-                                        <th>Severity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for c_vuln in analysis.vulnerable_dependencies %}
-                                    <tr>
-                                        <td class="align-middle">
-                                            <strong>{{ c_vuln.common_id }}</strong>
-                                        </td>   
-                                        <td class="align-middle">
-                                            <strong>{{ c_vuln.pkg_name | capitalize }}</strong>
-                                            <span class="badge badge-lg bg-lightblue">
-                                                {{ c_vuln.pkg_type }}
-                                            </span>
-                                            <br />
-                                            <small>
-                                                {{ c_vuln.pkg_ref }}
-                                            </small>
-                                        </td>
-                                        <td class="align-middle">
-                                            v{{ c_vuln.version }}
-                                            <br />
-                                            <span class="badge badge-lg bg-olive">
-                                                Fix: v{{ c_vuln.fix_version }}
-                                            </span>
-                                        </td>
-                                        <td class="align-middle">
-                                            {% if c_vuln.vendor_confirmed %}
-                                            <span class="badge badge-lg bg-light">
-                                                <i class="fas fa-stamp"></i>
-                                                Vendor confirmed
-                                            </span><br />
-                                            {% endif %}
-                                            {% if c_vuln.has_poc %}
-                                            <span class="badge badge-lg bg-warning">
-                                                <i class="fas fa-exclamation"></i>
-                                                Has PoC
-                                            </span><br />
-                                            {% endif %}
-                                            {% if c_vuln.has_exploit %}
-                                            <span class="badge badge-lg bg-maroon">
-                                                <i class="fas fa-skull-crossbones"></i>
-                                                Known exploit
-                                            </span>
-                                            {% endif %}
-                                            {% if c_vuln.direct %}
-                                            <span class="badge badge-lg bg-gray-dark">
-                                                <i class="fas fa-arrow-up"></i>
-                                               Direct usage
-                                            </span>
-                                            {% endif %}
-                                            {% if c_vuln.indirect %}
-                                            <span class="badge badge-lg bg-gray">
-                                                <i class="fas fa-arrow-down"></i>
-                                                Indirect dependency
-                                            </span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="align-middle">
-                                            {% if c_vuln.severity == "critical" %}
-                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3 text-lg">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="vulnerable-deps-table" class="table table-hover dataTable" role="grid">
+                            <thead>
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Dependency</th>
+                                    <th>Version</th>
+                                    <th>Insights</th>
+                                    <th>Severity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c_vuln in analysis.vulnerable_dependencies %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <strong>{{ c_vuln.common_id }}</strong>
+                                    </td>
+                                    <td class="align-middle">
+                                        <strong>{{ c_vuln.pkg_name | capitalize }}</strong>
+                                        <span class="badge badge-lg bg-lightblue">
+                                            {{ c_vuln.pkg_type }}
+                                        </span>
+                                        <br />
+                                        <small>
+                                            {{ c_vuln.pkg_ref }}
+                                        </small>
+                                    </td>
+                                    <td class="align-middle">
+                                        v{{ c_vuln.version }}
+                                        <br />
+                                        <span class="badge badge-lg bg-olive">
+                                            Fix: v{{ c_vuln.fix_version }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        {% if c_vuln.vendor_confirmed %}
+                                        <span class="badge badge-lg bg-light">
+                                            <i class="fas fa-stamp"></i>
+                                            Vendor confirmed
+                                        </span><br />
+                                        {% endif %}
+                                        {% if c_vuln.has_poc %}
+                                        <span class="badge badge-lg bg-warning">
+                                            <i class="fas fa-exclamation"></i>
+                                            Has PoC
+                                        </span><br />
+                                        {% endif %}
+                                        {% if c_vuln.has_exploit %}
+                                        <span class="badge badge-lg bg-maroon">
+                                            <i class="fas fa-skull-crossbones"></i>
+                                            Known exploit
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.direct %}
+                                        <span class="badge badge-lg bg-gray-dark">
+                                            <i class="fas fa-arrow-up"></i>
+                                            Direct usage
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.indirect %}
+                                        <span class="badge badge-lg bg-gray">
+                                            <i class="fas fa-arrow-down"></i>
+                                            Indirect dependency
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">
+                                        {% if c_vuln.severity == "critical" %}
+                                        <span class="badge badge-lg bg-danger p-2 pl-3 pr-3 text-lg">
                                             {% elif c_vuln.severity == "high" %}
                                             <span class="badge badge-lg bg-orange p-2 pl-3 pr-3 text-lg">
-                                            {% elif c_vuln.severity == "medium" %}
-                                            <span class="badge badge-lg bg-warning p-2 pl-3 pr-3 text-lg">
-                                            {% else %}
-                                            <span class="badge badge-lg bg-info p-2 pl-3 pr-3 text-lg">
-                                            {% endif %}
-                                                {{ c_vuln.cvss_score }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                                {% elif c_vuln.severity == "medium" %}
+                                                <span class="badge badge-lg bg-warning p-2 pl-3 pr-3 text-lg">
+                                                    {% else %}
+                                                    <span class="badge badge-lg bg-info p-2 pl-3 pr-3 text-lg">
+                                                        {% endif %}
+                                                        {{ c_vuln.cvss_score }}
+                                                    </span>
+                                    </td>
+                                    <td class="text-right py-0 align-middle">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-default"
+                                                onclick="ajaxVulnerableDependencyDetails(this, '{{ c_vuln.id }}')"
+                                                data-toggle="modal"
+                                                data-target="#modal-vulnerable-dependency-details">
+                                                <i class="fas fa-eye"></i>
+                                                Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>
@@ -160,11 +172,11 @@
 
 <script type="text/javascript">
     $("#vulnerable-deps-table").DataTable({
-      responsive: true, 
-      lengthChange: false, 
-      autoWidth: false,
-      paging: false,
-      info: false
+        responsive: true,
+        lengthChange: false,
+        autoWidth: false,
+        paging: false,
+        info: false
     });
 </script>
 {% endblock javascripts %}

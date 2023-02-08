@@ -81,13 +81,6 @@ def async_scan(self, analysis_id, app_inspector_id):
         sca_result = sca_scan(analysis.project)
         # Inspector scan: invoke ApplicationInspector
         inspector_result = inspector_scan(app_inspector.project.id)
-    except Exception as e:
-        analysis.project.error_message = repr(e)
-        analysis.project.status = STATUS_ERROR
-        current_app.logger.error(
-            "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
-        )
-    else:
         # Everything went fine: load results into the analysis object
         load_sast_scan_results(analysis, sast_result)
         load_sca_scan_results(analysis, sca_result)
@@ -95,6 +88,12 @@ def async_scan(self, analysis_id, app_inspector_id):
         # Also save SAST results into a file
         save_sast_result(analysis, sast_result)
         analysis.project.status = STATUS_FINISHED
+    except Exception as e:
+        analysis.project.error_message = repr(e)
+        analysis.project.status = STATUS_ERROR
+        current_app.logger.error(
+            "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
+        )
     # Done
     analysis.finished_on = datetime.now()
     analysis.task_id = ""
@@ -434,6 +433,21 @@ def load_sca_scan_results(analysis, dict_sca_results):
             pkg_type = bom_ref.split("/")[1].split(":")[1]
             pkg_ref = bom_ref.split(":")[1].split("@")[0].replace(pkg_type + "/", "")
             pkg_name = bom_ref.split(":")[1].split("@")[0].split("/")[-1]
+            # Get the source URL
+            source ="N/A"
+            if "source" in c_vuln and "url" in c_vuln["source"]:
+                source = c_vuln["source"]["url"]
+            elif "url" in c_vuln:
+                source = c_vuln["url"] 
+            # Retrieve ratings information
+            severity = cvss_score = cvss_version = "N/A"
+            if "ratings" in c_vuln and len(c_vuln["ratings"]) > 0:
+                if "severity" in c_vuln["ratings"][0]:
+                    severity =  c_vuln["ratings"][0]["severity"]
+                if "score" in c_vuln["ratings"][0]:
+                    cvss_score =  c_vuln["ratings"][0]["score"]
+                if "method" in c_vuln["ratings"][0]:
+                    cvss_version =  c_vuln["ratings"][0]["method"]
             # Search for affected and fixed versions    
             for v in c_vuln["affects"][0]["versions"]:
                 if v["status"] == "affected":
@@ -463,10 +477,10 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     pkg_type=pkg_type,
                     pkg_ref=pkg_ref,
                     pkg_name=pkg_name,
-                    source=c_vuln["source"]["url"],
-                    severity=c_vuln["ratings"][0]["severity"],
-                    cvss_score=c_vuln["ratings"][0]["score"],
-                    cvss_version=c_vuln["ratings"][0]["method"],
+                    source=source,
+                    severity=severity,
+                    cvss_score=cvss_score,
+                    cvss_version=cvss_version,
                     cwes=cwes,
                     description=c_vuln["description"],
                     recommendation=c_vuln["recommendation"],
@@ -482,7 +496,9 @@ def load_sca_scan_results(analysis, dict_sca_results):
             )
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
-
+            current_app.logger.debug(
+            "New vulnerable dependency %s added to the analysis with id=%i", c_vuln["id"], analysis.id
+        )
 
 ##
 ## Inspector scan utils

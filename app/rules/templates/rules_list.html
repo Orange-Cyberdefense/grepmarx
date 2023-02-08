@@ -121,7 +121,7 @@
                                             {{ c_rule.repository.name }}
                                         </span>
                                     </td>
-                                    <td class="text-truncate">
+                                    <td class="text-truncate" width="20px">
                                         <span class="font-weight-normal">
                                             {% for c_language in c_rule.languages %}
                                             {{ c_language.name }}
@@ -159,7 +159,8 @@
                                         <div class="btn-group btn-group-sm">
                                             <a href="#" class="btn btn-default"
                                                 onclick="ajaxRuleDetails(this, '{{ c_rule.id }}')" data-toggle="modal"
-                                                data-target="#modal-rule-details"><i class="fas fa-eye"></i></a>
+                                                data-target="#modal-rule-details">
+                                                <i class="fas fa-eye"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -250,7 +251,11 @@
 <script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#rules-list-table').DataTable();
+        $('#rules-list-table').DataTable({
+            responsive: true,
+            lengthChange: false,
+            autoWidth: false,
+        });
     });
 </script>
 {% endblock javascripts %}
