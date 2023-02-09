@@ -467,8 +467,8 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     indirect = True if "Indirect dependency" in v["value"] else False
             # Register CWEs if any
             cwes = ""
-            if "cwes" in c_vuln["ratings"]:
-                cwes = c_vuln["ratings"]["cwes"].join(",")
+            if "cwes" in c_vuln and len(c_vuln["cwes"]) > 0:
+                cwes = ",".join(str(c) for c in c_vuln["cwes"])
             # Populate VulnerableDependency object
             vuln_deps.append(   
                 VulnerableDependency(

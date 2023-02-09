@@ -22,6 +22,7 @@ from app.analysis.models import (
     Match,
     Occurence,
     Vulnerability,
+    VulnerableDependency,
 )
 from app.analysis.util import (
     async_scan,
@@ -213,6 +214,18 @@ def analysis_occurences_table(vulnerability_id):
 def analysis_dependencies(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
     return render_template("dependencies.html", user=current_user, analysis=analysis)
+
+
+@blueprint.route("/analysis/dependencies/details/<vuln_dep_id>")
+@login_required
+def analysis_dependencies_details(vuln_dep_id):
+    vulnerableDependency = VulnerableDependency.query.filter_by(
+        id=vuln_dep_id
+    ).first_or_404()
+    return render_template(
+        "dependencies_details.html",
+        vulnerableDependency=vulnerableDependency,
+    )
 
 
 #

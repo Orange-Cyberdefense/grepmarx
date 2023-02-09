@@ -139,8 +139,7 @@
                                         <div class="btn-group btn-group-sm">
                                             <a href="#" class="btn btn-default"
                                                 onclick="ajaxVulnerableDependencyDetails(this, '{{ c_vuln.id }}')"
-                                                data-toggle="modal"
-                                                data-target="#modal-vulnerable-dependency-details">
+                                                data-toggle="modal" data-target="#modal-vulnerable-dependency-details">
                                                 <i class="fas fa-eye"></i>
                                                 Details
                                             </a>
@@ -159,6 +158,14 @@
     </section>
 </div>
 
+<!-- VulnerableDependencyDetails modal dialog -->
+<div class="modal fade" id="modal-vulnerable-dependency-details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-vulnerable-dependency-details" role="document">
+        <!-- Placeholder for rule details -->
+    </div>
+</div>
+<!-- End VulnerableDependencyDetails modal dialog -->
+
 {% endblock content %}
 
 {% block javascripts %}
@@ -167,8 +174,6 @@
 <script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="/static/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="/static/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 
 <script type="text/javascript">
     $("#vulnerable-deps-table").DataTable({

@@ -124,6 +124,20 @@ function ajaxSyncRules() {
     };
 }
 
+// ------------ Asynchronous vulnerable dependency detail loading
+
+function ajaxVulnerableDependencyDetails(el, vulnDepId) {
+    reVulnDepDetails = new XMLHttpRequest();
+    reVulnDepDetails.onreadystatechange = function () {
+        if (reVulnDepDetails.readyState === XMLHttpRequest.DONE) {
+            var e = document.getElementById('modal-vulnerable-dependency-details');
+            e.innerHTML = reVulnDepDetails.responseText;
+        }
+    };
+    reVulnDepDetails.open('GET', '/analysis/dependencies/details/' + vulnDepId);
+    reVulnDepDetails.send();
+}
+
 // ------------ Datatables with checkboxes
 
 /**
