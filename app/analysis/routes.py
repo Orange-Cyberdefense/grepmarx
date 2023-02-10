@@ -235,7 +235,7 @@ def analysis_dependencies_details(vuln_dep_id):
 @login_required
 def analysis_dependencies_export_csv(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
-    data=[['Id', 'Package', 'Type', 'Version', 'Fix version', 'Severity', 'CVSS', 'Description', 'Vendor confirmed', 'Has PoC', 'Know exploit', 'Direct usage', 'Indirect dependency', 'Prioritized', 'Reference']]
+    data=[['Id', 'Package', 'Type', 'Version', 'Fix version', 'Severity', 'CVSS', 'Vendor confirmed', 'Has PoC', 'Know exploit', 'Direct usage', 'Indirect dependency', 'Prioritized', 'Reference']]
     for vuln_dep in analysis.vulnerable_dependencies:
         data.append([
             vuln_dep.common_id,
@@ -245,7 +245,6 @@ def analysis_dependencies_export_csv(analysis_id):
             vuln_dep.fix_version,
             vuln_dep.severity,
             vuln_dep.cvss_score,
-            vuln_dep.description,
             vuln_dep.vendor_confirmed,
             vuln_dep.has_poc,
             vuln_dep.has_exploit,
