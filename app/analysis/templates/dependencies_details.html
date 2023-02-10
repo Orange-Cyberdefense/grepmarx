@@ -1,0 +1,114 @@
+<div class="modal-dialog modal-lg modal-vulnerable-dependency-details" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            {% if vulnerableDependency.severity == "critical" %}
+            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">CRITICAL
+                {% endif %}
+                {% if vulnerableDependency.severity == "high" %}
+                <span class="badge badge-lg bg-orange p-2 pl-3 pr-3">HIGH
+                    {% endif %}
+                    {% if vulnerableDependency.severity == "medium" %}
+                    <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">MEDIUM
+                        {% endif %}
+                        {% if vulnerableDependency.severity == "low" %}
+                        <span class="badge badge-lg bg-info p-2 pl-3 pr-3">LOW
+                            {% endif %}
+                            <br />
+                            <small>
+                                {{ vulnerableDependency.cvss_version }} {{ vulnerableDependency.cvss_score }}
+                            </small>
+                        </span>
+                        &nbsp;
+                        <h4 class="text-smallcaps mt-2">
+                            {{ vulnerableDependency.common_id }}
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+        </div>
+        <div class="modal-body">
+
+            <p class="lead mb-0">
+                <strong>Affects:</strong>
+                {{ vulnerableDependency.pkg_name | capitalize }}
+                v{{ vulnerableDependency.version }}
+            </p>
+            <span class="badge badge-lg bg-lightblue">
+                {{ vulnerableDependency.pkg_type }}
+            </span>
+            {{ vulnerableDependency.pkg_ref }}
+            <br /><br />
+
+            {% if vulnerableDependency.source != "" %}
+            <span class="badge badge-lg bg-gray">
+                <a class="mt-2" target="_blank" href="{{ vulnerableDependency.source }}">
+                    <i class="fas fa-external-link-square-alt"></i>
+                    source
+                </a>
+            </span>
+            {% endif %}
+            {% if vulnerableDependency.cwes != "" %}
+            {% for cwe in vulnerableDependency.cwes.split(",") %}
+            <a href="https://cwe.mitre.org/data/definitions/{{ cwe }}.html" target="_blank">
+                <span class="badge badge-lg bg-info">CWE-{{ cwe }}</span>
+            </a>
+            {% endfor %}
+            {% endif %}
+            {% if vulnerableDependency.fix_version != "" %}
+            <span class="badge badge-lg bg-success">Fix version: {{ vulnerableDependency.fix_version }}</span>
+            {% endif %}
+            {% if vulnerableDependency.vendor_confirmed %}
+            <span class="badge badge-lg bg-light">
+                <i class="fas fa-stamp"></i>
+                Vendor confirmed
+            </span>
+            {% endif %}
+            {% if vulnerableDependency.has_poc %}
+            <span class="badge badge-lg bg-warning">
+                <i class="fas fa-exclamation"></i>
+                Has PoC
+            </span>
+            {% endif %}
+            {% if vulnerableDependency.has_exploit %}
+            <span class="badge badge-lg bg-maroon">
+                <i class="fas fa-skull-crossbones"></i>
+                Known exploit
+            </span>
+            {% endif %}
+            {% if vulnerableDependency.direct %}
+            <span class="badge badge-lg bg-gray-dark">
+                <i class="fas fa-arrow-up"></i>
+                Direct usage
+            </span>
+            {% endif %}
+            {% if vulnerableDependency.indirect %}
+            <span class="badge badge-lg bg-gray">
+                <i class="fas fa-arrow-down"></i>
+                Indirect dependency
+            </span>
+            {% endif %}
+            <br /><br />
+
+            <div class="h5">Description:</div>
+            <p>{{ vulnerableDependency.description | replace("\n", "<br />") | safe }}</p>
+            {% if vulnerableDependency.recommendation != "" %}
+
+            <div class="h5">Recommendation:</div>
+            <p>{{ vulnerableDependency.recommendation | replace("\n", "<br />") | safe }}</p>
+            {% endif %}
+
+            <div class="h5">Advisories:</div>
+            <ul>
+                {% for adv in vulnerableDependency.advisories %}
+                <li>
+                    <strong>{{ adv.title | capitalize }}:</strong> 
+                    <a target="_blank" href="{{ adv.url }}">{{ adv.url }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

@@ -20,3 +20,4 @@ flask_wtf==1.0.0
 wtforms==2.3.3
 redis==3.5.3
 semgrep==1.2.1
+appthreat-depscan==3.5.3

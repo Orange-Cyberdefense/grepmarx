@@ -12,8 +12,7 @@ from shutil import rmtree
 from zipfile import ZipFile, is_zipfile
 
 from app import db
-from app.constants import (APP_INSP_PATH, EXTRACT_FOLDER_NAME,
-                           PROJECTS_SRC_PATH, SCC_PATH)
+from app.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC
 from app.projects.models import LanguageLinesCount, ProjectLinesCount
 from app.rules.models import SupportedLanguage
 
@@ -36,48 +35,6 @@ def remove_project(project):
     db.session.commit()
 
 
-def application_inspector_scan(project_id):
-
-    """Microsoft Application Inspector is a software source code characterization tool
-    that helps identify coding features of first or third party software components based
-    on well-known library/API calls and is helpful in security and non-security use cases.
-
-    Args:
-        project_id (Project): project.id
-    """
-
-    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
-    # Call to external binary: ApplicationInspector.CLI
-    cwd = os.getcwd()
-
-    cmdline = subprocess.run(
-        [
-            APP_INSP_PATH,
-            "analyze",
-            "-s",
-            f"{source_path}/",
-            "-f",
-            "json",
-            "-o",
-            f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json",
-        ],
-        capture_output=True,
-    ).stdout
-    print(cmdline)
-    # #Excute App inspector binary and format json
-    # json_split = json_cmdline.replace(b'\n',b'')
-    # #Replace \n by ""
-    # json_convert = json_split.decode('utf-8')
-    # #Convert bytes to String
-    # json_regex= re.match(r"(\{[^}]+\}\}{1-9})", json_convert, re.MULTILINE)
-    # #Use regular expression to exact match json part to use json.loads function
-    # json_match=json_regex.group(1)
-    f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
-    json_result = json.load(f)
-    f.close()
-    return json_result
-
-
 def count_lines(project):
     """Count line of code of the project's code archive using third-party tool
     scc, and populate the ProjectLinesCount class member.
@@ -89,7 +46,7 @@ def count_lines(project):
     # Call to external binary: scc
     json_result = json.loads(
         subprocess.run(
-            [SCC_PATH, source_path, "-f", "json"], capture_output=True
+            [SCC, source_path, "-f", "json"], capture_output=True
         ).stdout
     )
     project.project_lines_count = load_project_lines_count(json_result)

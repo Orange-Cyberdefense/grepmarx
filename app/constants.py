@@ -15,6 +15,12 @@ ROLE_GUEST = "2"
 
 IGNORE_EXTENSIONS = {".min.js"}
 IGNORE_FOLDERS = {"vendor", "test", "Test"}
+#CDXGEN = "cdxgen"
+DEPSCAN_RESULT_FILE = "sbom-bom.vex.json"
+DEPSCAN_RESULT_FOLDER = "dependencies"
+#BOM_FILE="sbom-bom.json"
+DEPSCAN = "depscan"
+APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
 
 # Project constants
 
@@ -25,9 +31,8 @@ STATUS_ERROR = 3
 STATUS_PENDING = 4
 STATUS_ABORTED = 5
 PROJECTS_SRC_PATH = "data/projects/"
-APP_INSP_PATH="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
 EXTRACT_FOLDER_NAME = "extract"
-SCC_PATH = "app/third-party/scc/scc"
+SCC = "app/third-party/scc/scc"
 
 # Rule constants
 
