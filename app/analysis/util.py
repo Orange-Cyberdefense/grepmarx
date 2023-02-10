@@ -29,6 +29,7 @@ from app.analysis.models import (
     Position,
     Vulnerability,
     VulnerableDependency,
+    VulnerableDependencyReference,
 )
 from app.constants import (
     APPLICATION_INSPECTOR,
@@ -387,10 +388,9 @@ def sca_scan(project):
         [dict]: depscan results (CycloneDX BOM+VEX)
     """
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
-    output_folder = os.path.join(PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER)
-    # Generate SBOM with cdxgen
-    #bom_file = os.path.join(output_folder, BOM_FILE)
-    #subprocess.run([CDXGEN, "-r", source_path, "-o", bom_file])
+    output_folder = os.path.join(
+        PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER
+    )
     # Launch depscan analysis
     subprocess.run(
         [
@@ -399,8 +399,6 @@ def sca_scan(project):
             "--no-error",
             "--src",
             source_path,
-            #"--bom",
-            #bom_file,
             "--reports-dir",
             output_folder,
         ]
@@ -411,10 +409,6 @@ def sca_scan(project):
     for file in vex_files:
         with open(file) as f:
             result.append(json.load(f))
-
-    #f = open(os.path.join(output_folder, DEPSCAN_RESULT_FILE))
-    #c = json.load(f)
-    #f.close()
     return result
 
 
@@ -434,21 +428,21 @@ def load_sca_scan_results(analysis, dict_sca_results):
             pkg_ref = bom_ref.split(":")[1].split("@")[0].replace(pkg_type + "/", "")
             pkg_name = bom_ref.split(":")[1].split("@")[0].split("/")[-1]
             # Get the source URL
-            source ="N/A"
+            source = "N/A"
             if "source" in c_vuln and "url" in c_vuln["source"]:
                 source = c_vuln["source"]["url"]
             elif "url" in c_vuln:
-                source = c_vuln["url"] 
+                source = c_vuln["url"]
             # Retrieve ratings information
             severity = cvss_score = cvss_version = "N/A"
             if "ratings" in c_vuln and len(c_vuln["ratings"]) > 0:
                 if "severity" in c_vuln["ratings"][0]:
-                    severity =  c_vuln["ratings"][0]["severity"]
+                    severity = c_vuln["ratings"][0]["severity"]
                 if "score" in c_vuln["ratings"][0]:
-                    cvss_score =  c_vuln["ratings"][0]["score"]
+                    cvss_score = c_vuln["ratings"][0]["score"]
                 if "method" in c_vuln["ratings"][0]:
-                    cvss_version =  c_vuln["ratings"][0]["method"]
-            # Search for affected and fixed versions    
+                    cvss_version = c_vuln["ratings"][0]["method"]
+            # Search for affected and fixed versions
             for v in c_vuln["affects"][0]["versions"]:
                 if v["status"] == "affected":
                     version = v["version"]
@@ -460,7 +454,9 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 if v["name"] == "depscan:prioritized" and v["value"] == "true":
                     prioritized = True
                 elif v["name"] == "depscan:insights":
-                    vendor_confirmed = True if "Vendor Confirmed" in v["value"] else False
+                    vendor_confirmed = (
+                        True if "Vendor Confirmed" in v["value"] else False
+                    )
                     has_poc = True if "Has PoC" in v["value"] else False
                     has_exploit = True if "Known Exploits" in v["value"] else False
                     direct = True if "Direct usage" in v["value"] else False
@@ -469,8 +465,17 @@ def load_sca_scan_results(analysis, dict_sca_results):
             cwes = ""
             if "cwes" in c_vuln and len(c_vuln["cwes"]) > 0:
                 cwes = ",".join(str(c) for c in c_vuln["cwes"])
+            # Get advisories
+            advisories = list()
+            if "advisories" in c_vuln:
+                for adv in c_vuln["advisories"]:
+                    advisories.append(
+                        VulnerableDependencyReference(
+                            title=adv["title"], url=adv["url"]
+                        )
+                    )
             # Populate VulnerableDependency object
-            vuln_deps.append(   
+            vuln_deps.append(
                 VulnerableDependency(
                     common_id=c_vuln["id"],
                     bom_ref=bom_ref,
@@ -491,14 +496,18 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     has_poc=has_poc,
                     has_exploit=has_exploit,
                     direct=direct,
-                    indirect=indirect
+                    indirect=indirect,
+                    advisories=advisories
                 )
             )
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
             current_app.logger.debug(
-            "New vulnerable dependency %s added to the analysis with id=%i", c_vuln["id"], analysis.id
-        )
+                "New vulnerable dependency %s added to the analysis with id=%i",
+                c_vuln["id"],
+                analysis.id,
+            )
+
 
 ##
 ## Inspector scan utils
