@@ -94,10 +94,12 @@
                                     </td>
                                     <td class="align-middle">
                                         v{{ c_vuln.version }}
+                                        {% if c_vuln.fix_version != "" %}
                                         <br />
                                         <span class="badge badge-lg bg-olive">
                                             Fix: v{{ c_vuln.fix_version }}
                                         </span>
+                                        {% endif %}
                                     </td>
                                     <td class="align-middle">
                                         {% if c_vuln.vendor_confirmed %}

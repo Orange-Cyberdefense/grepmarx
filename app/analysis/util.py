@@ -34,7 +34,6 @@ from app.analysis.models import (
 from app.constants import (
     APPLICATION_INSPECTOR,
     DEPSCAN,
-    DEPSCAN_RESULT_FILE,
     DEPSCAN_RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
@@ -443,6 +442,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 if "method" in c_vuln["ratings"][0]:
                     cvss_version = c_vuln["ratings"][0]["method"]
             # Search for affected and fixed versions
+            fix_version=""
             for v in c_vuln["affects"][0]["versions"]:
                 if v["status"] == "affected":
                     version = v["version"]
