@@ -12,6 +12,10 @@ from flask_login import current_user, login_required
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
 
+import io
+import csv
+from flask import make_response
+
 from app import db
 from app.analysis import blueprint
 from app.analysis.forms import ScanForm
@@ -226,6 +230,38 @@ def analysis_dependencies_details(vuln_dep_id):
         "dependencies_details.html",
         vulnerableDependency=vulnerableDependency,
     )
+
+@blueprint.route("/analysis/<analysis_id>/dependencies/export/csv")
+@login_required
+def analysis_dependencies_export_csv(analysis_id):
+    analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    data=[['Id', 'Package', 'Type', 'Version', 'Fix version', 'Severity', 'CVSS', 'Description', 'Vendor confirmed', 'Has PoC', 'Know exploit', 'Direct usage', 'Indirect dependency', 'Prioritized', 'Reference']]
+    for vuln_dep in analysis.vulnerable_dependencies:
+        data.append([
+            vuln_dep.common_id,
+            vuln_dep.pkg_ref,
+            vuln_dep.pkg_type,
+            vuln_dep.version,
+            vuln_dep.fix_version,
+            vuln_dep.severity,
+            vuln_dep.cvss_score,
+            vuln_dep.description,
+            vuln_dep.vendor_confirmed,
+            vuln_dep.has_poc,
+            vuln_dep.has_exploit,
+            vuln_dep.direct,
+            vuln_dep.indirect,
+            vuln_dep.prioritized,
+            vuln_dep.source,
+        ])
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(data)
+    output = make_response(si.getvalue())
+    filename = "%i-Vulnerable Dependencies-%s.csv" % (analysis.id, analysis.project.name)
+    output.headers["Content-Disposition"] = "attachment; filename=" + filename
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 
 #
