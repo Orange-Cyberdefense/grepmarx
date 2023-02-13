@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %} Project dashboard - {{ project.name }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Project dashboard - {{ project.name }}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
+                        <li class="breadcrumb-item active">{{ project.name }}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        {% include 'messages.html' %}
+
+        <div class="row">
+
+            <div class="col-12 col-xl-9">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card card-tertiary">
+                            <div class="card-header">
+                                <h3 class="card-title">Risk level</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                        title="Collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div style="height: 8em;">
+                                            <div class="h3 text-danger"
+                                                style="width: 100%; position: absolute; top: 2.7em; left: 0; margin-top: -20px; line-height:19px; text-align: center; z-index: 999999999999999">
+                                                70%
+                                            </div>
+                                            <canvas id="chart-risk-level-canvas"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-9">
+                                        <p class="text-lg">
+                                            This application is fairly <strong>insecure.</strong>
+                                        </p>
+                                        <p class="text-justify">
+                                            Major vulnerabilities have been found, which may be exploited by an attacker
+                                            to gain access to sensitive information or to compromize the environment
+                                            running the application.
+                                        </p>
+                                        <div class="btn-group">
+                                            <a class="btn btn-default" href="#">
+                                                <span title="Workbench" class="fas fa-laptop-code"></span>
+                                                Workbench
+                                            </a>
+                                            <a class="btn btn-default" href="#">
+                                                <span title="Inspector" class="fas fa-list"></span>
+                                                Inspector
+                                            </a>
+                                            <a class="btn btn-default" href="#">
+                                                <span title="Dependencies" class="fas fa-sitemap"></span>
+                                                Dependencies
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-12 col-xl-6">
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">Vulnerabilities summary</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height: 20em;">
+                        <canvas id="chart-vulnerabilities-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- ChartJS -->
+<script src="/static/assets/plugins/chart.js/chart.min.js"></script>
+
+<script type="text/javascript">
+
+    /**
+     * Risk level chart 
+     */
+
+    (async function () {
+        const data = [
+            { type: "Level", percentage: 70 },
+            { type: "Padding", percentage: 30 },
+        ];
+
+        new Chart(
+            document.getElementById('chart-risk-level-canvas'),
+            {
+                type: 'doughnut',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: 55,
+                    plugins: {
+                        tooltip: {
+                            enabled: false
+                        },
+                        legend: {
+                            display: false,
+                        }
+                    },
+                    backgroundColor: [
+                        "#dc3545",
+                        "#0000",
+                    ],
+                },
+                data: {
+                    labels: data.map(row => row.type),
+                    datasets: [
+                        {
+                            borderWidth: 0,
+                            data: data.map(row => row.percentage)
+                        }
+                    ],
+                },
+            }
+        );
+    })();
+
+    /**
+     * Vulnerabilities chart 
+     */
+
+    (async function () {
+        const data = [
+            { severity: "Critical", count: 2 },
+            { severity: "High", count: 4 },
+            { severity: "Medium", count: 7 },
+            { severity: "Low", count: 5 },
+            { severity: "Information", count: 3 },
+        ];
+
+        new Chart(
+            document.getElementById('chart-vulnerabilities-canvas'),
+            {
+                type: 'bar',
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    barThickness: 45,
+                    scales: {
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                        }
+                    },
+                    backgroundColor: [
+                        "#dc3545",
+                        "#fd7e14",
+                        "#ffc107",
+                        "#17a2b8",
+                        "#3d9970"
+                    ],
+                    plugins: {
+                        tooltip: {
+                            enabled: false
+                        },
+                        legend: {
+                            display: false,
+                        }
+                    }
+                },
+                data: {
+                    labels: data.map(row => row.severity),
+                    datasets: [
+                        {
+                            data: data.map(row => row.count)
+                        }
+                    ],
+                },
+            }
+        );
+    })();
+
+</script>
+{% endblock javascripts %}

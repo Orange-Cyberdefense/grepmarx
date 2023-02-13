@@ -37,6 +37,17 @@ def projects_list():
         segment="projects",
     )
 
+@blueprint.route("/projects/<project_id>")
+@login_required
+def projects_dashboard(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    return render_template(
+        "project_dashboard.html",
+        project=project,
+        user=current_user,
+        lang_icons=LANGUAGES_DEVICONS,
+        segment="projects",
+    )
 
 @blueprint.route("/projects/<project_id>/status")
 @login_required
