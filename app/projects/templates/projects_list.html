@@ -177,6 +177,13 @@
                                     {% endif %}
                                 </td>
                                 <td class="project-actions">
+
+                                    {% if c_project.status == 2 %}
+                                    <a class="btn btn-default btn-sm text-danger"
+                                        href="/analysis/scans/stop/{{ c_project.analysis.id }}">
+                                        <i class="fas fa-ban"></i> Abort scan
+                                    </a>
+                                    {% else %}
                                     <div class="btn-group btn-group-sm">
                                         <button type="button" class="btn btn-default dropdown-toggle"
                                             data-toggle="dropdown" aria-expanded="true">
@@ -218,12 +225,8 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    {% if c_project.status == 2 %}
-                                    <a class="btn btn-default btn-sm text-danger"
-                                        href="/analysis/scans/stop/{{ c_project.analysis.id }}">
-                                        <i class="fas fa-ban"></i> Abort scan
-                                    </a>
                                     {% endif %}
+
                                 </td>
                             </tr>
                             {% endfor %}
