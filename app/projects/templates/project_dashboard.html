@@ -48,13 +48,12 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="card-body">
-
+                            <div class="card-body" style="height: 12em;">
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <div style="height: 8em;">
                                             <div class="h3 text-danger"
-                                                style="width: 100%; position: absolute; top: 2.8em; left: 0; margin-top: -20px; line-height:19px; text-align: center; z-index: 999999999999999">
+                                                style="width: 100%; position: absolute; top: 2.7em; left: 0; margin-top: -20px; line-height:19px; text-align: center; z-index: 999999999999999">
                                                 70%
                                             </div>
                                             <canvas id="chart-risk-level-canvas"></canvas>
@@ -65,23 +64,23 @@
                                         <p class="text-lg">
                                             This application is fairly <strong>insecure.</strong>
                                         </p>
-                                        <p class="text-justify">
-                                            Major vulnerabilities have been found, which may be exploited by an attacker
-                                            to gain access to sensitive information or to compromize the environment
+                                        <p class="text-justify pt-0">
+                                            Major vulnerabilities may be exploited by an attacker
+                                            to gain access to sensitive information or compromize the environment
                                             running the application.
                                         </p>
                                         <div class="btn-group">
-                                            <a class="btn btn-default" href="#">
+                                            <a class="btn btn-default" href="/analysis/workbench/{{ project.analysis.id }}">
                                                 <span title="Workbench" class="fas fa-laptop-code"></span>
                                                 Workbench
                                             </a>
-                                            <a class="btn btn-default" href="#">
-                                                <span title="Inspector" class="fas fa-list"></span>
-                                                Inspector
-                                            </a>
-                                            <a class="btn btn-default" href="#">
+                                            <a class="btn btn-default" href="/analysis/dependencies/{{ project.appinspector.id }}">
                                                 <span title="Dependencies" class="fas fa-sitemap"></span>
                                                 Dependencies
+                                            </a>
+                                            <a class="btn btn-default" href="/analysis/inspector/{{ project.analysis.id }}">
+                                                <span title="Inspector" class="fas fa-list"></span>
+                                                Inspector
                                             </a>
                                         </div>
                                     </div>
@@ -102,15 +101,15 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="height: 12em;">
                         <div class="row">
                             <div class="col-md-6">
                                 <span class="fas fa-file-archive" style="max-width: 25em;"></span>
-                                Archive name: {{ project.archive_filename | truncate(20, True) }}
+                                {{ project.archive_filename | truncate(18, True) }}
                             </div>
                             <div class="col-md-6">
                                 <span class="fas fa-user"></span>
-                                Created by: {{ project.creator.username }}
+                                {{ project.creator.username }}
                             </div>
                             <div class="col-md-6">
                                 <span class="fas fa-clock"></span>
@@ -132,11 +131,10 @@
                         </div>
                         <br />
                         <div class="row">
-                            {% for c_lang in top_supported_language_lines_counts(project.project_lines_count) %}
+                            {% for c_lang in top_supported_language_lines_counts(project.project_lines_count)[0:4] %}
                             <div class="col-md-6">
-                                <span class="{{ lang_icons[c_lang.name] }}">
-                                    {{ c_lang.name }}: {{ (project.project_lines_count.language_lines_counts | selectattr("language", "equalto",  c_lang.name) | map(attribute='line_count') | list)[0] }}
-                                </span>
+                                <span class="{{ lang_icons[c_lang.name] }}"></span>
+                                {{ c_lang.name }}: {{ (project.project_lines_count.language_lines_counts | selectattr("language", "equalto",  c_lang.name) | map(attribute='line_count') | list)[0] }}
                             </div>
                                 {% endfor %}
                         </div>
@@ -149,7 +147,7 @@
 
         <div class="row">
 
-            <div class="col-12 col-xl-6">
+            <div class="col-12 col-xl-4">
                 <div class="card card-default">
                     <div class="card-header">
                         <h3 class="card-title">Vulnerabilities summary</h3>
@@ -159,8 +157,92 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body" style="height: 20em;">
-                        <canvas id="chart-vulnerabilities-canvas"></canvas>
+                    <div class="card-body">
+                        <div style="height: 17em;">
+                            <canvas id="chart-vulnerabilities-canvas"></canvas>
+                        </div>
+                        <p class="m-0 text-right">
+                            <a href="/analysis/workbench/{{ project.analysis.id }}">Browse all vulnerabilities in the workbench &gt;&gt;</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">Critical dependencies</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height: 21em;">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="vulnerable-deps-table" class="table" role="grid">
+                                    <tbody>
+                                        {% for c_vuln in (project.analysis.vulnerable_dependencies | sort(attribute='cvss_score', reverse=True))[0:5] %}
+                                        <tr>
+                                            <td class="align-middle">
+                                                {% if c_vuln.severity == "critical" %}
+                                                <span class="badge bg-danger p-2">
+                                                {% elif c_vuln.severity == "high" %}
+                                                <span class="badge bg-orange p-2">
+                                                {% elif c_vuln.severity == "medium" %}
+                                                <span class="badge bg-warning p-2">
+                                                {% else %}
+                                                <span class="badge bg-info p-2">
+                                                    {% endif %}
+                                                    {{ c_vuln.common_id }}
+                                                </span>
+                                            </td>
+                                            <td class="align-middle">
+                                                {{ (c_vuln.pkg_name | capitalize + " v" +  c_vuln.version) | truncate(21, True) }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <p class="text-right">
+                            <a href="/analysis/dependencies/{{ project.analysis.id }}">Explore all vulnerable dependencies &gt;&gt;</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">Main features</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height: 21em;">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="vulnerable-deps-table" class="table" role="grid">
+                                    <tbody>
+                                        {% for c_feature in top_features %}
+                                        <tr>
+                                            <td class="align-middle">
+                                                {{ c_feature.description }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-right">
+                            <a href="/analysis/inspector/{{ project.analysis.id }}">View all features in the inspector &gt;&gt;</a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -240,12 +322,12 @@
             {
                 type: 'bar',
                 options: {
-                    indexAxis: 'y',
+                    indexAxis: 'x',
                     responsive: true,
                     maintainAspectRatio: false,
                     barThickness: 35,
                     scales: {
-                        y: {
+                        x: {
                             grid: {
                                 display: false
                             },
