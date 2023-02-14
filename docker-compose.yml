@@ -5,7 +5,6 @@ services:
   db:
     image: postgres:14.1-alpine
     restart: always
-    restart: always
     environment:
       - POSTGRES_USER=grepmarx
       - POSTGRES_PASSWORD=!!!CHANGE_ME!!!
