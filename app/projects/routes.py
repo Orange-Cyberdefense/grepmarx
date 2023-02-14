@@ -41,12 +41,15 @@ def projects_list():
 @login_required
 def projects_dashboard(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    # Get the 5 inspector mathes with the mot tags (thanks ChatGPT)
+    top_features = sorted(project.appinspector.match, key=lambda match: len(match.tag), reverse=True)[:5]
     return render_template(
         "project_dashboard.html",
         project=project,
         user=current_user,
         top_supported_language_lines_counts=top_supported_language_lines_counts,
         lang_icons=LANGUAGES_DEVICONS,
+        top_features=top_features,
         segment="projects",
     )
 

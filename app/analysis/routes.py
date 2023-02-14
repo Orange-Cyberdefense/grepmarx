@@ -140,7 +140,7 @@ def analysis_workbench(analysis_id):
         flash(
             "No findings were found for this project during the last analysis", "error"
         )
-        return redirect(url_for("projects_blueprint.projects_list"))
+        return redirect(url_for("projects_blueprint.projects_dashboard", project_id=analysis.project.id))
     vulnerabilities = vulnerabilities_sorted_by_severity(analysis)
     return render_template(
         "analysis_workbench.html",
