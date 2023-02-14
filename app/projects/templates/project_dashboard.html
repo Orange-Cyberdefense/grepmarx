@@ -35,7 +35,7 @@
 
         <div class="row">
 
-            <div class="col-12 col-xl-9">
+            <div class="col-12 col-xl-8">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card card-tertiary">
@@ -54,7 +54,7 @@
                                     <div class="col-sm-3">
                                         <div style="height: 8em;">
                                             <div class="h3 text-danger"
-                                                style="width: 100%; position: absolute; top: 2.7em; left: 0; margin-top: -20px; line-height:19px; text-align: center; z-index: 999999999999999">
+                                                style="width: 100%; position: absolute; top: 2.8em; left: 0; margin-top: -20px; line-height:19px; text-align: center; z-index: 999999999999999">
                                                 70%
                                             </div>
                                             <canvas id="chart-risk-level-canvas"></canvas>
@@ -91,6 +91,59 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">Project information</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span class="fas fa-file-archive" style="max-width: 25em;"></span>
+                                Archive name: {{ project.archive_filename | truncate(20, True) }}
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fas fa-user"></span>
+                                Created by: {{ project.creator.username }}
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fas fa-clock"></span>
+                                {% set duration = (project.analysis.finished_on - project.analysis.started_on) | string %}
+                                Duration: {{ duration.split('.', 2)[0] }}
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fas fa-file-import mr-1"></span>
+                                Files: {{ project.project_lines_count.total_file_count }}
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fas fa-code"></span>
+                                Code: {{ project.project_lines_count.total_code_count }}
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fas fa-hashtag"></span>
+                                Comments: {{ project.project_lines_count.total_comment_count }}
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            {% for c_lang in top_supported_language_lines_counts(project.project_lines_count) %}
+                            <div class="col-md-6">
+                                <span class="{{ lang_icons[c_lang.name] }}">
+                                    {{ c_lang.name }}: {{ (project.project_lines_count.language_lines_counts | selectattr("language", "equalto",  c_lang.name) | map(attribute='line_count') | list)[0] }}
+                                </span>
+                            </div>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
 
@@ -142,7 +195,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: 55,
+                    cutout: 50,
                     plugins: {
                         tooltip: {
                             enabled: false
@@ -190,7 +243,7 @@
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
-                    barThickness: 45,
+                    barThickness: 35,
                     scales: {
                         y: {
                             grid: {
