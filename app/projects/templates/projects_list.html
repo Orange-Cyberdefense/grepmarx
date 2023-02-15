@@ -95,9 +95,9 @@
                                     {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
                                     <a href="/analysis/scans/new/{{ c_project.id }}">
                                         {% elif c_project.status == 1 %}
-                                        <a href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                        <a href="/projects/{{ c_project.id }}">
                                             {% elif c_project.status == 2 or c_project.status == 4 %}
-                                            <a href="#">
+                                            <a href="">
                                                 {% endif %}
                                                 {{ c_project.name }}
                                             </a>
@@ -178,53 +178,51 @@
                                 </td>
                                 <td class="project-actions">
 
-                                    {% if c_project.status == 2 %}
+                                    {% if c_project.status == 2 or c_project.status == 4 %}
+                                    {% if c_project.status != 4 %}
                                     <a class="btn btn-default btn-sm text-danger"
                                         href="/analysis/scans/stop/{{ c_project.analysis.id }}">
-                                        <i class="fas fa-ban"></i> Abort scan
+                                        <i class="fas fa-ban"></i> Cancel
                                     </a>
+                                    {% endif %}
                                     {% else %}
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-default dropdown-toggle"
-                                            data-toggle="dropdown" aria-expanded="true">
-                                            Actions
-                                        </button>
-                                        <div class="dropdown-menu text-sm" role="menu">
-                                            {% if c_project.status != 2 and c_project.status != 4 %}
-                                            <a class="dropdown-item" href="/analysis/scans/new/{{ c_project.id }}">
-                                                <i title="New Scan" class="fas fa-play"></i>
-                                                Scan project
-                                            </a>
-                                            {% endif %}
-                                            {% if c_project.status == 1 %}
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item"
-                                                href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                                <i title="Workbench" class="fas fa-laptop-code"></i>
-                                                Workbench
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="/analysis/inspector/{{ c_project.appinspector.id }}">
-                                                <i title="Inspector" class="fas fa-list"></i>
-                                                Inspector
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="/analysis/dependencies/{{ c_project.analysis.id }}">
-                                                <i title="Dependencies" class="fas fa-sitemap"></i>
-                                                Dependencies
-                                            </a>
-                                            {% endif %}
-                                            {% if c_project.status != 2 %}
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item text-danger" href="#"
-                                                onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
-                                                data-toggle="modal" data-target="#confirm-removal">
-                                                <i title="Delete" class="fas fa-trash"></i>
-                                                Delete
-                                            </a>
-                                            {% endif %}
+
+                                    <div class="btn-group">
+                                        <a href="/analysis/scans/new/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
+                                            <i title="New analysis" class="fas fa-play"></i>
+                                        </a>
+                                        {% if c_project.status == 1 %}
+                                        <a href="/projects/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
+                                            <i title="Project dashboard" class="fas fa-chart-pie"></i>
+                                        </a>
+                                        <div class="btn-group">
+                                            <button type="button"
+                                                class="btn btn-default btn-sm dropdown-toggle dropdown-icon"
+                                                data-toggle="dropdown" aria-expanded="false">
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item"
+                                                    href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                                    <i title="Workbench" class="fas fa-laptop-code"></i>
+                                                    Workbench
+                                                </a>
+                                                <a class="dropdown-item"
+                                                    href="/analysis/inspector/{{ c_project.appinspector.id }}">
+                                                    <i title="Inspector" class="fas fa-list"></i>
+                                                    Inspector
+                                                </a>
+                                                <a class="dropdown-item"
+                                                    href="/analysis/dependencies/{{ c_project.analysis.id }}">
+                                                    <i title="Dependencies" class="fas fa-sitemap"></i>
+                                                    Dependencies
+                                                </a>
+                                            </div>
                                         </div>
+                                        {% endif %}
                                     </div>
+                                    <button type="button" class="btn btn-default btn-sm text-danger">
+                                        <i title="Delete project" class="fas fa-trash"></i>
+                                    </button>
                                     {% endif %}
 
                                 </td>
