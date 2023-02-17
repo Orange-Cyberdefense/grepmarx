@@ -1,12 +1,14 @@
 <div class="split-panel-block">
     <div id="language" hidden="true">{{ language }}</div>
-    <div id="highlight-theme" hidden="true">{% if user is defined and user.dark_theme %}atomic{% else %}godzilla{% endif %}</div>
+    <div id="highlight-theme" hidden="true">{% if user is defined and user.dark_theme %}atomic{% else %}godzilla{% endif
+        %}</div>
     <div id="anchor-line" hidden="true">{{ hl_lines }}</div>
     <!-- Begin toolbar -->
     <div class="toolbar">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
             <div class="toolbar-grp">
-                <a class="btn btn-sm btn-secondary text-white" href="/projects">
+                <a class="btn btn-sm btn-secondary text-white"
+                    href="/projects/{{ project_id }}">
                     <span class="fas fa-arrow-circle-left"></span> Back
                 </a>
                 <a class="btn btn-sm btn-secondary text-white" href="/switch-theme">

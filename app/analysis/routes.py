@@ -185,6 +185,7 @@ def analysis_codeview(occurence_id):
         hl_lines=hl_lines,
         user=current_user,
         path=occurence.file_path,
+        project_id=project_id
     )
 
 
