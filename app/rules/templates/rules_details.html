@@ -2,14 +2,20 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="h5">
+                {% if rule.severity == "critical" %}
+                <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">CRITICAL</span>
+                {% endif %}
                 {% if rule.severity == "high" %}
-                <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">HIGH</span>
+                <span class="badge badge-lg bg-orange p-2 pl-3 pr-3">HIGH</span>
                 {% endif %}
                 {% if rule.severity == "medium" %}
                 <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">MEDIUM</span>
                 {% endif %}
                 {% if rule.severity == "low" %}
                 <span class="badge badge-lg bg-info p-2 pl-3 pr-3">LOW</span>
+                {% endif %}
+                {% if rule.severity == "info" %}
+                <span class="badge badge-lg bg-secondary p-2 pl-3 pr-3">INFO</span>
                 {% endif %}
                 &nbsp;
             </div>
