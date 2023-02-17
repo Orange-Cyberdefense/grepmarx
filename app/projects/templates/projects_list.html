@@ -220,9 +220,11 @@
                                         </div>
                                         {% endif %}
                                     </div>
-                                    <button type="button" class="btn btn-default btn-sm text-danger">
+                                    <a class="btn btn-default btn-sm text-danger" href="#"
+                                        onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
+                                        data-toggle="modal" data-target="#confirm-removal">
                                         <i title="Delete project" class="fas fa-trash"></i>
-                                    </button>
+                                    </a>
                                     {% endif %}
 
                                 </td>
