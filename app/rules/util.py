@@ -17,9 +17,11 @@ from app.constants import (
     RULE_EXTENSIONS,
     RULES_PATH,
     LOCAL_RULES_PATH,
+    SEVERITY_CRITICAL,
+    SEVERITY_HIGH,
+    SEVERITY_INFO,
     SEVERITY_LOW,
     SEVERITY_MEDIUM,
-    TOP40_CWE_SEVERITIES,
 )
 from app.rules.models import Rule, RuleRepository, SupportedLanguage
 from yaml import YAMLError, safe_load
@@ -102,20 +104,29 @@ def save_rule_in_db(filename):
                                         rule.languages.append(c_sl)
                         # Add metadata: OWASP and CWE ids
                         if "metadata" in c_rule:
-                            if "cwe" in c_rule["metadata"]:
+                            metadata = c_rule["metadata"]
+                            if "cwe" in metadata:
                                 # There may be multiple CWE ids
-                                if type(c_rule["metadata"]["cwe"]) is list:
-                                    rule.cwe = c_rule["metadata"]["cwe"][0]
+                                if type(metadata["cwe"]) is list:
+                                    rule.cwe = metadata["cwe"][0]
                                 else:
-                                    rule.cwe = c_rule["metadata"]["cwe"]
-                            if "owasp" in c_rule["metadata"]:
+                                    rule.cwe = metadata["cwe"]
+                            if "owasp" in metadata:
                                 # There may be multiple OWASP ids (eg. 2017, 2021...)
-                                if type(c_rule["metadata"]["owasp"]) is list:
-                                    rule.owasp = c_rule["metadata"]["owasp"][0]
+                                if type(metadata["owasp"]) is list:
+                                    rule.owasp = metadata["owasp"][0]
                                 else:
-                                    rule.owasp = c_rule["metadata"]["owasp"]
+                                    rule.owasp = metadata["owasp"]
+                            # Add impact, likelihood and confidence if present
+                            if "impact" in metadata:
+                                rule.impact = metadata["impact"]
+                            if "likelihood" in metadata:
+                                rule.likelihood = metadata["likelihood"]
+                            if "confidence" in metadata:
+                                rule.confidence = metadata["confidence"]
                         # Replace rule level/severity by a calculated one
-                        rule.severity = generate_severity(rule.cwe)
+                        rule.severity = c_rule["severity"]
+                        generate_severity(rule)
                         current_app.logger.debug(
                             "Rule imported in DB: %s",
                             repository + "/" + rule.category + "/" + rule.title,
@@ -137,31 +148,46 @@ def add_new_rule(name, code):
     return rule_path
 
 
-def generate_severity(cwe_string):
-    """Generates a severity level from a CWE full name.
+def generate_severity(roc):
+    """Generates a severity level (critical, high, medium, low, info) calculated from a
+    rule's/vulnerability's impact, likelihood and confidence levels.
 
-    For Top 40 CWE, the severity is an average of the CVSS scores
-    for CVEs corresponding to this CWE. For CWE outside of the
-    Top 40, the severity is MEDIUM by default. If no CWE is set,
-    the severity is then LOW.
+    If these levels are not present, original severity level will be transformed such as:
+    - INFO => SEVERITY_INFO
+    - WARNING => SEVERITY_LOW
+    - ERROR => SEVERITY_MEDIUM
 
     Args:
-        cwe_string (str): CWE full name (such as 'CWE-200: Exposure of
-        Sensitive Information to an Unauthorized Actor')
-
-    Returns:
-        int: severity level (1-3)
+        roc (Rule/Vulnerability): rule/vulnerability object already populated with at least the original severity level
     """
-    ret = SEVERITY_LOW
-    if cwe_string is not None:
-        match = re.search("(CWE-\d+)", cwe_string, re.IGNORECASE)
-        if match:
-            cwe_id = match.group(1).upper()
-            if cwe_id in TOP40_CWE_SEVERITIES:
-                ret = TOP40_CWE_SEVERITIES[cwe_id]
+    if (
+        roc.impact is not None
+        and roc.likelihood is not None
+        and roc.confidence is not None
+    ):
+        total = 0
+        for level in (roc.impact, roc.likelihood, roc.confidence):
+            if level == "HIGH":
+                total += 3
+            elif level == "MEDIUM":
+                total += 2
             else:
-                ret = SEVERITY_MEDIUM
-    return ret
+                total += 1
+        if total > 7:
+            roc.severity = SEVERITY_CRITICAL
+        elif total > 5:
+            roc.severity = SEVERITY_HIGH
+        elif total > 3:
+            roc.severity = SEVERITY_MEDIUM
+        else:
+            roc.severity = SEVERITY_LOW
+    else:
+        if roc.severity == "ERROR":
+            roc.severity = SEVERITY_MEDIUM
+        elif roc.severity == "WARNING":
+            roc.severity = SEVERITY_LOW
+        else:
+            roc.severity = SEVERITY_INFO
 
 
 ##
@@ -211,7 +237,7 @@ def comma_separated_to_list(comma_separated):
 ##
 
 
-def clone_rule_repo(repo, username='', token=''):
+def clone_rule_repo(repo, username="", token=""):
     """Perform a 'clone' operation on the rule repository.
     The rule repository's 'last_update_on' attribute will be updated.
 
@@ -224,7 +250,11 @@ def clone_rule_repo(repo, username='', token=''):
     if username == "" or token == "":
         clone_uri = repo.uri
     else:
-        clone_uri = re.sub(r'(https?://)([a-zA-Z0-9].*)', r'\1' + username + ':' + token + '@\2', repo.uri)
+        clone_uri = re.sub(
+            r"(https?://)([a-zA-Z0-9].*)",
+            r"\1" + username + ":" + token + "@\2",
+            repo.uri,
+        )
 
     git.Repo.clone_from(clone_uri, repo_path)
 

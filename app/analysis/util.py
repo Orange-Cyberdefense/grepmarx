@@ -39,7 +39,10 @@ from app.constants import (
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
     RULES_PATH,
+    SEVERITY_CRITICAL,
     SEVERITY_HIGH,
+    SEVERITY_INFO,
+    SEVERITY_LOW,
     SEVERITY_MEDIUM,
     STATUS_ABORTED,
     STATUS_ANALYZING,
@@ -253,9 +256,18 @@ def load_vulnerability(title, sast_result):
                 vuln.owasp = metadata["owasp"][0]
             else:
                 vuln.owasp = metadata["owasp"]
+        # Add impact, likelihood and confidence if present
+        if "impact" in metadata:
+            vuln.impact = metadata["impact"]
+        if "likelihood" in metadata:
+            vuln.likelihood = metadata["likelihood"]
+        if "confidence" in metadata:
+            vuln.confidence = metadata["confidence"]
         if "references" in metadata:
             vuln.references = " ".join(metadata["references"])
-        vuln.severity = generate_severity(vuln.cwe)
+        # Replace rule level/severity by a calculated one
+        vuln.severity = extra["severity"]
+        generate_severity(vuln)
     return vuln
 
 
@@ -359,15 +371,17 @@ def vulnerabilities_sorted_by_severity(analysis):
         list: vulnerability objects sorted by severity
     """
     r_vulns = list()
-    low_vulns = list()
-    for c_vulns in analysis.vulnerabilities:
-        if c_vulns.severity == SEVERITY_HIGH:
-            r_vulns.insert(0, c_vulns)
-        elif c_vulns.severity == SEVERITY_MEDIUM:
-            r_vulns.append(c_vulns)
-        else:
-            low_vulns.append(c_vulns)
-    r_vulns.extend(low_vulns)
+    for severity in (SEVERITY_CRITICAL, SEVERITY_HIGH, SEVERITY_MEDIUM, SEVERITY_LOW, SEVERITY_INFO):
+        r_vulns += [vuln for vuln in analysis.vulnerabilities if vuln.severity == severity]
+    #low_vulns = list()
+    # for c_vulns in analysis.vulnerabilities:
+    #     if c_vulns.severity == SEVERITY_HIGH:
+    #         r_vulns.insert(0, c_vulns)
+    #     elif c_vulns.severity == SEVERITY_MEDIUM:
+    #         r_vulns.append(c_vulns)
+    #     else:
+    #         low_vulns.append(c_vulns)
+    # r_vulns.extend(low_vulns)
     return r_vulns
 
 

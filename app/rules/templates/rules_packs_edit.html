@@ -164,14 +164,20 @@
                                                         {{ c_rule.id }}
                                                     </td>
                                                     <td class="align-middle">
+                                                        {% if c_rule.severity == "critical" %}
+                                                        <span class="badge badge-sm bg-danger p-2 pl-3 pr-3">CRITICAL</span>
+                                                        {% endif %}
                                                         {% if c_rule.severity == "high" %}
-                                                        <span class="badge badge-sm bg-danger p-2 pl-3 pr-3">HIGH</span>
+                                                        <span class="badge badge-sm bg-orange p-2 pl-3 pr-3">HIGH</span>
                                                         {% endif %}
                                                         {% if c_rule.severity == "medium" %}
                                                         <span class="badge badge-sm bg-warning p-2 pl-3 pr-3">MEDIUM</span>
                                                         {% endif %}
                                                         {% if c_rule.severity == "low" %}
                                                         <span class="badge badge-sm bg-info p-2 pl-3 pr-3">LOW</span>
+                                                        {% endif %}
+                                                        {% if c_rule.severity == "info" %}
+                                                        <span class="badge badge-sm bg-secondary p-2 pl-3 pr-3">INFO</span>
                                                         {% endif %}
                                                     </td>
                                                     <td class="align-middle">

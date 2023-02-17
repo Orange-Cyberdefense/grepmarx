@@ -36,9 +36,11 @@ SCC = "app/third-party/scc/scc"
 
 # Rule constants
 
+SEVERITY_CRITICAL = "critical"
 SEVERITY_HIGH = "high"
 SEVERITY_MEDIUM = "medium"
 SEVERITY_LOW = "low"
+SEVERITY_INFO = "info"
 RULES_PATH = "data/rules/"
 LOCAL_RULES ="local_rules"
 LOCAL_RULES_PATH ="data/rules/" + LOCAL_RULES + "/"
@@ -54,49 +56,6 @@ OWASP_TOP10_LINKS = {
     "A08": "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/",
     "A09": "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/",
     "A10": "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/",
-}
-# https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html#methodology
-TOP40_CWE_SEVERITIES = {
-    "CWE-79": SEVERITY_MEDIUM,
-    "CWE-787": SEVERITY_HIGH,
-    "CWE-20": SEVERITY_HIGH,
-    "CWE-125": SEVERITY_HIGH,
-    "CWE-119": SEVERITY_HIGH,
-    "CWE-89": SEVERITY_HIGH,
-    "CWE-200": SEVERITY_HIGH,
-    "CWE-416": SEVERITY_HIGH,
-    "CWE-352": SEVERITY_HIGH,
-    "CWE-78": SEVERITY_HIGH,
-    "CWE-190": SEVERITY_HIGH,
-    "CWE-22": SEVERITY_HIGH,
-    "CWE-476": SEVERITY_MEDIUM,
-    "CWE-287": SEVERITY_HIGH,
-    "CWE-434": SEVERITY_HIGH,
-    "CWE-732": SEVERITY_MEDIUM,
-    "CWE-94": SEVERITY_HIGH,
-    "CWE-522": SEVERITY_HIGH,
-    "CWE-611": SEVERITY_HIGH,
-    "CWE-798": SEVERITY_HIGH,
-    "CWE-502": SEVERITY_HIGH,
-    "CWE-269": SEVERITY_HIGH,
-    "CWE-400": SEVERITY_HIGH,
-    "CWE-306": SEVERITY_HIGH,
-    "CWE-862": SEVERITY_MEDIUM,
-    "CWE-426": SEVERITY_HIGH,
-    "CWE-918": SEVERITY_HIGH,
-    "CWE-295": SEVERITY_HIGH,
-    "CWE-863": SEVERITY_MEDIUM,
-    "CWE-284": SEVERITY_HIGH,
-    "CWE-77": SEVERITY_HIGH,
-    "CWE-401": SEVERITY_MEDIUM,
-    "CWE-532": SEVERITY_MEDIUM,
-    "CWE-362": SEVERITY_MEDIUM,
-    "CWE-601": SEVERITY_MEDIUM,
-    "CWE-835": SEVERITY_MEDIUM,
-    "CWE-704": SEVERITY_HIGH,
-    "CWE-415": SEVERITY_HIGH,
-    "CWE-770": SEVERITY_HIGH,
-    "CWE-59": SEVERITY_HIGH,
 }
 
 # Language constants

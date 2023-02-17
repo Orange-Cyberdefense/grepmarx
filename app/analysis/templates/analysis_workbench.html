@@ -23,14 +23,20 @@
                     <div class="list-group">
                         {% for vulnerability in vulnerabilities %}
                         <a href="#" onclick="ajaxOccurencesTable(this, '{{ vulnerability.id }}');" class="list-group-item workbench-list-group-item text-smallcaps">
+                            {% if vulnerability.severity == "critical" %}
+                            <span class="badge badge-sm bg-danger w-20p">C</span>
+                            {% endif %}
                             {% if vulnerability.severity == "high" %}
-                            <span class="badge badge-sm bg-danger w-20p">H</span>
+                            <span class="badge badge-sm bg-orange w-20p">H</span>
                             {% endif %}
                             {% if vulnerability.severity == "medium" %}
                             <span class="badge badge-lg bg-warning w-20p">M</span>
                             {% endif %}
                             {% if vulnerability.severity == "low" %}
                             <span class="badge badge-sm bg-info w-20p">L</span>
+                            {% endif %}
+                            {% if vulnerability.severity == "info" %}
+                            <span class="badge badge-sm bg-secondary w-20p">I</span>
                             {% endif %}
                             &nbsp;
                             {{ vulnerability.title|replace('-',' ')|replace('_',' ') }}
