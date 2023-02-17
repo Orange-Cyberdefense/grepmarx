@@ -233,8 +233,9 @@ that could compromise the confidentiality, integrity, or availability of the sys
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
-                    </div>
-                    <div class="card-body">
+                    </div>   
+                    <div class="card-body" style="height: 21em;">
+                        {% if project.analysis.vulnerabilities | length > 0 %}
                         <div style="height: 17em;">
                             <canvas id="chart-vulnerabilities-canvas"></canvas>
                         </div>
@@ -242,6 +243,14 @@ that could compromise the confidentiality, integrity, or availability of the sys
                             <a href="/analysis/workbench/{{ project.analysis.id }}">Browse all vulnerabilities in the
                                 workbench &gt;&gt;</a>
                         </p>
+                        {% else %}
+                        <div class="text-center mt-5">
+                            <i class="fas fa-check-circle text-success fa-5x"></i>
+                            <p class="lead mt-4">
+                                No vulnerability has been identified.
+                            </p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -257,6 +266,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
                         </div>
                     </div>
                     <div class="card-body" style="height: 21em;">
+                        {% if project.analysis.vulnerable_dependencies | length > 0 %}
                         <div class="row">
                             <div class="col-sm-12">
                                 <table id="vulnerable-deps-table" class="table" role="grid">
@@ -291,6 +301,14 @@ that could compromise the confidentiality, integrity, or availability of the sys
                             <a href="/analysis/dependencies/{{ project.analysis.id }}">Explore all vulnerable
                                 dependencies &gt;&gt;</a>
                         </p>
+                        {% else %}
+                        <div class="text-center mt-5">
+                            <i class="fas fa-check-circle text-success fa-5x"></i>
+                            <p class="lead mt-4">
+                                No vulnerable dependency has been identified.
+                            </p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
