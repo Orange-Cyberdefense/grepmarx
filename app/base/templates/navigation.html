@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav
+<nav id="main-navbar"
   class="main-header navbar navbar-expand 
   {% if user is defined and user.dark_theme %}
   navbar-gray-dark navbar-dark
@@ -21,7 +21,7 @@
 
     <!-- Dark theme switch -->
     <li class="nav-item dropdown">
-      <a class="nav-link" href="/switch-theme">
+      <a class="nav-link" onclick="switchTheme()">
         <span class="fas fa-adjust"></span></a>
     </li>
     

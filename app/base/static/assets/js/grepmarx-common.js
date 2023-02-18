@@ -60,6 +60,30 @@ function showSelectedFile(el) {
     document.getElementById("source-archive-text").innerText = el.files[0].name;
 }
 
+// ------------ Switch dark mode
+
+function switchTheme() {
+    // Switch theme in the current page
+    if (document.body.classList.contains("dark-mode")) {
+        document.body.classList.remove("dark-mode");
+        document.getElementById("main-navbar").classList.remove("navbar-gray-dark");
+        document.getElementById("main-navbar").classList.remove("navbar-dark");
+        document.getElementById("main-navbar").classList.add("navbar-white");
+        document.getElementById("main-navbar").classList.add("navbar-light");
+
+    } else {
+        document.body.classList.add("dark-mode");
+        document.getElementById("main-navbar").classList.remove("navbar-white");
+        document.getElementById("main-navbar").classList.remove("navbar-light");
+        document.getElementById("main-navbar").classList.add("navbar-gray-dark");
+        document.getElementById("main-navbar").classList.add("navbar-dark");
+    }
+    // Change the preference server-side
+    reqSwitchTheme = new XMLHttpRequest();
+    reqSwitchTheme.open('GET', '/switch-theme');
+    reqSwitchTheme.send();
+}
+
 // ------------ Projects auto-refresh
 
 async function ajaxRefreshStatus(projectId) {
