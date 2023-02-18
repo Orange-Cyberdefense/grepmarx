@@ -1,4 +1,4 @@
-<table class="table table-sm table-hover occurences-table">
+<table class="table table-sm table-hover table-head-fixed occurences-table">
     <thead class="thead-light">
         <tr>
             <th class="th-col-width-5">#</th>
@@ -41,18 +41,10 @@
                 </span>
             </td>
             <td class="table-action">
-                <div class="btn-group btn-group-sm">
-                    <a href="#" class="btn btn-default" onclick="ajaxOccurenceDetails(this, '{{ occurence.id }}')"
+                <button class="btn btn-sm bg-lightblue" onclick="ajaxOccurenceDetails(this, '{{ occurence.id }}')"
                         data-toggle="modal" data-target="#modal-occurence-details">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                    <a href="#" class="btn btn-default" ondblclick="alert('TODO :)');">
-                        <i class="fas fa-check-circle"></i></i>
-                    </a>
-                    <a href="#" class="btn btn-default" ondblclick="alert('TODO :)');">
-                        <i class="fas fa-times-circle"></i>
-                    </a>
-                </div>
+                        Details
+                </button>
             </td>
         </tr>
         {% endfor %}
