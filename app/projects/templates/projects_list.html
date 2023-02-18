@@ -83,7 +83,7 @@
                         </thead>
                         <tbody>
                             {% for c_project in projects %}
-                            {# Trigger auto-refresh if state is STATE_ANALYSING % #}
+                            {# Trigger auto-refresh if state is Analyzing or Pending % #}
                             {% if c_project.status == 2 or c_project.status == 4 %}
                             <div id="{{ c_project.id}}" class="check-status"></div>
                             {% endif %}
@@ -348,10 +348,10 @@
         });
     });
 
-    /* Activate auto-refresh if a project is being analyzed */
-    analyzing = document.getElementsByClassName("check-status");
-    if (analyzing.length > 0) {
-        ajaxRefreshStatus(analyzing[0].id);
+    /* Activate auto-refresh if a project is Anlyzing or Pending */
+    needRefresh = document.getElementsByClassName("check-status");
+    if (needRefresh.length > 0) {
+        ajaxRefreshStatus(needRefresh[0].id);
     }
 
 </script>

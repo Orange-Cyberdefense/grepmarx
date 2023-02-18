@@ -69,8 +69,8 @@ async function ajaxRefreshStatus(projectId) {
         reqProjectStatus = new XMLHttpRequest();
         reqProjectStatus.onreadystatechange = function () {
             if (reqProjectStatus.readyState === XMLHttpRequest.DONE) {
-                status = reqProjectStatus.responseText;
-                if (status != 2) {
+                state = reqProjectStatus.responseText;
+                if (state != 2 && state != 4) {
                     document.location = '/projects';
                 }
             }
