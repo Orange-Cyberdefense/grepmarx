@@ -61,10 +61,10 @@ html {
 
 /* ------------ Workbench styles */
 
-/* Slightly bigger font for highligthed source code 
+/* Normalize font size for highligthed source code */ 
 .enlighter span {
-    font-size: 1.15em;
-}*/
+    font-size: .875rem !important;
+}
 
 /* More visible line highlight color */
 .enlighter-special {
