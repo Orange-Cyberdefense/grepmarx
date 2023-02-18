@@ -125,10 +125,15 @@ mark, .mark {
     padding-right: 5.5em;
 }
 
-/* Force englighter.js font and background */
+/* Force englighter.js font and background
 .enlighter {
     font-size: 1.05em !important;
     background-color: white !important;
+}*/
+
+/* Fix table-head-fixed thead font color in dark mode */
+.dark-mode .table.table-head-fixed thead tr:nth-child(1) th {
+    color: white;
 }
 
 /* Occurences table fixed columns sizes */
@@ -182,21 +187,6 @@ mark, .mark {
 
 .dark-mode .tr-occurence.active {
     background-color: var(--gray-dark) !important;
-}
-
-/* ERROR severity is red */
-.severity-high {
-    color: var(--bs-danger);
-}
-
-/* WARNING severity is orange */
-.severity-medium {
-    color: var(--bs-warning);
-}
-
-/* INFO severity is yellow */
-.severity-low {
-    color: var(--bs-info);
 }
 
 /* Larger modal dialog for occurence details */
