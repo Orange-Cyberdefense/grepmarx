@@ -6,7 +6,7 @@
 {% block stylesheets %}
 {% endblock stylesheets %}
 
-{% if project.risk_level > 80 %}
+{% if project.risk_level > 75 %}
 {% set risk_color = "danger" %}
 {% set risk_color_hex = "#dc3545" %}
 {% set lead_text = "This application is highly <strong>insecure</strong>." %}

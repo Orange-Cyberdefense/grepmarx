@@ -128,14 +128,20 @@
                                 </td>
                                 <td>
                                     <div class="progress progress-sm progress-striped active">
-                                        {% if c_project.risk_level > 70 %}
+                                        {% if c_project.risk_level > 75 %}
                                         <div class="progress-bar bg-danger" style="width: {{ c_project.risk_level }}%">
                                         </div>
-                                        {% elif c_project.risk_level > 30 %}
+                                        {% elif c_project.risk_level > 60 %}
+                                        <div class="progress-bar bg-orange" style="width: {{ c_project.risk_level }}%">
+                                        </div>
+                                        {% elif c_project.risk_level > 40 %}
                                         <div class="progress-bar bg-warning" style="width: {{ c_project.risk_level }}%">
                                         </div>
-                                        {% else %}
+                                        {% elif c_project.risk_level > 20 %}
                                         <div class="progress-bar bg-info" style="width: {{ c_project.risk_level }}%">
+                                        </div>
+                                        {% else %}
+                                        <div class="progress-bar bg-success" style="width: {{ c_project.risk_level }}%">
                                         </div>
                                         {% endif %}
                                     </div>

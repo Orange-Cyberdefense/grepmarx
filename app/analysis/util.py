@@ -373,15 +373,6 @@ def vulnerabilities_sorted_by_severity(analysis):
     r_vulns = list()
     for severity in (SEVERITY_CRITICAL, SEVERITY_HIGH, SEVERITY_MEDIUM, SEVERITY_LOW, SEVERITY_INFO):
         r_vulns += [vuln for vuln in analysis.vulnerabilities if vuln.severity == severity]
-    #low_vulns = list()
-    # for c_vulns in analysis.vulnerabilities:
-    #     if c_vulns.severity == SEVERITY_HIGH:
-    #         r_vulns.insert(0, c_vulns)
-    #     elif c_vulns.severity == SEVERITY_MEDIUM:
-    #         r_vulns.append(c_vulns)
-    #     else:
-    #         low_vulns.append(c_vulns)
-    # r_vulns.extend(low_vulns)
     return r_vulns
 
 

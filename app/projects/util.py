@@ -12,7 +12,15 @@ from shutil import rmtree
 from zipfile import ZipFile, is_zipfile
 
 from app import db
-from app.constants import EXTRACT_FOLDER_NAME, PROJECTS_SRC_PATH, SCC
+from app.constants import (
+    EXTRACT_FOLDER_NAME,
+    PROJECTS_SRC_PATH,
+    SCC,
+    SEVERITY_CRITICAL,
+    SEVERITY_HIGH,
+    SEVERITY_LOW,
+    SEVERITY_MEDIUM,
+)
 from app.projects.models import LanguageLinesCount, ProjectLinesCount
 from app.rules.models import SupportedLanguage
 
@@ -45,9 +53,7 @@ def count_lines(project):
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
     # Call to external binary: scc
     json_result = json.loads(
-        subprocess.run(
-            [SCC, source_path, "-f", "json"], capture_output=True
-        ).stdout
+        subprocess.run([SCC, source_path, "-f", "json"], capture_output=True).stdout
     )
     project.project_lines_count = load_project_lines_count(json_result)
 
@@ -114,8 +120,9 @@ def count_occurences(project):
 
 def calculate_risk_level(project):
     """Calculate the risk level for a project. An analysis must be associated
-    to this project. The risk level is calculated from a ratio between the
-    number of findings and the number of lines of code.
+    to this project. The risk level is calculated mainly from the severity level of the
+    found vulnerabilities (SAST), and adjusted with the severity of it's dependencies'
+    known vulnerabilities (SCA).
 
     Args:
         project (Project): Project for which the risk level has to be calculated
@@ -131,14 +138,64 @@ def calculate_risk_level(project):
             project.project_lines_count is not None
             and project.project_lines_count.total_code_count > 0
         ):
-            # Calculate the actual risk level (to be improved)
-            risk_level = (
-                project.occurences_count / project.project_lines_count.total_code_count
-            ) * 50000
-            risk_level = int(round(risk_level))
-            if risk_level > 100:
-                risk_level = 100
+            # 1. Define a base risk level depending on the vulns' severities
+            s2rl = {
+                SEVERITY_CRITICAL: 75,
+                SEVERITY_HIGH: 60,
+                SEVERITY_MEDIUM: 40,
+                SEVERITY_LOW: 20,
+            }
+            for s in s2rl:
+                if has_vuln_with_severity(project.analysis, s):
+                    risk_level = s2rl[s]
+                    break
+            # 2. Adjust the level with SCA results' severities
+            s2rl = {
+                SEVERITY_CRITICAL: 10,
+                SEVERITY_HIGH: 8,
+                SEVERITY_MEDIUM: 5,
+                SEVERITY_LOW: 2,
+            }
+            for s in s2rl:
+                if has_vuln_dep_with_severity(project.analysis, s):
+                    risk_level += s2rl[s]
     return risk_level
+
+
+def has_vuln_with_severity(analysis, severity_level):
+    """Check if an analysis contains at least one vulnerability with
+    the given severity level.
+
+    Args:
+        analysis (Analysis): analysis populated with vulnerabilities
+        severity_level (str): severity level to search in analysis' vulnerabilities
+
+    Returns:
+        bool: True if the analysis contains at least one vulnerability with
+        the given severity level
+    """
+    for vuln in analysis.vulnerabilities:
+        if vuln.severity == severity_level:
+            return True
+    return False
+
+
+def has_vuln_dep_with_severity(analysis, severity_level):
+    """Check if an analysis contains at least one vulnerable dependency with
+    the given severity level.
+
+    Args:
+        analysis (Analysis): analysis populated with vulnerable dependencies
+        severity_level (str): severity level to search in analysis' vulnerable dependencies
+
+    Returns:
+        bool: True if the analysis contains at least one vulnerable dependency with
+        the given severity level
+    """
+    for vuln in analysis.vulnerable_dependencies:
+        if vuln.severity == severity_level:
+            return True
+    return False
 
 
 ##
