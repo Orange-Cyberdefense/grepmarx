@@ -45,6 +45,8 @@ function ajaxOccurencesTable(el, vulnerability_id) {
             var e = document.getElementById('occurences-dyn');
             e.innerHTML = reqOccurencesTable.responseText;
             document.getElementById('occurences-load').style.visibility = 'hidden';
+            // Display codeview for the first occurence in the table
+            document.getElementsByClassName("occurences-table")[0].rows[1].cells[0].click(); 
         }
     };
     reqOccurencesTable.open('GET', '/analysis/occurences_table/' + vulnerability_id);
