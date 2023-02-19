@@ -78,5 +78,6 @@ LANGUAGES_DEVICONS = {
     "Solidity": "devicon-solidity-plain",
     "Terraform": "devicon-terraform-plain",
     "Generic": "devicon-devicon-plain",
-    "Swift": "devicon-swift-plain"
+    "Swift": "devicon-swift-plain",
+    "C#": "devicon-csharp-plain"
 }

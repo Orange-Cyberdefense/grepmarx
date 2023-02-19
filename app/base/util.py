@@ -112,6 +112,12 @@ def init_db():
     db.session.add(SupportedLanguage(name="Terraform", extensions=".tf"))
     db.session.add(SupportedLanguage(name="Generic", extensions=""))
     db.session.add(SupportedLanguage(name="Swift", extensions=".swift,.SWIFT"))
+    db.session.add(
+        SupportedLanguage(
+            name="C#",
+            extensions=".cs,.cshtml,.xaml,.vb,.config,.aspx,.ascx,.asax,.tag,.master,.xml",
+        )
+    )
     db.session.commit()
 
 
