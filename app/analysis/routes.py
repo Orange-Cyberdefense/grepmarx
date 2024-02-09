@@ -52,7 +52,6 @@ from app.rules.models import RulePack
 @blueprint.route("/analysis/scans/new/<project_id>")
 @login_required
 def scans_new(project_id, scan_form=None):
-    # Associate corresponding project
     project = Project.query.filter_by(id=project_id).first_or_404()
     if scan_form is None:
         scan_form = ScanForm(project_id=project.id)

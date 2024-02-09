@@ -19,5 +19,6 @@ pyyaml==6.0
 flask_wtf==1.0.0
 wtforms==2.3.3
 redis==3.5.3
-semgrep==1.2.1
+semgrep==1.59.1
 appthreat-depscan==3.5.3
+Werkzeug==2.2.2 #3.0.1

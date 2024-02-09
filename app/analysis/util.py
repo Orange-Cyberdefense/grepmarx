@@ -14,10 +14,10 @@ from shutil import copyfile, rmtree
 import subprocess
 
 from flask import current_app
-from semgrep import semgrep_main
-from semgrep.constants import OutputFormat
-from semgrep.error import SemgrepError
-from semgrep.output import OutputHandler, OutputSettings
+# from semgrep import semgrep_main
+# from semgrep.constants import OutputFormat
+# from semgrep.error import SemgrepError
+# from semgrep.output import OutputHandler, OutputSettings
 
 from app import celery, db
 from app.analysis.models import (
@@ -76,10 +76,10 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis.task_id = self.request.id
     db.session.commit()
     # Prepare semgrep options
-    files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
+    files_to_scan, project_rules_path = generate_semgrep_options(analysis)
     try:
         # SAST scan: invoke semgrep
-        sast_result = sast_scan(files_to_scan, project_rules_path, ignore)
+        sast_result = sast_scan(files_to_scan, project_rules_path)
         # SCA scan: invoke depscan
         sca_result = sca_scan(analysis.project)
         # Inspector scan: invoke ApplicationInspector
@@ -119,7 +119,7 @@ def stop_analysis(analysis):
 ##
 
 
-def sast_scan(files_to_scan, project_rules_path, ignore):
+def sast_scan(files_to_scan, project_rules_path):
     """Launch the actual semgrep scan. Credits to libsast:
     https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
 
@@ -131,54 +131,22 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
     Returns:
         [str]: Semgrep JSON output
     """
-    cpu_count = multiprocessing.cpu_count()
-    # util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
-    output_settings = OutputSettings(
-        output_format=OutputFormat.JSON,
-        output_destination=None,
-        error_on_findings=False,
-        verbose_errors=False,
-        strict=False,
-        timeout_threshold=3,
-        # json_stats=False,
-        output_per_finding_max_lines_limit=None,
-    )
-    try:
-        output_handler = OutputHandler(output_settings)
-        (
-            filtered_matches_by_rule,
-            semgrep_errors,
-            all_targets,
-            renamed_targets,
-            ignore_log,
-            filtered_rules,
-            profiler,
-            profiling_data,
-            parsing_data,
-            explanations,
-            shown_severities,
-            lockfile_scan_info,
-        ) = semgrep_main.main(
-            output_handler=output_handler,
-            target=files_to_scan,
-            jobs=cpu_count,
-            pattern=None,
-            lang=None,
-            configs=[project_rules_path],
-            timeout=0,
-            timeout_threshold=3,
-            exclude=ignore,
-            # I don't give a f*** about your .semgrepignore
-            disable_nosem=True,
-        )
-        output_handler.rule_matches = [
-            m for ms in filtered_matches_by_rule.values() for m in ms
-        ]
-        return output_handler._build_output()
-    except SemgrepError as e:
-        raise Exception(
-            "SemgrepError", output_handler.semgrep_structured_errors[0].long_msg
-        )
+    # cpu_count = multiprocessing.cpu_count()
+    output_handler =  subprocess.run(
+        [
+            "semgrep",
+            "scan",
+            "--config",
+            project_rules_path,
+            "--disable-nosem",
+            "--json",
+            # "--jobs",
+            # str(cpu_count),
+        ] + files_to_scan,
+            capture_output=True,
+            text=True,
+        ).stdout
+    return output_handler
 
 
 def save_sast_result(analysis, sast_result):
@@ -314,10 +282,10 @@ def generate_semgrep_options(analysis):
         PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
     )
     # Consolidate ignore list
-    ignore = set(
-        # Remove empty elements
-        filter(None, analysis.ignore_filenames.split(","))
-    )
+    # ignore = set(
+    #     # Remove empty elements
+    #     filter(None, analysis.ignore_filenames.split(","))
+    # )
     # Get all files corresponding to target extensions in project's source
     files_to_scan = list()
     for c_rule_pack in analysis.rule_packs:
@@ -325,10 +293,11 @@ def generate_semgrep_options(analysis):
             # Remove empty elements
             extensions = filter(None, c_language.extensions.split(","))
             for c_ext in extensions:
+                print(c_ext)
                 files_to_scan += glob(
                     pathname=os.path.join(scan_path, "**", "*" + c_ext), recursive=True
                 )
-    return (files_to_scan, project_rules_path, ignore)
+    return (files_to_scan, project_rules_path)
 
 
 def import_rules(analysis, rule_folder):

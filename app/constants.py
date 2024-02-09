@@ -21,7 +21,6 @@ DEPSCAN_RESULT_FOLDER = "dependencies"
 #BOM_FILE="sbom-bom.json"
 DEPSCAN = "depscan"
 APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
-
 # Project constants
 
 STATUS_NEW = 0
