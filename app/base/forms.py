@@ -69,4 +69,3 @@ class CreateUserForm(FlaskForm):
     email = TextField("Email", id="user-email", validators=[Email()])
     password = PasswordField("Password", id="user-password", validators=[DataRequired()])
     password_confirm = PasswordField("Confirm password", id="user-confirm-password", validators=[DataRequired()])
-    role = (int(1), "admin")

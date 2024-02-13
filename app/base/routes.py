@@ -16,7 +16,7 @@ from app.base.forms import LoginForm, CreateUserForm
 from app.base.models import User
 from app.base.util import (init_db, last_12_months_analysis_count,
                            ldap_config_dict, remove_dir_content, verify_pass)
-from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH,
+from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH, ROLE_ADMIN,
                            ROLE_GUEST, ROLE_USER, RULES_PATH)
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
@@ -54,6 +54,7 @@ def welcome():
             return render_template("welcome.html", error=error, form=user_form)
         # We can create the user
         user = User(**request.form)
+        user.role = ROLE_ADMIN
         db.session.add(user)
         db.session.commit()
         current_app.logger.info("New user added (user.id=%i)", user.id)
