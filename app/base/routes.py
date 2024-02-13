@@ -10,8 +10,9 @@ from os import path
 
 from app import db, ldap_manager, login_manager
 from app.administration.models import LdapConfiguration
+from app.administration.util import validate_user_form
 from app.base import blueprint
-from app.base.forms import LoginForm
+from app.base.forms import LoginForm, CreateUserForm
 from app.base.models import User
 from app.base.util import (init_db, last_12_months_analysis_count,
                            ldap_config_dict, remove_dir_content, verify_pass)
@@ -20,7 +21,7 @@ from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH,
 from app.projects.models import Project
 from app.rules.models import Rule, RulePack, RuleRepository
 from flask import (current_app, redirect, render_template, request, session,
-                   url_for)
+                   url_for, flash)
 from flask_login import current_user, login_required, login_user, logout_user
 from is_safe_url import is_safe_url
 from ldap3 import Tls
@@ -36,8 +37,31 @@ def route_default():
             remove_dir_content(PROJECTS_SRC_PATH)
         if path.exists(RULES_PATH):
             remove_dir_content(RULES_PATH)
+        #return to welcome page to create an account
+        return redirect(url_for("base_blueprint.welcome"))
     return redirect(url_for("base_blueprint.login"))
 
+
+@blueprint.route("/welcome", methods=["GET", "POST"])
+def welcome():
+    user_form = CreateUserForm(request.form)
+    if "username" in request.form:
+        #Form is valid
+        error = validate_user_form(user_form)
+        #Check if data isn't already used
+        if error is not None:
+            flash(error, "error")
+            return render_template("welcome.html", error=error, form=user_form)
+        # We can create the user
+        user = User(**request.form)
+        db.session.add(user)
+        db.session.commit()
+        current_app.logger.info("New user added (user.id=%i)", user.id)
+        flash("New user successfully added", "success")
+        return redirect(url_for("base_blueprint.login"))
+    else:
+        #invalid form
+        return render_template("welcome.html", form=user_form)
 
 @blueprint.route("/login", methods=["GET", "POST"])
 def login():

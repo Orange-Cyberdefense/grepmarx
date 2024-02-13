@@ -132,7 +132,10 @@ def sast_scan(files_to_scan, project_rules_path):
         [str]: Semgrep JSON output
     """
     # cpu_count = multiprocessing.cpu_count()
-    output_handler =  subprocess.run(
+    # s1 = os.system("pwd").read()
+    # s2 = os.system("which semgrep").read()
+    # s3 = os.system("env").read()
+    result =  subprocess.run(
         [
             "semgrep",
             "scan",
@@ -146,7 +149,7 @@ def sast_scan(files_to_scan, project_rules_path):
             capture_output=True,
             text=True,
         ).stdout
-    return output_handler
+    return result
 
 
 def save_sast_result(analysis, sast_result):
