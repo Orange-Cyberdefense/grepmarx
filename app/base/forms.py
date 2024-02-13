@@ -4,14 +4,14 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, HiddenField, SelectField, TextField
+from wtforms import PasswordField, HiddenField, SelectField, StringField
 from wtforms.validators import DataRequired, Email, Regexp
 
 ## login and registration
 
 
 class LoginForm(FlaskForm):
-    username = TextField(
+    username = StringField(
         "Username",
         id="username_login",
         validators=[
@@ -26,7 +26,7 @@ class LoginForm(FlaskForm):
 
 
 class CreateAccountForm(FlaskForm):
-    username = TextField(
+    username = StringField(
         "Username",
         id="username_create",
         validators=[
@@ -38,12 +38,12 @@ class CreateAccountForm(FlaskForm):
         ],
     )
     password = PasswordField("Password", id="pwd_login", validators=[DataRequired()])
-    email = TextField("Email", id="email_create", validators=[DataRequired(), Email()])
+    email = StringField("Email", id="email_create", validators=[DataRequired(), Email()])
     password = PasswordField("Password", id="pwd_create", validators=[DataRequired()])
 
 class CreateUserForm(FlaskForm):
     id = HiddenField("User id")
-    username = TextField(
+    username = StringField(
         "Username",
         id="user-username",
         validators=[
@@ -54,19 +54,19 @@ class CreateUserForm(FlaskForm):
             ),
         ],
     )
-    first_name = TextField("First name", id="user-first-name", validators=[
+    first_name = StringField("First name", id="user-first-name", validators=[
             Regexp(
                 "^[a-zA-Z0-9]+$",
                 message="First name must contain only letters characters",
             ),
         ],)
-    last_name = TextField("Last name", id="user-last-name", validators=[
+    last_name = StringField("Last name", id="user-last-name", validators=[
             Regexp(
                 "^[a-zA-Z0-9]+$",
                 message="Last name must contain only letters characters",
             ),
         ],)
-    email = TextField("Email", id="user-email", validators=[Email()])
+    email = StringField("Email", id="user-email", validators=[Email()])
     password = PasswordField("Password", id="user-password", validators=[DataRequired()])
     password_confirm = PasswordField("Confirm password", id="user-confirm-password", validators=[DataRequired()])
     role = (int(1), "admin")
