@@ -4,6 +4,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import json
+import re
 import multiprocessing
 import os
 import re
@@ -76,10 +77,10 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis.task_id = self.request.id
     db.session.commit()
     # Prepare semgrep options
-    files_to_scan, project_rules_path = generate_semgrep_options(analysis)
+    files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     try:
         # SAST scan: invoke semgrep
-        sast_result = sast_scan(files_to_scan, project_rules_path)
+        sast_result = sast_scan(files_to_scan, project_rules_path, ignore)
         # SCA scan: invoke depscan
         sca_result = sca_scan(analysis.project)
         # Inspector scan: invoke ApplicationInspector
@@ -118,8 +119,32 @@ def stop_analysis(analysis):
 ## SAST scan utils
 ##
 
+# def generate_ignore_exclude(ignore):
+#     result = []
+#     for data in ignore:
+#         result.append("--exclude")
+#         result.append(data)
+#     return result
 
-def sast_scan(files_to_scan, project_rules_path):
+
+def remove_ignored_files(files_paths, ignore):
+    result = []
+
+    if not ignore:
+        return files_paths
+    for path in files_paths:
+        should_include = True
+        for data in ignore:
+            if data in path:
+                should_include = False
+                break
+        if should_include:
+            result.append(path)
+    return result
+
+
+
+def sast_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
     https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
 
@@ -135,8 +160,12 @@ def sast_scan(files_to_scan, project_rules_path):
     # s1 = os.system("pwd").read()
     # s2 = os.system("which semgrep").read()
     # s3 = os.system("env").read()
-    result =  subprocess.run(
-        [
+    # ignore_exclude = generate_ignore_exclude(ignore)
+    files_to_scan = remove_ignored_files(files_to_scan, ignore)
+    if len(files_to_scan) <= 0:
+        return ""
+    result = ""
+    cmd =  [
             "semgrep",
             "scan",
             "--config",
@@ -145,10 +174,17 @@ def sast_scan(files_to_scan, project_rules_path):
             "--json",
             # "--jobs",
             # str(cpu_count),
-        ] + files_to_scan,
+        ] + files_to_scan
+    try:
+        result = subprocess.run(
+            cmd,
             capture_output=True,
             text=True,
         ).stdout
+    except FileNotFoundError:
+        print("No files found.")
+    except Exception as e:
+        print("There is an error :", e)
     return result
 
 
@@ -285,10 +321,10 @@ def generate_semgrep_options(analysis):
         PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
     )
     # Consolidate ignore list
-    # ignore = set(
-    #     # Remove empty elements
-    #     filter(None, analysis.ignore_filenames.split(","))
-    # )
+    ignore = set(
+        # Remove empty elements
+        filter(None, analysis.ignore_filenames.split(","))
+    )
     # Get all files corresponding to target extensions in project's source
     files_to_scan = list()
     for c_rule_pack in analysis.rule_packs:
@@ -300,7 +336,7 @@ def generate_semgrep_options(analysis):
                 files_to_scan += glob(
                     pathname=os.path.join(scan_path, "**", "*" + c_ext), recursive=True
                 )
-    return (files_to_scan, project_rules_path)
+    return (files_to_scan, project_rules_path, ignore)
 
 
 def import_rules(analysis, rule_folder):

@@ -135,19 +135,11 @@
                                 {% endfor %}
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <div>
-                                        <label for="scan-ignore-paths" class="form-label">Ignore paths</label>
-                                        {{ form.ignore_paths(
-                                        placeholder="Enter a list of comma-separated paths to ignore",
-                                        class="form-control", rows="4") }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div>
-                                        <label for="scan-ignore-files" class="form-label">Ignore filenames</label>
+                                        <label for="scan-ignore-files" class="form-label">Ignore filenames, directory or extension</label>
                                         {{ form.ignore_filenames(
-                                        placeholder="Enter a list of comma-separated filenames to ignore",
+                                        placeholder="Enter a list of comma-separated filenames, directory or extension to ignore",
                                         class="form-control", rows="4") }}
                                     </div>
                                 </div>
