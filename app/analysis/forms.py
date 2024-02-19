@@ -19,5 +19,5 @@ class ScanForm(FlaskForm):
         "Project id", id="scan-project-id", validators=[DataRequired()]
     )
     ignore_paths = TextAreaField("Ignore paths", id="scan-ignore-paths")
-    ignore_filenames = TextAreaField("Ignore files", id="scan-ignore-files")
+    ignore_filenames = TextAreaField("Ignore files", id="scan-ignore-files", default=".min., /test/, /tests/, mock, /nodes_modules/, /pods/")
     rule_packs = MultiCheckboxField("Rule packs", coerce=int)
