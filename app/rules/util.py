@@ -30,6 +30,14 @@ from yaml import YAMLError, safe_load
 ## Rule utils
 ##
 
+def get_languages_names():
+    supported_languages = SupportedLanguage.query.all()
+    language_names = []
+
+    for language in supported_languages:
+        language_names.append(language.name)
+
+    return language_names
 
 def sync_db(rules_folder):
     """Parse all libsast/semgrep YAML rule files in the given folder, and for each

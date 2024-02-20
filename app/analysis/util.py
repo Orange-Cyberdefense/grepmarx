@@ -142,8 +142,6 @@ def remove_ignored_files(files_paths, ignore):
             result.append(path)
     return result
 
-
-
 def sast_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
     https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
