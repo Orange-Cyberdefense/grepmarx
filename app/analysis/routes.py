@@ -73,7 +73,7 @@ def scans_launch():
     scan_form = ScanForm()
     project = Project.query.filter_by(id=scan_form.project_id.data).first_or_404()
     # Dynamically adds choices for multiple selection fields
-    scan_form.rule_packs.choices = ((rp.id, rp.name) for rp in RulePack.query.all())
+    scan_form.rule_packs.choices = list((rp.id, rp.name) for rp in RulePack.query.all())
     # Form is valid
     if scan_form.validate_on_submit():
         # Need at least one rule pack

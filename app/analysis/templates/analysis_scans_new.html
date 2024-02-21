@@ -123,15 +123,15 @@
 
                             <label class="form-label">Select rule packs</label>
                             <div class="row">
-                                {% for rp_choice in form.rule_packs %}
-                                <div class="col-md-3 mb-3">
-                                    <div class="custom-control custom-switch">
-                                        {{ rp_choice(class="custom-control-input", id=rp_choice.id) }}
-                                        <label class="custom-control-label" for="{{ rp_choice.id }}">
-                                            {{ rp_choice.label }}
-                                        </label>
+                                {% for rp_id, rp_label in form.rule_packs.choices %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="rp{{ rp_id }}" name="rule_packs" value="{{ rp_id }}">
+                                            <label class="custom-control-label" for="rp{{ rp_id }}">
+                                                {{ rp_label }}
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
                                 {% endfor %}
                             </div>
                             <div class="row">

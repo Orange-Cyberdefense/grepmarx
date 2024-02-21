@@ -18,9 +18,8 @@ class RulePackForm(FlaskForm):
     id = HiddenField("Rule pack id", id="rule-pack-id")
     name = StringField("Rule pack name", id="rule-pack-name", validators=[DataRequired()])
     description = TextAreaField("Rule pack description", id="rule-pack-description")
-    languages = MultiCheckboxField("Languages", coerce=int)
+    languages = MultiCheckboxField("Languages", coerce=int, validators=[DataRequired()])
     rules = HiddenField("Rule pack rules", id="datatable-selection")
-
 
 class RulesAddForm(FlaskForm):
     name = StringField("Name of rule", id="rule-name", validators=[DataRequired(),Regexp(

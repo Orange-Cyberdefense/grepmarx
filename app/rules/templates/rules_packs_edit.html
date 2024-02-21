@@ -101,15 +101,15 @@
                                 </label>
                                 <div class="form-group">
                                     <div class="row">
-                                        {% for lang_choice in form.languages %}
-                                        <div class="col-md-3 mb-3">
-                                            <div class="custom-control custom-switch">
-                                                {{ lang_choice(class="custom-control-input", id=lang_choice.id) }}
-                                                <label class="custom-control-label" for="{{ lang_choice.id }}">
-                                                    {{ lang_choice.label }}
-                                                </label>
+                                        {% for lang_id, lang_label in form.languages.choices %}
+                                            <div class="col-md-3 mb-3">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="lang{{ lang_id }}" name="languages" value="{{ lang_id }}">
+                                                    <label class="custom-control-label" for="lang{{ lang_id }}">
+                                                        {{ lang_label }}
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
                                         {% endfor %}
                                     </div>
                                 </div>

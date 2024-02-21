@@ -100,7 +100,7 @@ def rule_packs_form_page(edit, rule_pack_form):
 def rules_packs_create():
     rule_pack_form = RulePackForm()
     # Dynamically adds choices for multiple selection fields
-    rule_pack_form.languages.choices = (
+    rule_pack_form.languages.choices = list(
         (l.id, l.name) for l in SupportedLanguage.query.all()
     )
     # POST / Form submitted
