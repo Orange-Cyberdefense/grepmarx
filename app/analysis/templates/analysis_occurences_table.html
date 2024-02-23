@@ -5,8 +5,9 @@
             <th class="th-col-width-30">Snippet</th>
             <th class="th-col-width-25">Folder</th>
             <th class="th-col-width-20">File</th>
-            <th class="th-col-width-10">Lines</th>
-            <th class="th-col-width-10">Actions</th>
+            <th class="th-col-width-5">Lines</th>
+            <th class="th-col-width-5">Actions</th>
+            <th class="th-col-width-10">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -46,7 +47,26 @@
                         Details
                 </button>
             </td>
+            <td class="table-status {% if occurence.status == 1 %}green{% elif occurence.status == 2 %}red{% endif %}">
+                <select id="status-filter" name="status" onchange="saveStatus('{{occurence.id }}', '{{vulnerability.id}}', this.value)">
+                    {% for elem in status %}
+                        <option value="{{ elem['id'] }}" {% if occurence.status == elem['id'] %} selected {% endif %}> {{ elem['name'] }}</option>
+                    {% endfor %}
+                </select>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+{% block css %}
+<style>
+.green {
+    background-color: rgb(118, 228, 118);
+}
+
+.red {
+    background-color: rgb(233, 53, 53);
+}
+</style>
+{% endblock css%}

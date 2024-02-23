@@ -33,6 +33,14 @@ PROJECTS_SRC_PATH = "data/projects/"
 EXTRACT_FOLDER_NAME = "extract"
 SCC = "app/third-party/scc/scc"
 
+# Vulnerability occurence Status
+
+TO_REVIEW = {"id": 0, "name": "To review"}
+CONFIRMED = {"id": 1, "name": "Confirmed"}
+FALSE_POSITIVE = {"id": 2, "name": "False positive"}
+
+STATUS = [TO_REVIEW, CONFIRMED, FALSE_POSITIVE]
+
 # Rule constants
 
 SEVERITY_CRITICAL = "critical"

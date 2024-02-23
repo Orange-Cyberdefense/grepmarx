@@ -126,6 +126,7 @@ def stop_analysis(analysis):
 #         result.append(data)
 #     return result
 
+
 def remove_ignored_files(files_paths, ignore):
     result = []
 

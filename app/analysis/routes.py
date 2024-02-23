@@ -7,7 +7,7 @@ import json
 import os
 import time
 
-from flask import current_app, flash, redirect, render_template, url_for
+from flask import current_app, flash, redirect, render_template, url_for, request, jsonify
 from flask_login import current_user, login_required
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
@@ -39,6 +39,10 @@ from app.constants import (
     OWASP_TOP10_LINKS,
     PROJECTS_SRC_PATH,
     STATUS_PENDING,
+    STATUS,
+    TO_REVIEW,
+    CONFIRMED,
+    FALSE_POSITIVE,
 )
 from app.projects.models import Project
 from app.projects.util import top_language_lines_counts
@@ -198,13 +202,32 @@ def analysis_occurence_details(occurence_id):
         owasp_links=OWASP_TOP10_LINKS,
     )
 
+@blueprint.route("/analysis/occurences_table/<occurence_id>/save_status", methods=["GET"])
+@login_required
+def save_status(occurence_id):
+    vulnerability_id = request.args.get('vulnerabilityId')
+    vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
+    for occurence in vulnerability.occurences :
+        if occurence.id == int(occurence_id):
+            occurence.status = request.args.get('status')
+            try:
+                db.session.commit()
+                flash(f'Occurence {occurence_id} status updated successfully.', 'success')
+                return jsonify({"message": f"Occurence {occurence_id} status updated successfully."}), 200
+            except Exception as e:
+                db.session.rollback()
+                flash("Error : Add occurence status wto db faild.")
+                return jsonify({"error": str(e)}), 500
+    flash("Error: Occurence not found.")
+    return "Error", 404
 
-@blueprint.route("/analysis/occurences_table/<vulnerability_id>")
+
+@blueprint.route("/analysis/occurences_table/<vulnerability_id>", methods=["POST", "GET"])
 @login_required
 def analysis_occurences_table(vulnerability_id):
     vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
     return render_template(
-        "analysis_occurences_table.html", vulnerability=vulnerability
+        "analysis_occurences_table.html", vulnerability=vulnerability, status=STATUS
     )
 
 
