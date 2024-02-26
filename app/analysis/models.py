@@ -64,7 +64,7 @@ class Occurence(db.Model):
     match_string = Column(String)
     file_path = Column(String, nullable=False)
     position = db.relationship("Position", uselist=False, back_populates="occurence")
-    status = Column(db.Integer, nullable=True, default=TO_REVIEW)
+    status = Column(db.Integer, nullable=True, default=TO_REVIEW["id"])
 
 
 class Position(db.Model):

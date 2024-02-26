@@ -185,12 +185,10 @@
                                 <td class="project-actions">
 
                                     {% if c_project.status == 2 or c_project.status == 4 %}
-                                    {% if c_project.status != 4 %}
                                     <a class="btn btn-default btn-sm text-danger"
                                         href="/analysis/scans/stop/{{ c_project.analysis.id }}">
                                         <i class="fas fa-ban"></i> Cancel
                                     </a>
-                                    {% endif %}
                                     {% else %}
 
                                     <div class="btn-group">
