@@ -155,7 +155,7 @@ def rules_packs_edit(rule_pack_id):
     if "save-rule-pack" in request.form:
         rule_pack_form = RulePackForm()
         # Dynamically adds choices for multiple selection fields
-        rule_pack_form.languages.choices = (
+        rule_pack_form.languages.choices = list(
             (l.id, l.name) for l in SupportedLanguage.query.all()
         )
         # Form is valid

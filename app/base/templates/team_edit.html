@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %} Teams Group {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+<!-- Modal New/Modify Project -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card card-default">
+            <div class="card-header">
+                <h2 class="h4"> {% if edit %} Edit team {% else %} Create a new team {% endif %} </h2>
+                <span>
+                    {% if edit %} Custom the team name, members and projects acces autorisations. {% else %} Enter new team name, select members and projects acces autorisations. {% endif %} </span>
+            </div>
+                <div class="card-body">
+                <form class="form-horizontal" method="post" action="{% if edit %}/teams_setting/edit/{{team.id}}{% else %}/teams_setting/add{% endif %}">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.name.label }} {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <br>
+                        {{ form.members.label }} :
+                        <br>
+                        <div class="row">
+                            {% for member_id, member_label in form.members.choices %}
+                                <div class="col-md-1 mb-3">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
+                                        <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
+                                            {{ member_label }}
+                                        </label>
+                                    </div>
+                                    {% for error in form.members.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.projects.label }} :
+                        <br>
+                        <div class="row">
+                            {% for project_id, project_label in form.projects.choices %}
+                                <div class="col-md-1 mb-3">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="project{{ project_id }}" name="projects" value="{{ project_id }}" {% for project in team.projects %} {% if project_id == project.id %} checked {% endif %} {% endfor %}>
+                                        <label class="custom-control-label" for="project{{ project_id }}" style="white-space: nowrap;">
+                                            {{ project_label }}
+                                        </label>
+                                    </div>
+                                    {% for error in form.projects.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"> {% if edit %} Edit Team {% else %} Create Team {% endif %} </button>
+                    <a href="/teams_setting" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<!-- DataTables -->
+<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript">
+/* Initialize datatable */
+var dataTable = $('#projects-list-table');
+$(document).ready(function () {
+dataTable.DataTable({
+    /*columnDefs: [{
+        orderable: false,
+        targets: 0
+    }],*/
+    "order": [
+        [0, "desc"]
+    ]
+});
+});
+
+/* Activate auto-refresh if a project is Anlyzing or Pending */
+needRefresh = document.getElementsByClassName("check-status");
+if (needRefresh.length > 0) {
+ajaxRefreshStatus(needRefresh[0].id);
+}
+
+</script>
+{% endblock javascripts %}
+
+<!-- End of Modal New Project -->

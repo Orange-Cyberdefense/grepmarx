@@ -4,8 +4,10 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, HiddenField, SelectField, StringField
+from wtforms import PasswordField, HiddenField, SelectField, StringField, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, Email, Regexp
+from app.base.models import User
+from app.projects.models import Project
 
 ## login and registration
 
@@ -69,3 +71,24 @@ class CreateUserForm(FlaskForm):
     email = StringField("Email", id="user-email", validators=[Email()])
     password = PasswordField("Password", id="user-password", validators=[DataRequired()])
     password_confirm = PasswordField("Confirm password", id="user-confirm-password", validators=[DataRequired()])
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+class CreateTeamForm(FlaskForm):
+    name = StringField("Team name", id="team-name", validators=[
+            Regexp(
+                "^[a-zA-Z0-9]+$",
+                message="Name must contain only letters characters",
+            ),
+            DataRequired()
+        ],)
+    members = MultiCheckboxField("Team members", validators=[DataRequired()])
+    projects = MultiCheckboxField("Projects", validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        super(CreateTeamForm, self).__init__(*args, **kwargs)
+        # Take all database users and put them in members
+        self.members.choices = [(user.id, user.username) for user in User.query.all()]
+        self.projects.choices = [(project.id, project.name) for project in Project.query.all()]

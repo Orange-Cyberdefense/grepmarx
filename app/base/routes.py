@@ -11,9 +11,9 @@ from os import path
 from app import db, ldap_manager, login_manager
 from app.administration.models import LdapConfiguration
 from app.administration.util import validate_user_form
-from app.base import blueprint
-from app.base.forms import LoginForm, CreateUserForm
-from app.base.models import User
+from app.base import blueprint, util
+from app.base.forms import LoginForm, CreateUserForm, CreateTeamForm
+from app.base.models import User, Team
 from app.base.util import (init_db, last_12_months_analysis_count,
                            ldap_config_dict, remove_dir_content, verify_pass)
 from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH, ROLE_ADMIN,
@@ -202,6 +202,105 @@ def logout():
     current_app.logger.info("User logged out (user.id=%i)", current_user.id)
     logout_user()
     return redirect(url_for("base_blueprint.login"))
+
+@blueprint.route("/teams_setting/remove/<team_id>")
+@login_required
+def team_remove(team_id):
+    team = Team.query.filter_by(id=team_id).first_or_404()
+    db.session.delete(team)
+    db.session.commit()
+    return redirect(url_for("base_blueprint.teams_setting"))
+
+@blueprint.route("teams_setting/edit/<team_id>", methods=["GET", "POST"])
+@login_required
+def team_edit(team_id):
+    edit_team = Team.query.filter_by(id=team_id).first_or_404()
+    teamForm = CreateTeamForm()
+    admin = util.is_admin(current_user.role)
+    if admin:
+        if len(request.form) > 0:
+            if teamForm.validate_on_submit():
+                # teamForm.populate_obj(edit_team)
+                member_ids = teamForm.members.data
+                edit_team.members = User.query.filter(User.id.in_(member_ids)).all()
+
+                project_ids = teamForm.projects.data
+                edit_team.projects = Project.query.filter(Project.id.in_(project_ids)).all()
+                db.session.commit()
+                current_app.logger.info("Team updated (team.id=%i)", team_id)
+                flash("Team successfully updated", "success")
+                return redirect(url_for("base_blueprint.teams_setting"))
+            else:
+                return render_template(
+                "team_edit.html",
+                edit=True,
+                form=teamForm,
+                user=current_user,
+                team=edit_team,
+            )
+        else:
+            teamForm.name.data = edit_team.name
+            return render_template(
+                "team_edit.html",
+                edit=True,
+                form=teamForm,
+                user=current_user,
+                team=edit_team,
+            )
+    else:
+        return render_template("403.html"), 403
+
+@blueprint.route("teams_setting/add", methods=["POST", "GET"])
+@login_required
+def team_add():
+    teamForm = CreateTeamForm()
+    admin = util.is_admin(current_user.role)
+    if admin:
+        if request.method == "POST" and teamForm.validate_on_submit():
+            new_team = Team(
+                name=teamForm.name.data,
+                creator=current_user.username,
+                user_id=current_user.id
+            )
+            member_ids = teamForm.members.data
+            members = User.query.filter(User.id.in_(member_ids)).all()
+
+            new_team.members = members
+            project_ids = teamForm.projects.data
+            projects = Project.query.filter(Project.id.in_(project_ids)).all()
+
+            new_team.projects = projects
+            db.session.add(new_team)
+            db.session.commit()
+            return redirect(url_for("base_blueprint.teams_setting"))
+        return render_template("team_edit.html", user=current_user, form=teamForm, edit=False, team=None)
+    else:
+        return render_template("403.html"), 403
+
+@blueprint.route("/teams_setting", methods=["GET", "POST"])
+@login_required
+def teams_setting():
+    teamForm = CreateTeamForm()
+    teamTable = Team.query.all()
+    if request.method == "POST" and teamForm.validate_on_submit():
+        new_team = Team(
+            name=teamForm.name.data,
+            creator=current_user.username,
+            user_id=current_user.id
+        )
+        member_ids = teamForm.members.data
+        members = User.query.filter(User.id.in_(member_ids)).all()
+
+        new_team.members = members
+        project_ids = teamForm.projects.data
+        projects = Project.query.filter(Project.id.in_(project_ids)).all()
+
+        new_team.projects = projects
+        db.session.add(new_team)
+        db.session.commit()
+        return redirect(url_for("base_blueprint.teams_setting", edit=False))
+    return render_template("teams_setting.html", user=current_user, segment="teams", form=teamForm, teamTable=teamTable, edit=False)
+
 
 
 @blueprint.route("/switch-theme")
