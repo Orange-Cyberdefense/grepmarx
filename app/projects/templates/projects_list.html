@@ -84,155 +84,156 @@
                         <tbody>
                             {% for c_project in projects %}
                             {# Trigger auto-refresh if state is Analyzing or Pending % #}
-                            {% if c_project.status == 2 or c_project.status == 4 %}
-                            <div id="{{ c_project.id}}" class="check-status"></div>
-                            {% endif %}
-                            <tr>
-                                <td>
-                                    {{ c_project.id }}
-                                </td>
-                                <td>
-                                    {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
-                                    <a href="/analysis/scans/new/{{ c_project.id }}">
-                                        {% elif c_project.status == 1 %}
-                                        <a href="/projects/{{ c_project.id }}">
-                                            {% elif c_project.status == 2 or c_project.status == 4 %}
-                                            <a href="">
-                                                {% endif %}
-                                                {{ c_project.name }}
-                                            </a>
-                                            <br />
-                                            <small>
-                                                {% if c_project.analysis is not none and c_project.analysis.finished_on
-                                                is not
-                                                none
-                                                %}
-                                                {{ c_project.analysis.finished_on.strftime("%-d %B, %Y %H:%M") }}
-                                                {% else %}
-                                                Not yet analyzed
-                                                {% endif %}
-                                            </small>
-                                </td>
-                                <td>
-                                    {{ c_project.creator.username }}
-                                </td>
-                                <td>
-                                    {% if c_project.analysis is not none and c_project.analysis.finished_on is not none
-                                    %}
-                                    {% set duration = (c_project.analysis.finished_on -
-                                    c_project.analysis.started_on)|string %}
-                                    {{ duration.split('.', 2)[0] }}
-                                    {% else %}
-                                    -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="progress progress-sm progress-striped active">
-                                        {% if c_project.risk_level > 75 %}
-                                        <div class="progress-bar bg-danger" style="width: {{ c_project.risk_level }}%">
-                                        </div>
-                                        {% elif c_project.risk_level > 60 %}
-                                        <div class="progress-bar bg-orange" style="width: {{ c_project.risk_level }}%">
-                                        </div>
-                                        {% elif c_project.risk_level > 40 %}
-                                        <div class="progress-bar bg-warning" style="width: {{ c_project.risk_level }}%">
-                                        </div>
-                                        {% elif c_project.risk_level > 20 %}
-                                        <div class="progress-bar bg-info" style="width: {{ c_project.risk_level }}%">
-                                        </div>
-                                        {% else %}
-                                        <div class="progress-bar bg-success" style="width: {{ c_project.risk_level }}%">
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    <small>{{ c_project.risk_level }}%</small>
-                                </td>
-                                <td>
-                                    {{ c_project.occurences_count }}
-                                </td>
-                                <td class="text-lg text-left">
-                                    {% if c_project.project_lines_count is not none %}
-                                    {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count)
-                                    %}
-                                    <i class="{{ lang_icons[c_lang.name] }} text-secondary"
-                                        title="{{ c_lang.name }}"></i>
-                                    &nbsp;
-                                    {% endfor %}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ c_project.project_lines_count.total_code_count }}
-                                </td>
-                                <td>
-                                    {% if c_project.status == 0 %}
-                                    <span class="badge badge-lg bg-primary p-2 pl-3 pr-3">New</span>
-                                    {% elif c_project.status == 1 %}
-                                    <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Ready</span>
-                                    {% elif c_project.status == 2 %}
-                                    <span
-                                        class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
-                                        Analyzing
-                                    </span>
-                                    {% elif c_project.status == 3 %}
-                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3"
-                                        title="{{ c_project.error_message }}">Error</span>
-                                    {% elif c_project.status == 4 %}
-                                    <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
-                                    {% elif c_project.status == 5 %}
-                                    <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">Aborted</span>
-                                    {% endif %}
-                                </td>
-                                <td class="project-actions">
-
+                                {% if admin or c_project.id in user_projects_ids%}
                                     {% if c_project.status == 2 or c_project.status == 4 %}
-                                    <a class="btn btn-default btn-sm text-danger"
-                                        href="/analysis/scans/stop/{{ c_project.analysis.id }}">
-                                        <i class="fas fa-ban"></i> Cancel
-                                    </a>
-                                    {% else %}
-
-                                    <div class="btn-group">
-                                        <a href="/analysis/scans/new/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
-                                            <i title="New analysis" class="fas fa-play"></i>
-                                        </a>
-                                        {% if c_project.status == 1 %}
-                                        <a href="/projects/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
-                                            <i title="Project dashboard" class="fas fa-chart-pie"></i>
-                                        </a>
-                                        <div class="btn-group">
-                                            <button type="button"
-                                                class="btn btn-default btn-sm dropdown-toggle dropdown-icon"
-                                                data-toggle="dropdown" aria-expanded="false">
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item"
-                                                    href="/analysis/workbench/{{ c_project.analysis.id }}">
-                                                    <i title="Workbench" class="fas fa-laptop-code"></i>
-                                                    Workbench
-                                                </a>
-                                                <a class="dropdown-item"
-                                                    href="/analysis/inspector/{{ c_project.appinspector.id }}">
-                                                    <i title="Inspector" class="fas fa-list"></i>
-                                                    Inspector
-                                                </a>
-                                                <a class="dropdown-item"
-                                                    href="/analysis/dependencies/{{ c_project.analysis.id }}">
-                                                    <i title="Dependencies" class="fas fa-sitemap"></i>
-                                                    Dependencies
-                                                </a>
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    <a class="btn btn-default btn-sm text-danger" href="#"
-                                        onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
-                                        data-toggle="modal" data-target="#confirm-removal">
-                                        <i title="Delete project" class="fas fa-trash"></i>
-                                    </a>
+                                        <div id="{{ c_project.id}}" class="check-status"></div>
                                     {% endif %}
+                                        <tr>
+                                        <td>
+                                            {{ c_project.id }}
+                                        </td>
+                                        <td>
+                                            {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
+                                            <a href="/analysis/scans/new/{{ c_project.id }}">
+                                                {% elif c_project.status == 1 %}
+                                                <a href="/projects/{{ c_project.id }}">
+                                                    {% elif c_project.status == 2 or c_project.status == 4 %}
+                                                    <a href="">
+                                                        {% endif %}
+                                                        {{ c_project.name }}
+                                                    </a>
+                                                    <br />
+                                                    <small>
+                                                        {% if c_project.analysis is not none and c_project.analysis.finished_on
+                                                        is not
+                                                        none
+                                                        %}
+                                                        {{ c_project.analysis.finished_on.strftime("%-d %B, %Y %H:%M") }}
+                                                        {% else %}
+                                                        Not yet analyzed
+                                                        {% endif %}
+                                                    </small>
+                                        </td>
+                                        <td>
+                                            {{ c_project.creator.username }}
+                                        </td>
+                                        <td>
+                                            {% if c_project.analysis is not none and c_project.analysis.finished_on is not none
+                                            %}
+                                            {% set duration = (c_project.analysis.finished_on -
+                                            c_project.analysis.started_on)|string %}
+                                            {{ duration.split('.', 2)[0] }}
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="progress progress-sm progress-striped active">
+                                                {% if c_project.risk_level > 75 %}
+                                                <div class="progress-bar bg-danger" style="width: {{ c_project.risk_level }}%">
+                                                </div>
+                                                {% elif c_project.risk_level > 60 %}
+                                                <div class="progress-bar bg-orange" style="width: {{ c_project.risk_level }}%">
+                                                </div>
+                                                {% elif c_project.risk_level > 40 %}
+                                                <div class="progress-bar bg-warning" style="width: {{ c_project.risk_level }}%">
+                                                </div>
+                                                {% elif c_project.risk_level > 20 %}
+                                                <div class="progress-bar bg-info" style="width: {{ c_project.risk_level }}%">
+                                                </div>
+                                                {% else %}
+                                                <div class="progress-bar bg-success" style="width: {{ c_project.risk_level }}%">
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <small>{{ c_project.risk_level }}%</small>
+                                        </td>
+                                        <td>
+                                            {{ c_project.occurences_count }}
+                                        </td>
+                                        <td class="text-lg text-left">
+                                            {% if c_project.project_lines_count is not none %}
+                                            {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count)
+                                            %}
+                                            <i class="{{ lang_icons[c_lang.name] }} text-secondary"
+                                                title="{{ c_lang.name }}"></i>
+                                            &nbsp;
+                                            {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ c_project.project_lines_count.total_code_count }}
+                                        </td>
+                                        <td>
+                                            {% if c_project.status == 0 %}
+                                            <span class="badge badge-lg bg-primary p-2 pl-3 pr-3">New</span>
+                                            {% elif c_project.status == 1 %}
+                                            <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Ready</span>
+                                            {% elif c_project.status == 2 %}
+                                            <span
+                                                class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
+                                                Analyzing
+                                            </span>
+                                            {% elif c_project.status == 3 %}
+                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3"
+                                                title="{{ c_project.error_message }}">Error</span>
+                                            {% elif c_project.status == 4 %}
+                                            <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
+                                            {% elif c_project.status == 5 %}
+                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">Aborted</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="project-actions">
 
-                                </td>
-                            </tr>
+                                            {% if c_project.status == 2 or c_project.status == 4 %}
+                                            <a class="btn btn-default btn-sm text-danger"
+                                                href="/analysis/scans/stop/{{ c_project.analysis.id }}">
+                                                <i class="fas fa-ban"></i> Cancel
+                                            </a>
+                                            {% else %}
+
+                                            <div class="btn-group">
+                                                <a href="/analysis/scans/new/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
+                                                    <i title="New analysis" class="fas fa-play"></i>
+                                                </a>
+                                                {% if c_project.status == 1 %}
+                                                <a href="/projects/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
+                                                    <i title="Project dashboard" class="fas fa-chart-pie"></i>
+                                                </a>
+                                                <div class="btn-group">
+                                                    <button type="button"
+                                                        class="btn btn-default btn-sm dropdown-toggle dropdown-icon"
+                                                        data-toggle="dropdown" aria-expanded="false">
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item"
+                                                            href="/analysis/workbench/{{ c_project.analysis.id }}">
+                                                            <i title="Workbench" class="fas fa-laptop-code"></i>
+                                                            Workbench
+                                                        </a>
+                                                        <a class="dropdown-item"
+                                                            href="/analysis/inspector/{{ c_project.appinspector.id }}">
+                                                            <i title="Inspector" class="fas fa-list"></i>
+                                                            Inspector
+                                                        </a>
+                                                        <a class="dropdown-item"
+                                                            href="/analysis/dependencies/{{ c_project.analysis.id }}">
+                                                            <i title="Dependencies" class="fas fa-sitemap"></i>
+                                                            Dependencies
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <a class="btn btn-default btn-sm text-danger" href="#"
+                                                onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
+                                                data-toggle="modal" data-target="#confirm-removal">
+                                                <i title="Delete project" class="fas fa-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

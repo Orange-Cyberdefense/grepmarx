@@ -15,11 +15,12 @@ from werkzeug.utils import secure_filename
 from app import db
 from app.constants import (EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS,
                            PROJECTS_SRC_PATH)
+from app.base import util
 from app.projects import blueprint
 from app.projects.forms import ProjectForm
 from app.projects.models import Project
 from app.projects.util import (check_zipfile, count_lines, remove_project,
-                               sha256sum, top_supported_language_lines_counts)
+                               sha256sum, top_supported_language_lines_counts, get_user_projects_ids)
 
 
 @blueprint.route("/projects")
@@ -27,11 +28,15 @@ from app.projects.util import (check_zipfile, count_lines, remove_project,
 def projects_list():
     projects = Project.query.all()
     project_form = ProjectForm()
+    admin = util.is_admin(current_user.role)
+    user_projects_ids = get_user_projects_ids(current_user)
     return render_template(
         "projects_list.html",
         projects=projects,
         form=project_form,
         user=current_user,
+        admin=admin,
+        user_projects_ids=user_projects_ids,
         top_supported_language_lines_counts=top_supported_language_lines_counts,
         lang_icons=LANGUAGES_DEVICONS,
         segment="projects",
