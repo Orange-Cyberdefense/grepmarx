@@ -16,6 +16,7 @@ from app.base.forms import LoginForm, CreateUserForm, CreateTeamForm
 from app.base.models import User, Team
 from app.base.util import (init_db, last_12_months_analysis_count,
                            ldap_config_dict, remove_dir_content, verify_pass)
+from app.projects.util import get_user_projects_ids
 from app.constants import (AUTH_LDAP, AUTH_LOCAL, PROJECTS_SRC_PATH, ROLE_ADMIN,
                            ROLE_GUEST, ROLE_USER, RULES_PATH)
 from app.projects.models import Project
@@ -318,9 +319,14 @@ def switch_theme():
 @blueprint.route("/dashboard")
 @login_required
 def index():
+    admin = util.is_admin(current_user.role)
+    nb_projects_user = len(get_user_projects_ids(current_user))
+    nb_projects = nb_projects_user
+    if admin:
+        nb_projects = Project.query.count()
     return render_template(
         "dashboard.html",
-        nb_projects=Project.query.count(),
+        nb_projects=nb_projects,
         nb_rules=Rule.query.count(),
         nb_rule_packs=RulePack.query.count(),
         nb_repos=RuleRepository.query.count(),
