@@ -101,11 +101,13 @@
                                     <a class="btn btn-default btn-sm text-primary" href="/teams_setting/edit/{{ team.id }}">
                                         <i title="Modify" class="fas fa-cog"></i>
                                     </a>
-                                    <a class="btn btn-default btn-sm text-danger" href="#"
-                                        onclick="setConfirmAction('confirm-project-removal-button', '/teams_setting/remove/{{ team.id }}')"
-                                        data-toggle="modal" data-target="#confirm-removal">
-                                        <i title="Delete team" class="fas fa-trash"></i>
-                                    </a>
+                                    {% if team.name != "Global" %}
+                                        <a class="btn btn-default btn-sm text-danger" href="#"
+                                            onclick="setConfirmAction('confirm-project-removal-button', '/teams_setting/remove/{{ team.id }}')"
+                                            data-toggle="modal" data-target="#confirm-removal">
+                                            <i title="Delete team" class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

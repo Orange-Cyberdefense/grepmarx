@@ -17,39 +17,41 @@
     <section class="content">
         <div class="card card-default">
             <div class="card-header">
-                <h2 class="h4"> {% if edit %} Edit team {% else %} Create a new team {% endif %} </h2>
+                <h2 class="h4"> {% if edit %} Edit {% if team.name == "Global" %} Global {% else %} team {% endif %} {% else %} Create a new team {% endif %} </h2>
                 <span>
-                    {% if edit %} Custom the team name, members and projects acces autorisations. {% else %} Enter new team name, select members and projects acces autorisations. {% endif %} </span>
+                    {% if edit %}  {% if team.name == "Global" %} Custom the global projects autorisations. {% else %} Custom the team name, members and projects acces autorisations. {% endif %} {% else %} Enter new team name, select members and projects acces autorisations. {% endif %} </span>
             </div>
                 <div class="card-body">
                 <form class="form-horizontal" method="post" action="{% if edit %}/teams_setting/edit/{{team.id}}{% else %}/teams_setting/add{% endif %}">
                     {{ form.hidden_tag() }}
-                    <div class="form-group">
-                        {{ form.name.label }} {{ form.name(class="form-control") }}
-                        {% for error in form.name.errors %}
-                            <span class="text-danger">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="form-group">
-                        <br>
-                        {{ form.members.label }} :
-                        <br>
-                        <div class="row">
-                            {% for member_id, member_label in form.members.choices %}
-                                <div class="col-md-1 mb-3">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
-                                        <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
-                                            {{ member_label }}
-                                        </label>
-                                    </div>
-                                    {% for error in form.members.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
+                    {% if team.name != "Global" %}
+                        <div class="form-group">
+                            {{ form.name.label }} {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                                <span class="text-danger">{{ error }}</span>
                             {% endfor %}
                         </div>
-                    </div>
+                            <div class="form-group">
+                                <br>
+                                {{ form.members.label }} :
+                                <br>
+                                <div class="row">
+                                    {% for member_id, member_label in form.members.choices %}
+                                        <div class="col-md-1 mb-3">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
+                                                <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
+                                                    {{ member_label }}
+                                                </label>
+                                            </div>
+                                            {% for error in form.members.errors %}
+                                                <span class="text-danger">{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                    {% endif %}
                     <div class="form-group">
                         {{ form.projects.label }} :
                         <br>
@@ -69,7 +71,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary"> {% if edit %} Edit Team {% else %} Create Team {% endif %} </button>
+                    <button type="submit" class="btn btn-primary"> {% if edit %} Edit {% if team.name == "Global" %} Global {% else %} Team {% endif %} {% else %} Create Team {% endif %} </button>
                     <a href="/teams_setting" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>

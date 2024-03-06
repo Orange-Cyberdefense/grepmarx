@@ -31,6 +31,15 @@ from ldap3 import Tls
 @blueprint.route("/")
 def route_default():
     # Init DB if first launch (eg. no user yet registered)
+    if not Team.query.filter(Team.name == 'Global').first():
+        global_team = Team(
+                name="Global",
+                creator=None,
+                user_id=None
+            )
+        global_team.members = db.session.query(User).all()
+        db.session.add(global_team)
+        db.session.commit()
     if db.session.query(User).count() == 0:
         init_db()
         # Also remove projects and rules repo in data/ (if any)
@@ -281,6 +290,15 @@ def team_add():
 @blueprint.route("/teams_setting", methods=["GET", "POST"])
 @login_required
 def teams_setting():
+    if not Team.query.filter(Team.name == 'Global').first():
+        global_team = Team(
+                name="Global",
+                creator=None,
+                user_id=None
+            )
+        global_team.members = db.session.query(User).all()
+        db.session.add(global_team)
+        db.session.commit()
     teamForm = CreateTeamForm()
     teamTable = Team.query.all()
     if request.method == "POST" and teamForm.validate_on_submit():
@@ -319,6 +337,15 @@ def switch_theme():
 @blueprint.route("/dashboard")
 @login_required
 def index():
+    if not Team.query.filter(Team.name == 'Global').first():
+        global_team = Team(
+                name="Global",
+                creator=None,
+                user_id=None
+            )
+        global_team.members = db.session.query(User).all()
+        db.session.add(global_team)
+        db.session.commit()
     admin = util.is_admin(current_user.role)
     nb_projects_user = len(get_user_projects_ids(current_user))
     nb_projects = nb_projects_user

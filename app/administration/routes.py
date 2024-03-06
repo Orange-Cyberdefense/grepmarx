@@ -15,7 +15,7 @@ from app.administration.forms import LdapForm, RepositoryForm, UserForm
 from app.administration.models import LdapConfiguration
 from app.administration.util import validate_ldap_form, validate_user_form
 from app.base import util
-from app.base.models import User
+from app.base.models import User, Team
 from app.constants import ROLE_USER
 from app.rules.models import RuleRepository
 from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
@@ -64,6 +64,9 @@ def users_add():
                 # Remove id attribute to let the DB set it
                 delattr(user, "id")
                 db.session.add(user)
+                # add user to the "Global team"
+                Global_team = Team.query.filter_by(name="Global").first_or_404()
+                Global_team.members.append(user)
                 db.session.commit()
                 current_app.logger.info("New user added (user.id=%i)", user.id)
                 flash("New user successfully added", "success")
