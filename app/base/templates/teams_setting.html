@@ -1,16 +1,20 @@
-{% extends "base.html" %}
-
-{% block title %} Teams Group {% endblock %}
+{% extends "base.html" %} {% block title %} Teams Group {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-{% endblock stylesheets %}
-
-
-{% block content %}
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css"
+/>
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
+/>
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css"
+/>
+{% endblock stylesheets %} {% block content %}
 
 <div class="content-wrapper">
     <!-- Content Header -->
@@ -25,14 +29,15 @@
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Teams setting</li>
                     </ol>
-                    <br>
+                    <br />
                 </div>
             </div>
-            <div class="row mb-2 ">
+            <div class="row mb-2">
                 <div class="col-sm-8">
                     <p class="mb-3">
-                        The following table shows all teams your admin account is authorized to access and modify.
-                        You can view, edit or delete an existing team, or create a new team.
+                        The following table shows all teams your admin account
+                        is authorized to access and modify. You can view, edit
+                        or delete an existing team, or create a new team.
                     </p>
                 </div>
                 <div class="col-sm-4">
@@ -46,19 +51,27 @@
             </div>
         </div>
     </section>
- <!-- Default box -->
+    <!-- Default box -->
     <div class="card card-default">
         <div class="card-header">
             <h3 class="card-title">Team list</h3>
             <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                    title="Collapse"
+                >
                     <i class="fas fa-minus"></i>
                 </button>
             </div>
         </div>
         <div class="card-body p-0">
             <div class="p-3">
-                <table class="table table-striped projects" id="projects-list-table">
+                <table
+                    class="table table-striped projects"
+                    id="teams-list-table"
+                >
                     <thead>
                         <tr>
                             <th>#</th>
@@ -71,106 +84,130 @@
                     </thead>
                     <tbody>
                         {% for team in teamTable %}
-                            <tr>
-                                <td>
-                                    {{ team.id }}
-                                </td>
-                                <td>
-                                    {{ team.name }}
-                                </td>
-                                <td>
-                                    {{ team.creator }}
-                                </td>
-                                <td>
-                                    <p>
-                                        {% for member in team.members%}
-                                        {{ member }}
-                                        {% if not loop.last %},{% endif %}
-                                        {% endfor %}
-                                    </p>
-                                </td>
-                                <td>
-                                    <p>
-                                        {% for project in team.projects%}
-                                        {{ project.name }}
-                                        {% if not loop.last %},{% endif %}
-                                        {% endfor %}
-                                    </p>
-                                </td>
-                                <td>
-                                    <a class="btn btn-default btn-sm text-primary" href="/teams_setting/edit/{{ team.id }}">
-                                        <i title="Modify" class="fas fa-cog"></i>
-                                    </a>
-                                    {% if team.name != "Global" %}
-                                        <a class="btn btn-default btn-sm text-danger" href="#"
-                                            onclick="setConfirmAction('confirm-project-removal-button', '/teams_setting/remove/{{ team.id }}')"
-                                            data-toggle="modal" data-target="#confirm-removal">
-                                            <i title="Delete team" class="fas fa-trash"></i>
-                                        </a>
+                        <tr>
+                            <td>{{ team.id }}</td>
+                            <td>{{ team.name }}</td>
+                            <td>{{ team.creator }}</td>
+                            <td>
+                                <p>
+                                    {% for member in team.members[:3] %} {{
+                                    member }} {% if not loop.last %},{% endif %}
+                                    {% endfor %} {% if team.members|length > 3
+                                    %}
+                                    <span
+                                        title="{% for member in team.members[3:] %} {{ member.username }}{% if not loop.last %}, {% endif %}{% endfor %}"
+                                        >...</span
+                                    >
                                     {% endif %}
-                                </td>
-                            </tr>
+                                </p>
+                            </td>
+                            <td>
+                                <p>
+                                    {% for project in team.projects[:3] %} {{
+                                    project.name }} {% if not loop.last %},{%
+                                    endif %} {% endfor %} {% if
+                                    team.projects|length > 3 %}
+                                    <span
+                                        title="{% for project in team.projects[3:] %}{{ project.name }}{% if not loop.last %}, {% endif %}{% endfor %}"
+                                        >...</span
+                                    >
+                                    {% endif %}
+                                </p>
+                            </td>
+                            <td>
+                                <a
+                                    class="btn btn-default btn-sm text-primary"
+                                    href="/teams_setting/edit/{{ team.id }}"
+                                >
+                                    <i title="Modify" class="fas fa-cog"></i>
+                                </a>
+                                {% if team.name != "Global" %}
+                                <a
+                                    class="btn btn-default btn-sm text-danger"
+                                    href="#"
+                                    onclick="setConfirmAction('confirm-project-removal-button', '/teams_setting/remove/{{ team.id }}')"
+                                    data-toggle="modal"
+                                    data-target="#confirm-removal"
+                                >
+                                    <i
+                                        title="Delete team"
+                                        class="fas fa-trash"
+                                    ></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
 
-    <!-- Modal remove confirmation -->
-    <div class="modal fade" id="confirm-removal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content bg-warning">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm deletion</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body m-3">
-                    <p class="mb-0">
-                        You are about to delete a team.
-                        This operation is irreversible.
-                    </p>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirm-project-removal-button">Delete</button>
+        <!-- Modal remove confirmation -->
+        <div
+            class="modal fade"
+            id="confirm-removal"
+            tabindex="-1"
+            role="dialog"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content bg-warning">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm deletion</h5>
+                        <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body m-3">
+                        <p class="mb-0">
+                            You are about to delete a team. This operation is
+                            irreversible.
+                        </p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-outline"
+                            data-dismiss="modal"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            id="confirm-project-removal-button"
+                        >
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
-{% block javascripts %}
-<!-- DataTables -->
-<script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script type="text/javascript">
-/* Initialize datatable */
-var dataTable = $('#projects-list-table');
-$(document).ready(function () {
-dataTable.DataTable({
-    /*columnDefs: [{
-        orderable: false,
-        targets: 0
-    }],*/
-    "order": [
-        [0, "desc"]
-    ]
-});
-});
-
-/* Activate auto-refresh if a project is Anlyzing or Pending */
-needRefresh = document.getElementsByClassName("check-status");
-if (needRefresh.length > 0) {
-ajaxRefreshStatus(needRefresh[0].id);
-}
-
-</script>
-{% endblock javascripts %}
-</div>
+    {% block javascripts %}
+    <!-- DataTables -->
+    <script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+        var dataTable = $('#teams-list-table');
+        $(document).ready(function () {
+        dataTable.DataTable({
+            "order": [
+                [0, "desc"]
+            ]
+        });
+        });
+    </script>
+    {% endblock javascripts %}
 
 {% endblock content %}
