@@ -228,9 +228,34 @@ def team_edit(team_id):
     teamForm = CreateTeamForm()
     admin = util.is_admin(current_user.role)
     if admin:
+        member_name = request.form.get('member_name', '')
+        project_name = request.form.get('project_name', '')
+        if teamForm.members.data:
+            edit_team.members = User.query.filter(User.id.in_(teamForm.members.data)).all()
+        if teamForm.projects.data:
+            edit_team.projects = Project.query.filter(Project.id.in_(teamForm.projects.data)).all()
+        if request.form.get('sort_member_button'):
+            return render_template(
+            "team_edit.html",
+            edit=True,
+            form=teamForm,
+            user=current_user,
+            team=edit_team,
+            member_name=member_name,
+            project_name=project_name,
+            )
+        if request.form.get('sort_project_button'):
+            return render_template(
+            "team_edit.html",
+            edit=True,
+            form=teamForm,
+            user=current_user,
+            team=edit_team,
+            member_name=member_name,
+            project_name=project_name,
+            )
         if len(request.form) > 0:
             if teamForm.validate_on_submit():
-                # teamForm.populate_obj(edit_team)
                 member_ids = teamForm.members.data
                 edit_team.members = User.query.filter(User.id.in_(member_ids)).all()
 
@@ -247,6 +272,8 @@ def team_edit(team_id):
                 form=teamForm,
                 user=current_user,
                 team=edit_team,
+                member_name=member_name,
+                project_name=project_name,
             )
         else:
             teamForm.name.data = edit_team.name
@@ -256,6 +283,8 @@ def team_edit(team_id):
                 form=teamForm,
                 user=current_user,
                 team=edit_team,
+                member_name=member_name,
+                project_name=project_name,
             )
     else:
         return render_template("403.html"), 403
@@ -283,7 +312,7 @@ def team_add():
             db.session.add(new_team)
             db.session.commit()
             return redirect(url_for("base_blueprint.teams_setting"))
-        return render_template("team_edit.html", user=current_user, form=teamForm, edit=False, team=None)
+        return render_template("team_edit.html", user=current_user, form=teamForm, edit=False, team=None, member_name="", project_name="")
     else:
         return render_template("403.html"), 403
 

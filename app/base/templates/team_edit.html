@@ -41,15 +41,16 @@
                         <div class="form-group">
                             <br>
                             {{ form.members.label }} :
-                            <!-- <input id="myInput" class="form-control" type="text" placeholder="Enter member name..."> -->
+                            <button type="submit" name="sort_member_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
+                            <input class="form-control" type="text" name="member_name" placeholder="Enter member name..." style="width: 200px;" value="{{ member_name }}">
                             <br>
                             <div class="row scrollable-list">
                                 {% for member_id, member_label in form.members.choices %}
-                                    <div class="col-md-1 mb-3">
+                                    <div class="col-md-1 mb-3" style="{% if member_name not in member_label %} display: none;{% endif %}">
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
                                             <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
-                                                {% if member_label|length > 9%}
+                                                {% if member_label|length > 9 %}
                                                     {{ member_label[:7] }} <span title=" {{ member_label }}">...</span>
                                                 {% else %}
                                                     {{ member_label }}
@@ -66,10 +67,11 @@
                     {% endif %}
                     <div class="form-group">
                         {{ form.projects.label }} :
-                        <br>
+                        <button type="submit" name="sort_project_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
+                        <input class="form-control" type="text" name="project_name" placeholder="Enter project name..." style="width: 200px;" value="{{ project_name }}">
                         <div class="row scrollable-lists">
                             {% for project_id, project_label in form.projects.choices %}
-                                <div class="col-md-1 mb-3">
+                                <div class="col-md-1 mb-3" style="{% if project_name not in project_label %} display: none;{% endif %}">
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="project{{ project_id }}" name="projects" value="{{ project_id }}" {% for project in team.projects %} {% if project_id == project.id %} checked {% endif %} {% endfor %}>
                                         <label class="custom-control-label" for="project{{ project_id }}" style="white-space: nowrap;">
@@ -87,6 +89,8 @@
                     <a href="/teams_setting" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
+
+            <!-- Test Datable to sort member by name -->
             <!-- <div class="card card-default">
                 <div class="card-header">
                     <h3 class="card-title">Member list</h3>

@@ -86,6 +86,8 @@ class CreateTeamForm(FlaskForm):
         ],)
     members = MultiCheckboxField("Team members", validators=[DataRequired()])
     projects = MultiCheckboxField("Projects", validators=[DataRequired()])
+    member_name = StringField()
+    project_name = StringField()
 
     def __init__(self, *args, **kwargs):
         super(CreateTeamForm, self).__init__(*args, **kwargs)
