@@ -31,40 +31,38 @@
                 <div class="card-body">
                 <form class="form-horizontal" method="post" action="{% if edit %}/teams_setting/edit/{{team.id}}{% else %}/teams_setting/add{% endif %}">
                     {{ form.hidden_tag() }}
-                    {% if team.name != "Global" %}
-                        <div class="form-group">
-                            {{ form.name.label }} {{ form.name(class="form-control") }}
-                            {% for error in form.name.errors %}
-                                <span class="text-danger">{{ error }}</span>
+                    <div class="form-group" style="{% if team.name == "Global" %} display: none;{% endif %}">
+                        {{ form.name.label }} {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group" style="{% if team.name == "Global" %} display: none;{% endif %}>
+                        <br>
+                        {{ form.members.label }} :
+                        <button type="submit" name="sort_member_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
+                        <input class="form-control" type="text" name="member_name" placeholder="Enter member name..." style="width: 200px;" value="{{ member_name }}">
+                        <br>
+                        <div class="row scrollable-list">
+                            {% for member_id, member_label in form.members.choices %}
+                                <div class="col-md-1 mb-3" style="{% if member_name not in member_label %} display: none;{% endif %}">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
+                                        <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
+                                            {% if member_label|length > 9 %}
+                                                {{ member_label[:7] }} <span title=" {{ member_label }}">...</span>
+                                            {% else %}
+                                                {{ member_label }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    {% for error in form.members.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
                             {% endfor %}
                         </div>
-                        <div class="form-group">
-                            <br>
-                            {{ form.members.label }} :
-                            <button type="submit" name="sort_member_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
-                            <input class="form-control" type="text" name="member_name" placeholder="Enter member name..." style="width: 200px;" value="{{ member_name }}">
-                            <br>
-                            <div class="row scrollable-list">
-                                {% for member_id, member_label in form.members.choices %}
-                                    <div class="col-md-1 mb-3" style="{% if member_name not in member_label %} display: none;{% endif %}">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
-                                            <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
-                                                {% if member_label|length > 9 %}
-                                                    {{ member_label[:7] }} <span title=" {{ member_label }}">...</span>
-                                                {% else %}
-                                                    {{ member_label }}
-                                                {% endif %}
-                                            </label>
-                                        </div>
-                                        {% for error in form.members.errors %}
-                                            <span class="text-danger">{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
+                    </div>
                     <div class="form-group">
                         {{ form.projects.label }} :
                         <button type="submit" name="sort_project_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>

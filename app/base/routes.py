@@ -266,6 +266,7 @@ def team_edit(team_id):
                 flash("Team successfully updated", "success")
                 return redirect(url_for("base_blueprint.teams_setting"))
             else:
+                print(teamForm.errors)
                 return render_template(
                 "team_edit.html",
                 edit=True,

@@ -21,6 +21,7 @@ from app.projects.forms import ProjectForm
 from app.projects.models import Project
 from app.projects.util import (check_zipfile, count_lines, remove_project,
                                sha256sum, top_supported_language_lines_counts, get_user_projects_ids)
+from app.base.models import Team
 
 
 @blueprint.route("/projects")
@@ -121,6 +122,13 @@ def projects_create():
         count_lines(project)
         db.session.commit()
         current_app.logger.info("New project created (project.id=%i)", project.id)
+        # Add the project to the global team
+        Global_team = Team.query.filter_by(name="Global").first()
+        Global_team_project_ids = [project.id for project in Global_team.projects]
+        Global_team_project_ids.append(project.id)
+        Global_team.projects = Project.query.filter(Project.id.in_(Global_team_project_ids)).all()
+        print(Global_team)
+        db.session.commit()
         return str(project.id), 200
     # Form is invalid
     else:
