@@ -1,0 +1,279 @@
+{% extends "base.html" %} {% block title %} User edit {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css"
+/>
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
+/>
+<link
+    rel="stylesheet"
+    href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css"
+/>
+{% endblock stylesheets %} {% block content %}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1> Edit your account</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/users">Users</a></li>
+                        <li class="breadcrumb-item active">Edit account</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2 ">
+                <div class="col-sm-8">
+                    <p class="mb-3">
+                        Fill the following form to modify your user account.
+                    </p>
+                </div>
+                {% if edit %}
+                <div class="col-sm-4">
+                    <div class="btn-group float-sm-right">
+                        <a class="btn btn-default" href="#"
+                            onclick="setConfirmAction('confirm-user-removal-button', '/users/remove/{{ form.id.data }}')"
+                            data-toggle="modal" data-target="#confirm-removal">
+                            <span class="fas fa-trash"></span>
+                            Remove user
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        {% include 'messages.html' %}
+        <form class="form-horizontal" method="post"
+            action="/user_edit">
+            {{ form.hidden_tag() }}
+
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">User information</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="user-username" class="col-sm-2 col-form-label">Username</label>
+                        <div class="col-sm-10">
+                            {{ form.username(placeholder="Username", class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="user-first-name" class="col-sm-2 col-form-label">First Name</label>
+                        <div class="col-sm-10">
+                            {{ form.first_name(placeholder="First name", class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="user-last-name" class="col-sm-2 col-form-label">Last Name</label>
+                        <div class="col-sm-10">
+                            {{ form.last_name(placeholder="Last name", class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="user-email" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            {{ form.email(placeholder="Mail address", class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="user-role" class="col-sm-2 col-form-label">Admin</label>
+                        <div class="col-sm-10">
+                            {{ form.role( class="form-control") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-default collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Change your password</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="user-password" class="col-sm-2 col-form-label">Password</label>
+                        <div class="col-sm-10">
+                            {{ form.password(placeholder="Password", class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="user-password" class="col-sm-2 col-form-label">Confirm password</label>
+                        <div class="col-sm-10">
+                            {{ form.password_confirm(placeholder="Confirm password", class="form-control") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-default collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Your asigned teams</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <p>Create a team: </p>
+                        <a href="/teams_setting/add" class="btn btn-secondary">Create</a>
+                    </div>
+                    <table
+                    class="table table-striped projects"
+                    id="teams-list-table"
+                    >
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Creator</th>
+                                <th>Members</th>
+                                <th>Projets</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for team in teams %}
+                            <tr>
+                                <td>{{ team.id }}</td>
+                                <td>{{ team.name }}</td>
+                                <td>{{ team.creator }}</td>
+                                <td>
+                                    <p>
+                                        {% for member in team.members[:3] %} {{
+                                        member }} {% if not loop.last %},{% endif %}
+                                        {% endfor %} {% if team.members|length > 3
+                                        %}
+                                        <span
+                                            title="{% for member in team.members[3:] %} {{ member.username }}{% if not loop.last %}, {% endif %}{% endfor %}"
+                                            >...</span
+                                        >
+                                        {% endif %}
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        {% for project in team.projects[:3] %} {{
+                                        project.name }} {% if not loop.last %},{%
+                                        endif %} {% endfor %} {% if
+                                        team.projects|length > 3 %}
+                                        <span
+                                            title="{% for project in team.projects[3:] %}{{ project.name }}{% if not loop.last %}, {% endif %}{% endfor %}"
+                                            >...</span
+                                        >
+                                        {% endif %}
+                                    </p>
+                                </td>
+                                <td>
+                                    {% if team.creator == user.username or admin%}
+                                        <a
+                                            class="btn btn-default btn-sm text-primary"
+                                            href="/teams_setting/edit/{{ team.id }}"
+                                        >
+                                            <i title="Modify" class="fas fa-cog"></i>
+                                        </a>
+                                        {% if team.name != "Global" %}
+                                        <a
+                                            class="btn btn-default btn-sm text-danger"
+                                            href="#"
+                                            onclick="setConfirmAction('confirm-team-removal-button', '/teams_setting/remove/{{ team.id }}')"
+                                            data-toggle="modal"
+                                            data-target="#confirm-removal"
+                                        >
+                                            <i
+                                                title="Delete team"
+                                                class="fas fa-trash"
+                                            ></i>
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <a href="/users" class="btn btn-secondary">Cancel</a>
+                    <input name="save-user" type="submit" value="Save user" class="btn btn-default float-right">
+                </div>
+            </div>
+
+        </form>
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Modal remove confirmation -->
+<div class="modal fade" id="confirm-removal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <p class="mb-0">
+                    You are about to delete a Team.
+                    All of its projets will be kept.
+                    This operation is irreversible.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-team-removal-button">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<!-- DataTables -->
+<script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript">
+    var dataTable = $('#teams-list-table');
+    $(document).ready(function () {
+    dataTable.DataTable({
+        "order": [
+            [0, "desc"]
+        ]
+    });
+    });
+</script>
+{% endblock javascripts %}
+
+{% endblock content %}

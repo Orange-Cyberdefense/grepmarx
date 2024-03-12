@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary"> {% if edit %} Edit {% if team.name == "Global" %} Global {% else %} Team {% endif %} {% else %} Create Team {% endif %} </button>
-                    <a href="/teams_setting" class="btn btn-secondary">Cancel</a>
+                    <a href="{% if admin %}/teams_setting{% else %}/user_edit{% endif %}" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
 

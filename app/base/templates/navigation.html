@@ -36,7 +36,7 @@
         <i class="fas fa-user"></i>
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <span class="dropdown-item dropdown-header">{{ current_user.username }}</span>
+        <a class="dropdown-item dropdown-header" href="/user_edit">{{ current_user.username }}</a>
         <div class="dropdown-divider"></div>
         <a href="{{ url_for('base_blueprint.logout') }}" class="dropdown-item">
           <i class="fas fa-power-off"></i> Logout
