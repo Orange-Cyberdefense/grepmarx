@@ -11,10 +11,9 @@
         <div style="max-height: 150px; overflow-y:auto; border-bottom: 1px solid #ccc">
           <ul style="list-style-type:none; padding-left: 0">
             {% for elt in inspectortag %}
-
             <li>
               <a href="#" onclick="ajaxInspExcerpt('{{ elt.id }}');">
-                {{ elt.filename }}
+                {{ elt.filename.split("extract")[-1].strip("/") }}
               </a>
             </li>
           </ul>

@@ -309,6 +309,8 @@ def analysis_inspector_excerpt(tag_id):
     return render_template("app_inspector_excerpt.html", inspectortag=inspectortag)
 
 
+
+
 @blueprint.route("/analysis/inspector/occurence/<match_id>")
 @login_required
 def analysis_inspector_occurence(match_id):
