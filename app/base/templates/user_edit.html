@@ -41,10 +41,10 @@
                 <div class="col-sm-4">
                     <div class="btn-group float-sm-right">
                         <a class="btn btn-default" href="#"
-                            onclick="setConfirmAction('confirm-user-removal-button', '/users/remove/{{ form.id.data }}')"
-                            data-toggle="modal" data-target="#confirm-removal">
+                            onclick="setConfirmAction('confirm-user-removal-button', '/users/remove/{{form.id.data}}')"
+                            data-toggle="modal" data-target="#confirm-removal-user">
                             <span class="fas fa-trash"></span>
-                            Remove user
+                            Remove account
                         </a>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
                                             class="btn btn-default btn-sm text-primary"
                                             href="/teams_setting/edit/{{ team.id }}"
                                         >
-                                            <i title="Modify" class="fas fa-cog"></i>
+                                            <i title="Edit" class="fas fa-cog"></i>
                                         </a>
                                         {% if team.name != "Global" %}
                                         <a
@@ -202,7 +202,7 @@
                                             href="#"
                                             onclick="setConfirmAction('confirm-team-removal-button', '/teams_setting/remove/{{ team.id }}')"
                                             data-toggle="modal"
-                                            data-target="#confirm-removal"
+                                            data-target="#confirm-removal-team"
                                         >
                                             <i
                                                 title="Delete team"
@@ -232,8 +232,8 @@
 </div>
 <!-- /.content-wrapper -->
 
-<!-- Modal remove confirmation -->
-<div class="modal fade" id="confirm-removal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Modal remove team confirmation -->
+<div class="modal fade" id="confirm-removal-team" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content bg-warning">
             <div class="modal-header">
@@ -245,13 +245,36 @@
             <div class="modal-body m-3">
                 <p class="mb-0">
                     You are about to delete a Team.
-                    All of its projets will be kept.
                     This operation is irreversible.
                 </p>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirm-team-removal-button">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal remove user confirmation -->
+<div class="modal fade" id="confirm-removal-user" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <p class="mb-0">
+                    You are about to delete a Users.
+                    This operation is irreversible.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-user-removal-button">Delete</button>
             </div>
         </div>
     </div>

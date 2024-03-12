@@ -24,20 +24,17 @@
       <a class="nav-link" onclick="switchTheme()">
         <span class="fas fa-adjust"></span></a>
     </li>
-    <!-- Team Menu -->
-    <li class="nav-item dropdown">
-      <a class="nav-link" href="/teams_setting">
-        <span class="fas fa-users"></span>
-      </a>
-    </li>
     <!-- User Menu -->
     <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#">
         <i class="fas fa-user"></i>
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <a class="dropdown-item dropdown-header" href="/user_edit">{{ current_user.username }}</a>
+        <a class="dropdown-item dropdown-header">{{ current_user.username }}</a>
         <div class="dropdown-divider"></div>
+        <a href="/user_edit" class="dropdown-item" title="Edit passord, name, teams...">
+          <i class="fas fa-cog"></i> User setting
+        </a>
         <a href="{{ url_for('base_blueprint.logout') }}" class="dropdown-item">
           <i class="fas fa-power-off"></i> Logout
         </a>

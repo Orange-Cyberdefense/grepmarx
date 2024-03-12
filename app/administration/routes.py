@@ -166,13 +166,16 @@ def users_edit(user_id):
 @login_required
 def users_remove(user_id):
     admin = util.is_admin(current_user.role)
-    if admin:
+    if admin or int(user_id) == current_user.id:
         user = User.query.filter_by(id=user_id).first_or_404()
         db.session.delete(user)
         db.session.commit()
         current_app.logger.info("User removed (user.id=%i)", user.id)
         flash("User successfully deleted", "success")
-        return redirect(url_for("administration_blueprint.users_list"))
+        if admin:
+            return redirect(url_for("administration_blueprint.users_list"))
+        else :
+            return redirect(url_for("base_blueprint.login"))
     else:
         return render_template("403.html"), 403
 
