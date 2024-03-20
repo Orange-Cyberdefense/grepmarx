@@ -12,7 +12,7 @@ from openpyxl.styles import Alignment, PatternFill
 from openpyxl.drawing.image import Image as XLImage
 from zipfile import BadZipFile, ZipFile
 
-from flask import current_app, flash, redirect, render_template, send_file, url_for
+from flask import current_app, flash, redirect, render_template, send_file, url_for, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
@@ -21,7 +21,7 @@ from app.constants import (EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS,
                            PROJECTS_SRC_PATH)
 from app.base import util
 from app.projects import blueprint
-from app.projects.forms import ProjectForm
+from app.projects.forms import ProjectForm, ExcelForm
 from app.projects.models import Project
 from app.projects.util import (check_zipfile, count_lines, remove_project,
                                sha256sum, top_supported_language_lines_counts, get_user_projects_ids)
@@ -52,6 +52,11 @@ def projects_list():
 def projects_dashboard(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
     # Get the 5 inspector mathes with the mot tags (thanks ChatGPT)
+    form = ExcelForm()
+    if form.validate_on_submit():
+        selected_option = form.choice.data
+        # Faire quelque chose avec l'option sélectionnée, comme rediriger vers une autre page
+        return redirect(url_for("projects_blueprint.scan_to_excel", project_id=project_id, selected_option=selected_option))
     top_features = sorted(project.appinspector.match, key=lambda match: len(match.tag), reverse=True)[:5]
     return render_template(
         "project_dashboard.html",
@@ -61,6 +66,7 @@ def projects_dashboard(project_id):
         lang_icons=LANGUAGES_DEVICONS,
         top_features=top_features,
         segment="projects",
+        form=form
     )
 
 @blueprint.route("/projects/<project_id>/status")
@@ -153,6 +159,7 @@ def scan_to_excel(project_id):
     wb = Workbook()
     wb.is_spellcheck_enabled = False
     vulnerabilities = project.analysis.vulnerabilities
+    selected_option = request.args.get('selected_option')
 
     # Create the sheets table
     sheets = {}
@@ -253,11 +260,14 @@ def scan_to_excel(project_id):
 
         # Set occurences data
         for index, occurence in enumerate(vulnerabilitie.occurences):
-            sheets[sheet_name].merge_cells(f'A{4 + index}:D{4 + index}')
-            sheets[sheet_name][f"A{4 + index}"] = occurence.file_path
-            sheets[sheet_name][f"E{4 + index}"] = occurence.id
-            sheets[sheet_name].merge_cells(f'F{4 + index}:Z{4 + index}')
-            sheets[sheet_name][f"F{4 + index}"] = occurence.match_string
+            if (selected_option == "only_confirmed" and occurence.status == 1) or \
+                (selected_option == "confirmed_and_undefined" and occurence.status in [1, 0]) or \
+                (selected_option == "all"):
+                sheets[sheet_name].merge_cells(f'A{4 + index}:D{4 + index}')
+                sheets[sheet_name][f"A{4 + index}"] = occurence.file_path
+                sheets[sheet_name][f"E{4 + index}"] = occurence.id
+                sheets[sheet_name].merge_cells(f'F{4 + index}:Z{4 + index}')
+                sheets[sheet_name][f"F{4 + index}"] = occurence.match_string
 
 
     wb.save(f'excel_save/{project.name}.xlsx')

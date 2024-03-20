@@ -47,7 +47,7 @@
                         Details
                 </button>
             </td>
-            <td class="table-status {% if occurence.status == 1 %}green{% elif occurence.status == 2 %}red{% endif %}">
+            <td class="table-status">
                 <select id="status-filter" name="status" onchange="saveStatus('{{occurence.id }}', '{{vulnerability.id}}', this.value)">
                     {% for elem in status %}
                         <option value="{{ elem['id'] }}" {% if occurence.status == elem['id'] %} selected {% endif %}> {{ elem['name'] }}</option>
@@ -58,15 +58,3 @@
         {% endfor %}
     </tbody>
 </table>
-
-{% block css %}
-<style>
-.green {
-    background-color: rgb(118, 228, 118);
-}
-
-.red {
-    background-color: rgb(233, 53, 53);
-}
-</style>
-{% endblock css%}
