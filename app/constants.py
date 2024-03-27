@@ -21,7 +21,6 @@ DEPSCAN_RESULT_FOLDER = "dependencies"
 #BOM_FILE="sbom-bom.json"
 DEPSCAN = "depscan"
 APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
-
 # Project constants
 
 STATUS_NEW = 0
@@ -33,6 +32,14 @@ STATUS_ABORTED = 5
 PROJECTS_SRC_PATH = "data/projects/"
 EXTRACT_FOLDER_NAME = "extract"
 SCC = "app/third-party/scc/scc"
+
+# Vulnerability occurence Status
+
+TO_REVIEW = {"id": 0, "name": "To review"}
+CONFIRMED = {"id": 1, "name": "Confirmed"}
+FALSE_POSITIVE = {"id": 2, "name": "False positive"}
+
+STATUS = [TO_REVIEW, CONFIRMED, FALSE_POSITIVE]
 
 # Rule constants
 

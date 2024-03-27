@@ -5,14 +5,14 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, HiddenField, IntegerField, PasswordField,
-                     SelectField, TextField)
+                     SelectField, StringField)
 from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Optional, Email, Regexp
 
 
 class UserForm(FlaskForm):
     id = HiddenField("User id")
-    username = TextField(
+    username = StringField(
         "Username",
         id="user-username",
         validators=[
@@ -23,9 +23,9 @@ class UserForm(FlaskForm):
             ),
         ],
     )
-    first_name = TextField("First name", id="user-first-name")
-    last_name = TextField("Last name", id="user-last-name")
-    email = TextField("Email", id="user-email", validators=[DataRequired(), Email()])
+    first_name = StringField("First name", id="user-first-name")
+    last_name = StringField("Last name", id="user-last-name")
+    email = StringField("Email", id="user-email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", id="user-password")
     password_confirm = PasswordField("Confirm password", id="user-confirm-password")
     roles = [(int(0), "user"), (int(1), "admin")]
@@ -34,7 +34,7 @@ class UserForm(FlaskForm):
 
 class RepositoryForm(FlaskForm):
     id = HiddenField("Repository id")
-    name = TextField(
+    name = StringField(
         "Repository name",
         id="repo-name",
         validators=[
@@ -46,8 +46,8 @@ class RepositoryForm(FlaskForm):
         ],
     )
     description = TextAreaField("Repository description", id="repo-description")
-    uri = TextField("Repository URI", id="repo-uri", validators=[DataRequired()])
-    git_username = TextField("Git username", id="repo-username")
+    uri = StringField("Repository URI", id="repo-uri", validators=[DataRequired()])
+    git_username = StringField("Git username", id="repo-username")
     git_token = PasswordField("Git access token", id="repo-token")
 
 
@@ -56,7 +56,7 @@ class LdapForm(FlaskForm):
         "Activate LDAP authentication", id="ldap-activated", validators=[DataRequired()]
     )
     users_approval = BooleanField("LDAP users approval", id="ldap-users-approval")
-    server_host = TextField(
+    server_host = StringField(
         "LDAP server host",
         id="ldap-server-uri",
         validators=[
@@ -69,7 +69,7 @@ class LdapForm(FlaskForm):
     )
     server_port = IntegerField("Port", id="ldap-server-port", validators=[Optional()])
     use_tls = BooleanField("Activate TLS", id="ldap-use-tls")
-    cacert_path = TextField(
+    cacert_path = StringField(
         "CA certificate path",
         id="ldap-cacert-path",
         validators=[
@@ -80,7 +80,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    bind_dn = TextField(
+    bind_dn = StringField(
         "Bind DN",
         id="ldap-bind-dn",
         validators=[
@@ -92,7 +92,7 @@ class LdapForm(FlaskForm):
         ],
     )
     bind_password = PasswordField("Bind password", id="ldap-bind-password")
-    base_dn = TextField(
+    base_dn = StringField(
         "Base DN",
         id="ldap-base-dn",
         validators=[
@@ -103,7 +103,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    users_dn = TextField(
+    users_dn = StringField(
         "Users DN",
         id="ldap-users-dn",
         validators=[
@@ -114,7 +114,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    groups_dn = TextField(
+    groups_dn = StringField(
         "Groups DN",
         id="ldap-groups-dn",
         validators=[
@@ -125,7 +125,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    user_rdn_attr = TextField(
+    user_rdn_attr = StringField(
         "User RDN Attribute",
         id="ldap-user-rdn-attr",
         validators=[
@@ -136,7 +136,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    user_login_attr = TextField(
+    user_login_attr = StringField(
         "User login attribute",
         id="ldap-user-login-attr",
         validators=[
@@ -147,7 +147,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    user_object_filter = TextField(
+    user_object_filter = StringField(
         "User object filter",
         id="ldap-user-object-filter",
         validators=[
@@ -158,7 +158,7 @@ class LdapForm(FlaskForm):
             )
         ],
     )
-    group_object_filter = TextField(
+    group_object_filter = StringField(
         "Group object filter",
         id="ldap-group-object-filter",
         validators=[

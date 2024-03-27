@@ -73,11 +73,6 @@ def last_12_months_analysis_count():
 
 def init_db():
     """Insert a default admin/admin user in the database."""
-    db.session.add(
-        models.User(
-            username="admin", email="admin@grepmarx", password="admin", role="1"
-        )
-    )
     db.session.add(SupportedLanguage(name="Python", extensions=".py"))
     db.session.add(
         SupportedLanguage(

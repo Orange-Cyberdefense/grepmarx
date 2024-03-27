@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 {% endblock stylesheets %}
-
 {% block content %}
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -95,7 +94,6 @@
                                         </td>
                                         <td>
 
-                                            
                                             {% if c_user.role == '0'  %}
                                             User
                                             {% elif c_user.role == '1' %}
@@ -141,7 +139,7 @@
             <div class="modal-body m-3">
                 <p class="mb-0">
                     You are about to delete a user. 
-                    All of its projets will be kept. 
+                    All of its projets will be kept.
                     This operation is irreversible.
                 </p>
             </div>

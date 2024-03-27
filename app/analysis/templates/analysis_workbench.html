@@ -85,5 +85,21 @@
     // Init : show the code of the first occurence and occurences of the first vulnerability
     ajaxOccurenceCode(null, '{{ vulnerabilities[0].occurences[0].id }}');
     ajaxOccurencesTable(null, '{{ vulnerabilities[0].id }}');
+    // Submit select form in analysis_occurence_table.html
+    function saveStatus(occurenceId, vulnerabilityId, status) {
+        fetch(`/analysis/occurences_table/${occurenceId}/save_status?status=${status}&vulnerabilityId=${vulnerabilityId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Error during the fetch request.');
+            }
+            console.log('Successfull saved status.');
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
 </script>
 {% endblock javascripts %}

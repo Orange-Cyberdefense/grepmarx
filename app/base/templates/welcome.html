@@ -20,20 +20,44 @@
     <div class="card">
       <div class="card-body login-card-body">
 
-            <p class="login-box-msg">
-            {% if msg %}
-                {{ msg | safe }}
-            {% else %}
-                Add your credentials
-            {% endif %}
+        <p class="login-box-msg">
+            Welcome !
+            <br>
+            Create your account
         </p>
+
+          {% if error %}
+              <p class="alert-danger">{{ error }}</p>
+          {% endif %}
 
         <form method="post" action="">
 
-          {{ form.hidden_tag() }}
-
           <div class="input-group mb-3">
             {{ form.username(placeholder="Username", class="form-control") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            {{ form.first_name(placeholder="First Name", class="form-control") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            {{ form.last_name(placeholder="Last Name", class="form-control") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            {{ form.email(placeholder="Email", class="form-control") }}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-envelope"></span>
@@ -48,28 +72,18 @@
               </div>
             </div>
           </div>
-
-          
-          <div class="row">
-            <div class="col-8">
-              <div class="icheck-primary">
-                <input type="checkbox" id="remember">
-                <label for="remember">
-                  Remember Me
-                </label>
-                <br>
-                {% if ldap_activated %}
-                <input type="checkbox" id="ldap" name="ldap" checked="checked" />
-                <label for="ldap">
-                  LDAP Authentication
-                </label>
-                {% endif %}
+          <div class="input-group mb-3">
+            {{ form.password_confirm(placeholder="Password Confirm", class="form-control", type="password") }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
               </div>
             </div>
+          </div>
 
-
+          <div class="row">
             <div class="col-4">
-              <button type="submit" name="login" class="btn btn-primary btn-block">Sign In</button>
+              <button type="submit" name="register" class="btn btn-primary btn-block">Register</button>
             </div>
           </div>
         </form>

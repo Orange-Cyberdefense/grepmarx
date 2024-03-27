@@ -23,6 +23,7 @@ from app.constants import (
 )
 from app.projects.models import LanguageLinesCount, ProjectLinesCount
 from app.rules.models import SupportedLanguage
+from app.base.models import Team
 
 ##
 ## Project utils
@@ -284,3 +285,11 @@ def load_project_lines_count(scc_result):
         project_lc.total_code_count += c["Code"]
         project_lc.total_complexity_count += c["Complexity"]
     return project_lc
+
+def get_user_projects_ids(current_user):
+    user_teams = Team.query.filter(Team.members.any(username=current_user.username)).all()
+    projects_id_list = []
+
+    projects_id_list = [project.id for team in user_teams for project in team.projects]
+    projects_id_list = list(set(projects_id_list))
+    return projects_id_list

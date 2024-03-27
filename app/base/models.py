@@ -5,12 +5,25 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 from flask_login import UserMixin
-from sqlalchemy import Boolean, Column, Integer, LargeBinary, String
+from sqlalchemy import Boolean, Column, Integer, LargeBinary, String, Table, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app import db, login_manager
 from app.base.util import hash_pass
 from app.constants import AUTH_LOCAL, ROLE_USER
+from app.projects.models import Project
 
+team_members_association = Table(
+    'team_members', db.metadata,
+    Column('team_id', Integer, ForeignKey('Team.id', name='fk_team_members_team_id')),
+    Column('user_id', Integer, ForeignKey('User.id', name='fk_team_members_user_id'))
+)
+
+team_projet_association = Table(
+    'team_projets', db.metadata,
+    Column('team_id', Integer, ForeignKey('Team.id', name='fk_team_projets_team_id')),
+    Column('project_id', Integer, ForeignKey('Project.id', name='fk_team_projets_project_id'))
+)
 
 class User(db.Model, UserMixin):
 
@@ -41,7 +54,19 @@ class User(db.Model, UserMixin):
             setattr(self, property, value)
 
     def __repr__(self):
+        self
         return str(self.username)
+
+class Team(db.Model):
+
+    __tablename__ = "Team"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    creator = Column(String)
+    user_id = db.Column(Integer, db.ForeignKey('User.id'))
+    members = db.relationship("User", secondary=team_members_association, backref="team_members")
+    projects = db.relationship("Project", secondary=team_projet_association, backref="projets")
 
 
 @login_manager.user_loader

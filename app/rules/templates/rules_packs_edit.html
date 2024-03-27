@@ -101,15 +101,15 @@
                                 </label>
                                 <div class="form-group">
                                     <div class="row">
-                                        {% for lang_choice in form.languages %}
-                                        <div class="col-md-3 mb-3">
-                                            <div class="custom-control custom-switch">
-                                                {{ lang_choice(class="custom-control-input", id=lang_choice.id) }}
-                                                <label class="custom-control-label" for="{{ lang_choice.id }}">
-                                                    {{ lang_choice.label }}
-                                                </label>
+                                        {% for lang_id, lang_label in form.languages.choices %}
+                                            <div class="col-md-3 mb-3">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="lang{{ lang_id }}" name="languages" value="{{ lang_id }}">
+                                                    <label class="custom-control-label" for="lang{{ lang_id }}">
+                                                        {{ lang_label }}
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -135,6 +135,13 @@
                             <div class="row">
                                 <div class="col-sm-12 div-select-rules">
                                     <div class="form-group">
+                                        <select id="language-filter" class="form-control">
+                                            <option value="all">All</option>
+                                            {%for language in languages%}
+                                                <option value="{{ language }}"> {{ language }} </option>
+                                            {% endfor %}
+                                        </select>
+                                        <br>
                                         <table id="rules-list-table" class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
@@ -277,7 +284,7 @@
 <script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script type="text/javascript">
     /* Initialize datatable */
-    var dataTable = $('#rules-list-table');
+   var dataTable = $('#rules-list-table');
     $(document).ready(function () {
         dataTable.DataTable({
             paging: false,
@@ -288,9 +295,20 @@
             }],
             order: [[1, 'desc']]
         });
-        /* Reset selection to ensure sync */
+        // Détecter les changements dans le menu déroulant
+        $('#language-filter').change(function() {
+            var dataTable = $('#rules-list-table').DataTable();
+            var selectedLanguage = $(this).val();
+
+            if (selectedLanguage == "all") {
+                dataTable.columns(4).search('').draw();
+            } else {
+                dataTable.columns(4).search('^' + selectedLanguage + '$', true, false, true).draw();
+            }
+        });
         refreshSelectedLines();
     });
+
 
     /* Convert dataTable's controls to bootstrap
     document.getElementsByClassName("dataTable-top")[0].classList.add("row");
