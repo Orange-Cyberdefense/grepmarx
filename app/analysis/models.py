@@ -7,6 +7,8 @@ from sqlalchemy import Boolean, Column, Integer, String
 
 from app import db
 from app.rules.models import analysis_to_rule_pack_association_table
+from app.constants import (TO_REVIEW)
+
 
 
 class Analysis(db.Model):
@@ -62,6 +64,7 @@ class Occurence(db.Model):
     match_string = Column(String)
     file_path = Column(String, nullable=False)
     position = db.relationship("Position", uselist=False, back_populates="occurence")
+    status = Column(db.Integer, nullable=True, default=TO_REVIEW["id"])
 
 
 class Position(db.Model):

@@ -36,7 +36,9 @@ def register_blueprints(app):
 
 
 def configure_database(app):
-    @app.before_first_request
+    with app.app_context():
+        db.create_all()
+
     def initialize_database():
         db.create_all()
 

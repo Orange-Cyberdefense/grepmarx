@@ -4,6 +4,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 """
 
 import json
+import re
 import multiprocessing
 import os
 import re
@@ -14,10 +15,10 @@ from shutil import copyfile, rmtree
 import subprocess
 
 from flask import current_app
-from semgrep import semgrep_main
-from semgrep.constants import OutputFormat
-from semgrep.error import SemgrepError
-from semgrep.output import OutputHandler, OutputSettings
+# from semgrep import semgrep_main
+# from semgrep.constants import OutputFormat
+# from semgrep.error import SemgrepError
+# from semgrep.output import OutputHandler, OutputSettings
 
 from app import celery, db
 from app.analysis.models import (
@@ -118,6 +119,28 @@ def stop_analysis(analysis):
 ## SAST scan utils
 ##
 
+# def generate_ignore_exclude(ignore):
+#     result = []
+#     for data in ignore:
+#         result.append("--exclude")
+#         result.append(data)
+#     return result
+
+
+def remove_ignored_files(files_paths, ignore):
+    result = []
+
+    if not ignore:
+        return files_paths
+    for path in files_paths:
+        should_include = True
+        for data in ignore:
+            if data in path:
+                should_include = False
+                break
+        if should_include:
+            result.append(path)
+    return result
 
 def sast_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
@@ -131,54 +154,36 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
     Returns:
         [str]: Semgrep JSON output
     """
-    cpu_count = multiprocessing.cpu_count()
-    # util.set_flags(verbose=False, debug=False, quiet=True, force_color=False)
-    output_settings = OutputSettings(
-        output_format=OutputFormat.JSON,
-        output_destination=None,
-        error_on_findings=False,
-        verbose_errors=False,
-        strict=False,
-        timeout_threshold=3,
-        # json_stats=False,
-        output_per_finding_max_lines_limit=None,
-    )
+    # cpu_count = multiprocessing.cpu_count()
+    # s1 = os.system("pwd").read()
+    # s2 = os.system("which semgrep").read()
+    # s3 = os.system("env").read()
+    # ignore_exclude = generate_ignore_exclude(ignore)
+    files_to_scan = remove_ignored_files(files_to_scan, ignore)
+    if len(files_to_scan) <= 0:
+        return ""
+    result = ""
+    cmd =  [
+            "semgrep",
+            "scan",
+            "--config",
+            project_rules_path,
+            "--disable-nosem",
+            "--json",
+            # "--jobs",
+            # str(cpu_count),
+        ] + files_to_scan
     try:
-        output_handler = OutputHandler(output_settings)
-        (
-            filtered_matches_by_rule,
-            semgrep_errors,
-            all_targets,
-            renamed_targets,
-            ignore_log,
-            filtered_rules,
-            profiler,
-            profiling_data,
-            parsing_data,
-            explanations,
-            shown_severities,
-            lockfile_scan_info,
-        ) = semgrep_main.main(
-            output_handler=output_handler,
-            target=files_to_scan,
-            jobs=cpu_count,
-            pattern=None,
-            lang=None,
-            configs=[project_rules_path],
-            timeout=0,
-            timeout_threshold=3,
-            exclude=ignore,
-            # I don't give a f*** about your .semgrepignore
-            disable_nosem=True,
-        )
-        output_handler.rule_matches = [
-            m for ms in filtered_matches_by_rule.values() for m in ms
-        ]
-        return output_handler._build_output()
-    except SemgrepError as e:
-        raise Exception(
-            "SemgrepError", output_handler.semgrep_structured_errors[0].long_msg
-        )
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+        ).stdout
+    except FileNotFoundError:
+        print("No files found.")
+    except Exception as e:
+        print("There is an error :", e)
+    return result
 
 
 def save_sast_result(analysis, sast_result):
@@ -325,6 +330,7 @@ def generate_semgrep_options(analysis):
             # Remove empty elements
             extensions = filter(None, c_language.extensions.split(","))
             for c_ext in extensions:
+                print(c_ext)
                 files_to_scan += glob(
                     pathname=os.path.join(scan_path, "**", "*" + c_ext), recursive=True
                 )

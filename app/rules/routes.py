@@ -19,6 +19,7 @@ from app.rules.util import (
     validate_languages_rules,
     sync_db,
     add_new_rule,
+    get_languages_names,
 )
 
 
@@ -80,6 +81,8 @@ def rule_packs_form_page(edit, rule_pack_form):
         (l.id, l.name) for l in SupportedLanguage.query.all()
     )
     rules = Rule.query.all()
+    languages_names = get_languages_names()
+    # listed_languages = SupportedLanguage.query.rules
     return render_template(
         "rules_packs_edit.html",
         edit=edit,
@@ -88,6 +91,7 @@ def rule_packs_form_page(edit, rule_pack_form):
         owasp_links=OWASP_TOP10_LINKS,
         user=current_user,
         segment="rule_packs",
+        languages=languages_names
     )
 
 
@@ -96,7 +100,7 @@ def rule_packs_form_page(edit, rule_pack_form):
 def rules_packs_create():
     rule_pack_form = RulePackForm()
     # Dynamically adds choices for multiple selection fields
-    rule_pack_form.languages.choices = (
+    rule_pack_form.languages.choices = list(
         (l.id, l.name) for l in SupportedLanguage.query.all()
     )
     # POST / Form submitted
@@ -151,7 +155,7 @@ def rules_packs_edit(rule_pack_id):
     if "save-rule-pack" in request.form:
         rule_pack_form = RulePackForm()
         # Dynamically adds choices for multiple selection fields
-        rule_pack_form.languages.choices = (
+        rule_pack_form.languages.choices = list(
             (l.id, l.name) for l in SupportedLanguage.query.all()
         )
         # Form is valid

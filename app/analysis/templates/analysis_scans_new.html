@@ -123,31 +123,23 @@
 
                             <label class="form-label">Select rule packs</label>
                             <div class="row">
-                                {% for rp_choice in form.rule_packs %}
-                                <div class="col-md-3 mb-3">
-                                    <div class="custom-control custom-switch">
-                                        {{ rp_choice(class="custom-control-input", id=rp_choice.id) }}
-                                        <label class="custom-control-label" for="{{ rp_choice.id }}">
-                                            {{ rp_choice.label }}
-                                        </label>
+                                {% for rp_id, rp_label in form.rule_packs.choices %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="rp{{ rp_id }}" name="rule_packs" value="{{ rp_id }}">
+                                            <label class="custom-control-label" for="rp{{ rp_id }}">
+                                                {{ rp_label }}
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
                                 {% endfor %}
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <div>
-                                        <label for="scan-ignore-paths" class="form-label">Ignore paths</label>
-                                        {{ form.ignore_paths(
-                                        placeholder="Enter a list of comma-separated paths to ignore",
-                                        class="form-control", rows="4") }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div>
-                                        <label for="scan-ignore-files" class="form-label">Ignore filenames</label>
+                                        <label for="scan-ignore-files" class="form-label">Ignore filenames, directorys or extensions</label>
                                         {{ form.ignore_filenames(
-                                        placeholder="Enter a list of comma-separated filenames to ignore",
+                                        placeholder="Enter a list of comma-separated filenames, directorys or extensions to ignore",
                                         class="form-control", rows="4") }}
                                     </div>
                                 </div>

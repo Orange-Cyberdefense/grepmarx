@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %} Teams Group {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<style>
+    .scrollable-list {
+        max-height: 150px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+<!-- Modal New/Modify Team -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card card-default">
+            <div class="card-header">
+                <h2 class="h4"> {% if edit %} Edit {% if team.name == "Global" %} Global {% else %} team {% endif %} {% else %} Create a new team {% endif %} </h2>
+                <span>
+                    {% if edit %}  {% if team.name == "Global" %} Custom the global projects autorisations. {% else %} Custom the team name, members and projects acces autorisations. {% endif %} {% else %} Enter new team name, select members and projects acces autorisations. {% endif %} </span>
+            </div>
+                <div class="card-body">
+                <form class="form-horizontal" method="post" action="{% if edit %}/teams_setting/edit/{{team.id}}{% else %}/teams_setting/add{% endif %}">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group" style="{% if team.name == "Global" %} display: none;{% endif %}">
+                        {{ form.name.label }} {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group" style="{% if team.name == "Global" %} display: none;{% endif %}>
+                        <br>
+                        {{ form.members.label }} :
+                        <button type="submit" name="sort_member_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
+                        <input class="form-control" type="text" name="member_name" placeholder="Enter member name..." style="width: 200px;" value="{{ member_name }}">
+                        <br>
+                        <div class="row scrollable-list">
+                            {% for member_id, member_label in form.members.choices %}
+                                <div class="col-md-1 mb-3" style="{% if member_name not in member_label %} display: none;{% endif %}">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
+                                        <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
+                                            {% if member_label|length > 9 %}
+                                                {{ member_label[:7] }} <span title=" {{ member_label }}">...</span>
+                                            {% else %}
+                                                {{ member_label }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    {% for error in form.members.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.projects.label }} :
+                        <button type="submit" name="sort_project_button" style="display: inline-block; margin-left: 12px;" value="true" class="btn btn-secondary">Sort</button>
+                        <input class="form-control" type="text" name="project_name" placeholder="Enter project name..." style="width: 200px;" value="{{ project_name }}">
+                        <div class="row scrollable-lists">
+                            {% for project_id, project_label in form.projects.choices %}
+                                <div class="col-md-1 mb-3" style="{% if project_name not in project_label %} display: none;{% endif %}">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="project{{ project_id }}" name="projects" value="{{ project_id }}" {% for project in team.projects %} {% if project_id == project.id %} checked {% endif %} {% endfor %}>
+                                        <label class="custom-control-label" for="project{{ project_id }}" style="white-space: nowrap;">
+                                            {{ project_label }}
+                                        </label>
+                                    </div>
+                                    {% for error in form.projects.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"> {% if edit %} Edit {% if team.name == "Global" %} Global {% else %} Team {% endif %} {% else %} Create Team {% endif %} </button>
+                    <a href="{% if admin %}/teams_setting{% else %}/user_edit{% endif %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+
+            <!-- Test Datable to sort member by name -->
+            <!-- <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Member list</h3>
+                    <div class="card-tools">
+                        <button
+                            type="button"
+                            class="btn btn-tool"
+                            data-card-widget="collapse"
+                            title="Collapse"
+                        >
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3">
+                        <table id="member-list-table" class="table table-striped projects" style="width:100%">
+                            <thead>
+
+                            </thead>
+                            <tbody>
+                                {% for member_id, member_label in form.members.choices %}
+                                    {% if loop.index0 % 10 == 0 %}
+                                        {% if loop.index0 != 0 %}
+                                            </tr>
+                                        {% endif %}
+                                        <tr>
+                                    {% endif %}
+                                    <td>
+                                        <div class="col-md-1 mb-3">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="member{{ member_id }}" name="members" value="{{ member_id }}" {% for member in team.members %} {% if member_id == member.id %} checked {% endif %} {% endfor %}>
+                                                <label class="custom-control-label" for="member{{ member_id }}" style="white-space: nowrap;">
+                                                    {% if member_label|length > 9 %}
+                                                        {{ member_label[:7] }} <span title="{{ member_label }}">...</span>
+                                                    {% else %}
+                                                        {{ member_label }}
+                                                    {% endif %}
+                                                </label>
+                                            </div>
+                                            {% for error in form.members.errors %}
+                                                <span class="text-danger">{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    {% if loop.last %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                     </div>
+                </div>
+            </div> -->
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<!-- DataTables -->
+<script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript">
+    var inputElement = document.getElementById('myInput');
+
+    // Écoute de l'événement de saisie sur l'élément input
+    inputElement.addEventListener('input', function() {
+        // Récupération de la valeur entrée dans l'input
+        var valeur = inputElement.value;
+
+        // Modification de la largeur de l'input en fonction de la longueur de la valeur
+        inputElement.style.width = (valeur.length * 10) + 'px'; // Par exemple, multiplier la longueur par 10 pixels
+    });
+
+    var dataTable = $('#member-list-table');
+    $(document).ready(function () {
+    dataTable.DataTable({
+        "order": [
+        [0, "desc"]
+    ]
+    });
+    });
+
+</script>
+
+{% endblock javascripts %}
+
+<!-- End of Modal New Project -->

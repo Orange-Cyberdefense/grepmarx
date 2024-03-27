@@ -34,3 +34,6 @@ package-lock.json
 .vscode/settings.json
 
 dump.rdb
+
+# excel generated
+excel_save/*

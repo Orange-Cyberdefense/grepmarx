@@ -30,6 +30,14 @@ from yaml import YAMLError, safe_load
 ## Rule utils
 ##
 
+def get_languages_names():
+    supported_languages = SupportedLanguage.query.all()
+    language_names = []
+
+    for language in supported_languages:
+        language_names.append(language.name)
+
+    return language_names
 
 def sync_db(rules_folder):
     """Parse all libsast/semgrep YAML rule files in the given folder, and for each
@@ -76,7 +84,7 @@ def save_rule_in_db(filename):
             if yml_ok:
                 category = ".".join(file_path.split(os.path.sep)[1:][:-1])
                 # Extract rules from the file, if any
-                if "rules" in yml_rules:
+                if "rules" in yml_rules and file_path[-10:] !=  ".test.yaml":
                     for c_rule in yml_rules["rules"]:
                         # Skip deprecated rules
                         if "metadata" in c_rule and "deprecated" in c_rule["metadata"]:
