@@ -45,7 +45,7 @@ from app.constants import (
     FALSE_POSITIVE,
 )
 from app.projects.models import Project
-from app.projects.util import top_language_lines_counts
+from app.projects.util import has_access, top_language_lines_counts
 from app.rules.models import RulePack
 
 #
@@ -76,6 +76,9 @@ def scans_new(project_id, scan_form=None):
 def scans_launch():
     scan_form = ScanForm()
     project = Project.query.filter_by(id=scan_form.project_id.data).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
     # Dynamically adds choices for multiple selection fields
     scan_form.rule_packs.choices = list((rp.id, rp.name) for rp in RulePack.query.all())
     # Form is valid
@@ -125,6 +128,9 @@ def scans_launch():
 @login_required
 def scans_stop(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, analysis.project):
+        return render_template("403.html"), 403
     stop_analysis(analysis)
     flash("Analysis has successfully been stopped.", "success")
     return redirect(url_for("projects_blueprint.projects_list"))
@@ -139,6 +145,9 @@ def scans_stop(analysis_id):
 @login_required
 def analysis_workbench(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, analysis.project):
+        return render_template("403.html"), 403
     if len(analysis.vulnerabilities) <= 0:
         flash(
             "No findings were found for this project during the last analysis", "error"
@@ -159,6 +168,10 @@ def analysis_codeview(occurence_id):
     # Get occurence infos
     occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
     project_id = occurence.vulnerability.analysis.project.id
+    # Check if the user has access to the project
+    if not has_access(current_user, occurence.vulnerability.analysis.project):
+        return render_template("403.html"), 403
+    # Get the source code file
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
     file = os.path.join(source_path, occurence.file_path)
     # Mitigate path traversal risk
@@ -196,6 +209,9 @@ def analysis_codeview(occurence_id):
 @login_required
 def analysis_occurence_details(occurence_id):
     occurence = Occurence.query.filter_by(id=occurence_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, occurence.vulnerability.analysis.project):
+        return render_template("403.html"), 403
     return render_template(
         "analysis_occurence_details.html",
         occurence=occurence,
@@ -207,6 +223,9 @@ def analysis_occurence_details(occurence_id):
 def save_status(occurence_id):
     vulnerability_id = request.args.get('vulnerabilityId')
     vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, vulnerability.analysis.project):
+        return render_template("403.html"), 403
     for occurence in vulnerability.occurences :
         if occurence.id == int(occurence_id):
             occurence.status = request.args.get('status')
@@ -226,6 +245,9 @@ def save_status(occurence_id):
 @login_required
 def analysis_occurences_table(vulnerability_id):
     vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, vulnerability.analysis.project):
+        return render_template("403.html"), 403
     return render_template(
         "analysis_occurences_table.html", vulnerability=vulnerability, status=STATUS
     )
@@ -240,6 +262,9 @@ def analysis_occurences_table(vulnerability_id):
 @login_required
 def analysis_dependencies(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, analysis.project):
+        return render_template("403.html"), 403
     return render_template("dependencies.html", user=current_user, analysis=analysis)
 
 
@@ -249,6 +274,9 @@ def analysis_dependencies_details(vuln_dep_id):
     vulnerableDependency = VulnerableDependency.query.filter_by(
         id=vuln_dep_id
     ).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, vulnerableDependency.analysis.project):
+        return render_template("403.html"), 403
     return render_template(
         "dependencies_details.html",
         vulnerableDependency=vulnerableDependency,
@@ -258,6 +286,9 @@ def analysis_dependencies_details(vuln_dep_id):
 @login_required
 def analysis_dependencies_export_csv(analysis_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, analysis.project):
+        return render_template("403.html"), 403
     data=[['Id', 'Package', 'Type', 'Version', 'Fix version', 'Severity', 'CVSS', 'Vendor confirmed', 'Has PoC', 'Know exploit', 'Direct usage', 'Indirect dependency', 'Prioritized', 'Reference']]
     for vuln_dep in analysis.vulnerable_dependencies:
         data.append([
@@ -295,6 +326,9 @@ def analysis_dependencies_export_csv(analysis_id):
 @login_required
 def analysis_inspector(inspector_id):
     appinspector = AppInspector.query.filter_by(id=inspector_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, appinspector.project):
+        return render_template("403.html"), 403
     return render_template(
         "app_inspector.html", user=current_user, appinspector=appinspector
     )
@@ -305,6 +339,9 @@ def analysis_inspector(inspector_id):
 def analysis_inspector_excerpt(tag_id):
     """Retrieve the content of an inspectorTag object thanks to an id"""
     inspectortag = InspectorTag.query.filter_by(id=tag_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, inspectortag.match.appinspector.project):
+        return render_template("403.html"), 403
     print(inspectortag.excerpt)
     return render_template("app_inspector_excerpt.html", inspectortag=inspectortag)
 
@@ -316,6 +353,9 @@ def analysis_inspector_excerpt(tag_id):
 def analysis_inspector_occurence(match_id):
     """Retrieve all the filenames associated with a match"""
     match = Match.query.filter_by(id=match_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, match.appinspector.project):
+        return render_template("403.html"), 403
     inspectortag = InspectorTag.query.filter_by(match_id=match_id).all()
     return render_template(
         "app_inspector_ocuurence_view.html", inspectortag=inspectortag, match=match

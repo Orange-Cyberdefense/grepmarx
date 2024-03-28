@@ -293,3 +293,12 @@ def get_user_projects_ids(current_user):
     projects_id_list = [project.id for team in user_teams for project in team.projects]
     projects_id_list = list(set(projects_id_list))
     return projects_id_list
+
+def has_access(current_user, project):
+    user_teams = set(Team.query.filter(Team.members.any(username=current_user.username)).all())
+    project_teams = set(Team.query.filter(Team.projects.any(name=project.name)).all())
+
+    if user_teams.isdisjoint(project_teams):
+        return False
+    else:
+        return True
