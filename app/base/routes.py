@@ -58,7 +58,7 @@ def route_default():
 @blueprint.route("/welcome", methods=["GET", "POST"])
 def welcome():
     # Redirect to login page if DB already exists
-    if db.session.query(User).count() == 0:
+    if db.session.query(User).count() > 0:
         return redirect(url_for("base_blueprint.login"))
     user_form = CreateUserForm(request.form)
     if "username" in request.form:
