@@ -55,8 +55,6 @@ $ sudo docker-compose pull && sudo docker-compose build && sudo docker-compose u
 
 Visit `http://localhost:5000` in your browser. The app should be up & running.
 
-**Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
-
 
 #### [Gunicorn](https://gunicorn.org/)
 ---
@@ -75,8 +73,6 @@ $ supervisord -c supervisord.conf
 ```
 
 Visit `http://localhost:8001` in your browser. The app should be up & running.
-
-**Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 ## Build from sources
 
@@ -134,9 +130,6 @@ $ flask run --host=0.0.0.0 --port=5000
 ```
 
 > Access grepmarx in browser: http://127.0.0.1:5000/
-
-
-**Note: a default user account is created on first launch (user=admin / password=admin). Change the default password immediately.**
 
 ## Credits & Links
 
