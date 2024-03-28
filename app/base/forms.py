@@ -79,13 +79,13 @@ class MultiCheckboxField(SelectMultipleField):
 class CreateTeamForm(FlaskForm):
     name = StringField("Team name", id="team-name", validators=[
             Regexp(
-                "^[a-zA-Z0-9]+$",
-                message="Name must contain only letters characters",
+                "^[a-zA-Z0-9 -_]+$",
+                message="Team's name can only contain letters, digits, - or _.",
             ),
             DataRequired()
         ],)
     members = MultiCheckboxField("Team members", validators=[DataRequired()])
-    projects = MultiCheckboxField("Projects", validators=[DataRequired()])
+    projects = MultiCheckboxField("Projects")
     member_name = StringField()
     project_name = StringField()
 
