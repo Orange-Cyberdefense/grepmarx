@@ -53,7 +53,7 @@ class RepositoryForm(FlaskForm):
 
 class LdapForm(FlaskForm):
     ldap_activated = BooleanField(
-        "Activate LDAP authentication", id="ldap-activated", validators=[DataRequired()]
+        "Activate LDAP authentication", id="ldap-activated"
     )
     users_approval = BooleanField("LDAP users approval", id="ldap-users-approval")
     server_host = StringField(
