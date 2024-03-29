@@ -23,7 +23,7 @@ from app.base import util
 from app.projects import blueprint
 from app.projects.forms import ProjectForm, ExcelForm
 from app.projects.models import Project
-from app.projects.util import (check_zipfile, count_lines, remove_project,
+from app.projects.util import (check_zipfile, count_lines, has_access, remove_project,
                                sha256sum, top_supported_language_lines_counts, get_user_projects_ids)
 from app.base.models import Team
 
@@ -51,6 +51,9 @@ def projects_list():
 @login_required
 def projects_dashboard(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
     # Get the 5 inspector mathes with the mot tags (thanks ChatGPT)
     form = ExcelForm()
     if form.validate_on_submit():
@@ -73,6 +76,9 @@ def projects_dashboard(project_id):
 @login_required
 def projects_status(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
     return str(project.status), 200
 
 
@@ -80,6 +86,9 @@ def projects_status(project_id):
 @login_required
 def projects_remove(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
     remove_project(project)
     # If there is project excel generated, delet it
     path = os.getcwd()
@@ -156,6 +165,9 @@ def projects_create():
 @login_required
 def scan_to_excel(project_id):
     project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
     wb = Workbook()
     wb.is_spellcheck_enabled = False
     vulnerabilities = project.analysis.vulnerabilities
