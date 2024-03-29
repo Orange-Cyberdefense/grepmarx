@@ -7,7 +7,15 @@ import json
 import os
 import time
 
-from flask import current_app, flash, redirect, render_template, url_for, request, jsonify
+from flask import (
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    url_for,
+    request,
+    jsonify,
+)
 from flask_login import current_user, login_required
 from pygments.lexers import guess_lexer_for_filename
 from pygments.util import ClassNotFound
@@ -102,7 +110,14 @@ def scans_launch():
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
-        import_rules(project.analysis, project_rules_path)
+        try:
+            import_rules(project.analysis, project_rules_path)
+        except FileNotFoundError:
+            flash(
+                "There was an issue while getting the rules for this analysis. Please synchronize the rules from the 'Analysis rules' page.",
+                "error",
+            )
+            return scans_new(project_id=project.id, scan_form=scan_form)
         # Start celery asynchronous scan
         project.status = STATUS_PENDING
         db.session.commit()
@@ -152,7 +167,11 @@ def analysis_workbench(analysis_id):
         flash(
             "No findings were found for this project during the last analysis", "error"
         )
-        return redirect(url_for("projects_blueprint.projects_dashboard", project_id=analysis.project.id))
+        return redirect(
+            url_for(
+                "projects_blueprint.projects_dashboard", project_id=analysis.project.id
+            )
+        )
     vulnerabilities = vulnerabilities_sorted_by_severity(analysis)
     return render_template(
         "analysis_workbench.html",
@@ -201,7 +220,7 @@ def analysis_codeview(occurence_id):
         hl_lines=hl_lines,
         user=current_user,
         path=occurence.file_path,
-        project_id=project_id
+        project_id=project_id,
     )
 
 
@@ -218,21 +237,33 @@ def analysis_occurence_details(occurence_id):
         owasp_links=OWASP_TOP10_LINKS,
     )
 
-@blueprint.route("/analysis/occurences_table/<occurence_id>/save_status", methods=["GET"])
+
+@blueprint.route(
+    "/analysis/occurences_table/<occurence_id>/save_status", methods=["GET"]
+)
 @login_required
 def save_status(occurence_id):
-    vulnerability_id = request.args.get('vulnerabilityId')
+    vulnerability_id = request.args.get("vulnerabilityId")
     vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
     # Check if the user has access to the project
     if not has_access(current_user, vulnerability.analysis.project):
         return render_template("403.html"), 403
-    for occurence in vulnerability.occurences :
+    for occurence in vulnerability.occurences:
         if occurence.id == int(occurence_id):
-            occurence.status = request.args.get('status')
+            occurence.status = request.args.get("status")
             try:
                 db.session.commit()
-                flash(f'Occurence {occurence_id} status updated successfully.', 'success')
-                return jsonify({"message": f"Occurence {occurence_id} status updated successfully."}), 200
+                flash(
+                    f"Occurence {occurence_id} status updated successfully.", "success"
+                )
+                return (
+                    jsonify(
+                        {
+                            "message": f"Occurence {occurence_id} status updated successfully."
+                        }
+                    ),
+                    200,
+                )
             except Exception as e:
                 db.session.rollback()
                 flash("Error : Add occurence status wto db faild.")
@@ -241,7 +272,9 @@ def save_status(occurence_id):
     return "Error", 404
 
 
-@blueprint.route("/analysis/occurences_table/<vulnerability_id>", methods=["POST", "GET"])
+@blueprint.route(
+    "/analysis/occurences_table/<vulnerability_id>", methods=["POST", "GET"]
+)
 @login_required
 def analysis_occurences_table(vulnerability_id):
     vulnerability = Vulnerability.query.filter_by(id=vulnerability_id).first_or_404()
@@ -282,6 +315,7 @@ def analysis_dependencies_details(vuln_dep_id):
         vulnerableDependency=vulnerableDependency,
     )
 
+
 @blueprint.route("/analysis/<analysis_id>/dependencies/export/csv")
 @login_required
 def analysis_dependencies_export_csv(analysis_id):
@@ -289,29 +323,51 @@ def analysis_dependencies_export_csv(analysis_id):
     # Check if the user has access to the project
     if not has_access(current_user, analysis.project):
         return render_template("403.html"), 403
-    data=[['Id', 'Package', 'Type', 'Version', 'Fix version', 'Severity', 'CVSS', 'Vendor confirmed', 'Has PoC', 'Know exploit', 'Direct usage', 'Indirect dependency', 'Prioritized', 'Reference']]
+    data = [
+        [
+            "Id",
+            "Package",
+            "Type",
+            "Version",
+            "Fix version",
+            "Severity",
+            "CVSS",
+            "Vendor confirmed",
+            "Has PoC",
+            "Know exploit",
+            "Direct usage",
+            "Indirect dependency",
+            "Prioritized",
+            "Reference",
+        ]
+    ]
     for vuln_dep in analysis.vulnerable_dependencies:
-        data.append([
-            vuln_dep.common_id,
-            vuln_dep.pkg_ref,
-            vuln_dep.pkg_type,
-            vuln_dep.version,
-            vuln_dep.fix_version,
-            vuln_dep.severity,
-            vuln_dep.cvss_score,
-            vuln_dep.vendor_confirmed,
-            vuln_dep.has_poc,
-            vuln_dep.has_exploit,
-            vuln_dep.direct,
-            vuln_dep.indirect,
-            vuln_dep.prioritized,
-            vuln_dep.source,
-        ])
+        data.append(
+            [
+                vuln_dep.common_id,
+                vuln_dep.pkg_ref,
+                vuln_dep.pkg_type,
+                vuln_dep.version,
+                vuln_dep.fix_version,
+                vuln_dep.severity,
+                vuln_dep.cvss_score,
+                vuln_dep.vendor_confirmed,
+                vuln_dep.has_poc,
+                vuln_dep.has_exploit,
+                vuln_dep.direct,
+                vuln_dep.indirect,
+                vuln_dep.prioritized,
+                vuln_dep.source,
+            ]
+        )
     si = io.StringIO()
     cw = csv.writer(si)
     cw.writerows(data)
     output = make_response(si.getvalue())
-    filename = "%i-Vulnerable Dependencies-%s.csv" % (analysis.id, analysis.project.name)
+    filename = "%i-Vulnerable Dependencies-%s.csv" % (
+        analysis.id,
+        analysis.project.name,
+    )
     output.headers["Content-Disposition"] = "attachment; filename=" + filename
     output.headers["Content-type"] = "text/csv"
     return output
@@ -344,8 +400,6 @@ def analysis_inspector_excerpt(tag_id):
         return render_template("403.html"), 403
     print(inspectortag.excerpt)
     return render_template("app_inspector_excerpt.html", inspectortag=inspectortag)
-
-
 
 
 @blueprint.route("/analysis/inspector/occurence/<match_id>")
