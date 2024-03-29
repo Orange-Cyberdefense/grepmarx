@@ -15,6 +15,7 @@ from app import db
 from app.constants import (
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
+    ROLE_ADMIN,
     SCC,
     SEVERITY_CRITICAL,
     SEVERITY_HIGH,
@@ -295,9 +296,10 @@ def get_user_projects_ids(current_user):
     return projects_id_list
 
 def has_access(current_user, project):
+    if current_user.role == ROLE_ADMIN:
+        return True
     user_teams = set(Team.query.filter(Team.members.any(username=current_user.username)).all())
     project_teams = set(Team.query.filter(Team.projects.any(name=project.name)).all())
-
     if user_teams.isdisjoint(project_teams):
         return False
     else:
