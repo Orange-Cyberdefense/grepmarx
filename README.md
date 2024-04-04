@@ -98,11 +98,13 @@ $ # pip install -r requirements-pgsql.txt
 
 > Install additionnal requirements
 ```bash
-# Dependency scan (cdxgen / depscan) requirements
-$ sudo apt install npm openjdk-17-jdk maven gradle golang composer
+# Dependency scan requirements (cdxgen)
+$ sudo apt install -y npm openjdk-17-jdk maven gradle golang composer
 $ sudo npm install -g @cyclonedx/cdxgen
-$ pip install appthreat-depscan
+# Application Inspector dependencies
+$ sudo apt install -y dotnet-runtime-8.0
 ```
+Make sure nodejs version is >= 20.X, otherwise cdxgen will fail.
 
 > A Redis server is required to queue security scans. Install the `redis` package with your favorite distro package manager, then:
 

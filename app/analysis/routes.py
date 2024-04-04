@@ -126,8 +126,6 @@ def scans_launch():
         # async_scan.apply_async(args=(project.analysis.id, project.appinspector.id))
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
         time.sleep(1.0)
-        # Done
-        current_app.logger.info("Analysis completed (project.id=%i)", project.id)
         flash("Analysis successfully launched", "success")
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated

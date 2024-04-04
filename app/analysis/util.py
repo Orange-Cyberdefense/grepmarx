@@ -15,10 +15,7 @@ from shutil import copyfile, rmtree
 import subprocess
 
 from flask import current_app
-# from semgrep import semgrep_main
-# from semgrep.constants import OutputFormat
-# from semgrep.error import SemgrepError
-# from semgrep.output import OutputHandler, OutputSettings
+
 
 from app import celery, db
 from app.analysis.models import (
@@ -81,16 +78,19 @@ def async_scan(self, analysis_id, app_inspector_id):
     try:
         # SAST scan: invoke semgrep
         sast_result = sast_scan(files_to_scan, project_rules_path, ignore)
+        load_sast_scan_results(
+            analysis, sast_result
+        )  # Load results into the analysis object
+        save_sast_result(analysis, sast_result)  # Also save SAST results into a file
+
         # SCA scan: invoke depscan
         sca_result = sca_scan(analysis.project)
+        load_sca_scan_results(analysis, sca_result)
+
         # Inspector scan: invoke ApplicationInspector
         inspector_result = inspector_scan(app_inspector.project.id)
-        # Everything went fine: load results into the analysis object
-        load_sast_scan_results(analysis, sast_result)
-        load_sca_scan_results(analysis, sca_result)
         load_inspector_results(app_inspector, inspector_result)
-        # Also save SAST results into a file
-        save_sast_result(analysis, sast_result)
+
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
         analysis.project.error_message = repr(e)
@@ -113,23 +113,18 @@ def stop_analysis(analysis):
     analysis.project.status = STATUS_ABORTED
     analysis.task_id = ""
     db.session.commit()
+    current_app.logger.debug(
+        "Analysis stopped for project with id=%i", analysis.project.id
+    )
 
 
 ##
 ## SAST scan utils
 ##
 
-# def generate_ignore_exclude(ignore):
-#     result = []
-#     for data in ignore:
-#         result.append("--exclude")
-#         result.append(data)
-#     return result
-
 
 def remove_ignored_files(files_paths, ignore):
     result = []
-
     if not ignore:
         return files_paths
     for path in files_paths:
@@ -141,6 +136,7 @@ def remove_ignored_files(files_paths, ignore):
         if should_include:
             result.append(path)
     return result
+
 
 def sast_scan(files_to_scan, project_rules_path, ignore):
     """Launch the actual semgrep scan. Credits to libsast:
@@ -154,25 +150,19 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
     Returns:
         [str]: Semgrep JSON output
     """
-    # cpu_count = multiprocessing.cpu_count()
-    # s1 = os.system("pwd").read()
-    # s2 = os.system("which semgrep").read()
-    # s3 = os.system("env").read()
-    # ignore_exclude = generate_ignore_exclude(ignore)
+    current_app.logger.debug("Starting SAST scan (semgrep)")
     files_to_scan = remove_ignored_files(files_to_scan, ignore)
     if len(files_to_scan) <= 0:
         return ""
     result = ""
-    cmd =  [
-            "semgrep",
-            "scan",
-            "--config",
-            project_rules_path,
-            "--disable-nosem",
-            "--json",
-            # "--jobs",
-            # str(cpu_count),
-        ] + files_to_scan
+    cmd = [
+        "semgrep",
+        "scan",
+        "--config",
+        project_rules_path,
+        "--disable-nosem",
+        "--json",
+    ] + files_to_scan
     try:
         result = subprocess.run(
             cmd,
@@ -183,6 +173,7 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
         print("No files found.")
     except Exception as e:
         print("There is an error :", e)
+    current_app.logger.debug("SAST scan (semgrep) finished")
     return result
 
 
@@ -377,8 +368,16 @@ def vulnerabilities_sorted_by_severity(analysis):
         list: vulnerability objects sorted by severity
     """
     r_vulns = list()
-    for severity in (SEVERITY_CRITICAL, SEVERITY_HIGH, SEVERITY_MEDIUM, SEVERITY_LOW, SEVERITY_INFO):
-        r_vulns += [vuln for vuln in analysis.vulnerabilities if vuln.severity == severity]
+    for severity in (
+        SEVERITY_CRITICAL,
+        SEVERITY_HIGH,
+        SEVERITY_MEDIUM,
+        SEVERITY_LOW,
+        SEVERITY_INFO,
+    ):
+        r_vulns += [
+            vuln for vuln in analysis.vulnerabilities if vuln.severity == severity
+        ]
     return r_vulns
 
 
@@ -397,28 +396,35 @@ def sca_scan(project):
     Returns:
         [dict]: depscan results (CycloneDX BOM+VEX)
     """
-    source_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME)
+    current_app.logger.debug("Starting SCA scan (depscan)")
+    source_path = os.path.join(
+        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME
+    )
     output_folder = os.path.join(
-        PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER
+        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER
     )
     # Launch depscan analysis
     subprocess.run(
-        [
+        cwd=source_path,
+        args=[
             DEPSCAN,
             "--no-banner",
             "--no-error",
+            "--no-vuln-table",
+            "--sync",
             "--src",
             source_path,
             "--reports-dir",
             output_folder,
-        ]
+        ],
     )
     # Return depscan JSON result as list of dicts
     result = list()
-    vex_files = glob(pathname=os.path.join(output_folder, "*.vex.json"))
+    vex_files = glob(pathname=os.path.join(output_folder, "*.vdr.json"))
     for file in vex_files:
         with open(file) as f:
             result.append(json.load(f))
+    current_app.logger.debug("SCA scan (depscan) finished")
     return result
 
 
@@ -453,7 +459,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 if "method" in c_vuln["ratings"][0]:
                     cvss_version = c_vuln["ratings"][0]["method"]
             # Search for affected and fixed versions
-            fix_version=""
+            fix_version = ""
             for v in c_vuln["affects"][0]["versions"]:
                 if v["status"] == "affected":
                     version = v["version"]
@@ -508,7 +514,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     has_exploit=has_exploit,
                     direct=direct,
                     indirect=indirect,
-                    advisories=advisories
+                    advisories=advisories,
                 )
             )
             # Add VulnerableDependency into the analysis
@@ -533,6 +539,7 @@ def inspector_scan(project_id):
     Args:
         project_id (Project): project.id
     """
+    current_app.logger.debug("Starting Inspector scan (ApplicationInspector)")
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
     # Call to external binary: ApplicationInspector.CLI
     cwd = os.getcwd()
@@ -552,6 +559,7 @@ def inspector_scan(project_id):
     f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
     json_result = json.load(f)
     f.close()
+    current_app.logger.debug("Inspector scan (ApplicationInspector) finished")
     return json_result
 
 
