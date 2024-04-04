@@ -60,7 +60,7 @@
             <table class="table table-sm" style="margin: 0;">
               <tr>
                 <td style="width:160px;line-height:30px;vertical-align:top">
-                  <i>Select Features</i>
+                  <i>Sensitive Features</i>
                 </td>
                 <td style="line-height:30px;;vertical-align:top">
                   <div id="<i>Select Features</i> -summary" style="display:inline-block; ">
@@ -79,8 +79,12 @@
                     <a href="#" class="feature_icon" title="AV media parsing" data-target="Data.Parsing.Media">
                       <i class="fas fa-photo-video fa-lg"></i>
                     </a>
-                    <a href="#" class="feature_icon" title="Dynamic command execution" data-target="DynamicExecution">
+                    <a href="#" class="feature_icon" title="Dynamic command execution"
+                      data-target="^OS.Process.DynamicExecution.*">
                       <i class="fab fa-audible fa-lg"></i>
+                    </a>
+                    <a href="#" class="feature_icon" title="AI" data-target="^AI\..*$">
+                      <i class="fas fa-robot fa-lg"></i>
                     </a>
                   </div>
                 </td>
@@ -118,6 +122,18 @@
                     <a href="#" class="feature_icon fa-lg" title="Advertising network"
                       data-target=".AdvertisingNetwork">
                       <i class="fas fa-ad"></i>
+                    </a>
+                    <a href="#" class="feature_icon fa-lg" title="SalesForces"
+                      data-target="^CloudServices.SalesForce$">
+                      <i class="fas fa-cloud"></i>
+                    </a>
+                    <a href="#" class="feature_icon fa-lg" title="ServiceNow"
+                      data-target="^CloudServices.ServiceNow$">
+                      <i class="fas fa-bell-concierge"></i>
+                    </a>
+                    <a href="#" class="feature_icon fa-lg" title="Work Day"
+                      data-target="^CloudServices.WorkDay$">
+                      <i class="fas fa-calendar-day"></i>
                     </a>
                   </div>
                 </td>
