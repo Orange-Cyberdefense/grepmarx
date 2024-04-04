@@ -15,12 +15,10 @@ ROLE_GUEST = "2"
 
 IGNORE_EXTENSIONS = {".min.js"}
 IGNORE_FOLDERS = {"vendor", "test", "Test"}
-#CDXGEN = "cdxgen"
-DEPSCAN_RESULT_FILE = "sbom-bom.vex.json"
-DEPSCAN_RESULT_FOLDER = "dependencies"
-#BOM_FILE="sbom-bom.json"
+DEPSCAN_RESULT_FOLDER = "reports"
 DEPSCAN = "depscan"
-APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.6.26/ApplicationInspector.CLI"
+APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.9.22/ApplicationInspector.CLI"
+
 # Project constants
 
 STATUS_NEW = 0

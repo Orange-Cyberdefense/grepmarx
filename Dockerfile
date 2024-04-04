@@ -25,6 +25,9 @@ RUN pip install --no-cache-dir -r requirements-pgsql.txt
 RUN apt-get update && apt-get install -y npm openjdk-17-jdk maven gradle golang composer
 RUN npm install -g @cyclonedx/cdxgen
 
+# Application Inspector dependencies
+RUN apt-get update && apt-get install -y dotnet-runtime-8.0
+
 # Downloaded packages cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

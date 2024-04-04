@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <REPLACECSS/>
+
+    <title>{{ application_version }}</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md bg-light navbar-lg">
+        <span class="navbar-brand">
+            <img alt="" class="d-inline-block align-top" height="32" id="ms_logo" src="" width="32">
+            Application Inspector
+        </span>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-button nav-link" data-target="#page__report_overview" href="#">Overview</a></li>
+            <li class="nav-item"><a class="nav-button nav-link" data-target="#page__report_summary" href="#">Summary</a></li>
+            <li class="nav-item"><a class="nav-button nav-link" data-target="#page__report_profile" href="#">Key Features</a></li>
+            <li class="nav-item"><a class="nav-button nav-link" data-target="#page__report_profile"
+                   href="https://github.com/Microsoft/ApplicationInspector/wiki" rel="noopener" target="_blank">About</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto" style="margin-right: 80px">
+            <li>
+                <a class="nav-button" href="https://github.com/Microsoft/ApplicationInspector" rel="noopener noreferrer"
+                   target="_blank">
+                    <i class="fab fa-github" style="font-size: 1.8em; color: #888"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main class="container-fluid" role="main">
+    <div class="row">
+        <div class="col col-lg-1"></div>
+        <div class="col" id="page__report_overview">
+            {% include "report_overview" %}
+        </div>
+        <div class="col d-none" id="page__report_summary">
+            {% include "report_summary" %}
+        </div>
+        <div class="col d-none" id="page__report_profile">
+            {% include "report_profile" %}
+        </div>
+        <div class="col col-lg-2"></div>
+    </div>
+</main>
+
+{% include "file_listing" %}
+
+<DEPSJS/>
+<REPLACEJS/>
+    let data = {{ json }};
+</script>
+</body>
+</html>
