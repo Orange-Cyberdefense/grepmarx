@@ -6,25 +6,38 @@ Copyright (c) 2021 - present Orange Cyberdefense
 import json
 import os
 import pathlib
-import pandas as pd
-from openpyxl import load_workbook, Workbook
+
+from openpyxl import Workbook
 from openpyxl.styles import Alignment, PatternFill
-from openpyxl.drawing.image import Image as XLImage
 from zipfile import BadZipFile, ZipFile
 
-from flask import current_app, flash, redirect, render_template, send_file, url_for, request
+from flask import (
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    send_file,
+    url_for,
+    request,
+)
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.constants import (EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS,
-                           PROJECTS_SRC_PATH)
+from app.constants import EXTRACT_FOLDER_NAME, LANGUAGES_DEVICONS, PROJECTS_SRC_PATH
 from app.base import util
 from app.projects import blueprint
 from app.projects.forms import ProjectForm, ExcelForm
 from app.projects.models import Project
-from app.projects.util import (check_zipfile, count_lines, has_access, remove_project,
-                               sha256sum, top_supported_language_lines_counts, get_user_projects_ids)
+from app.projects.util import (
+    check_zipfile,
+    count_lines,
+    has_access,
+    remove_project,
+    sha256sum,
+    top_supported_language_lines_counts,
+    get_user_projects_ids,
+)
 from app.base.models import Team
 
 
@@ -47,6 +60,7 @@ def projects_list():
         segment="projects",
     )
 
+
 @blueprint.route("/projects/<project_id>", methods=["POST", "GET"])
 @login_required
 def projects_dashboard(project_id):
@@ -54,23 +68,31 @@ def projects_dashboard(project_id):
     # Check if the user has access to the project
     if not has_access(current_user, project):
         return render_template("403.html"), 403
-    # Get the 5 inspector mathes with the mot tags (thanks ChatGPT)
+    # XLS export button
     form = ExcelForm()
     if form.validate_on_submit():
         selected_option = form.choice.data
         # Faire quelque chose avec l'option sélectionnée, comme rediriger vers une autre page
-        return redirect(url_for("projects_blueprint.scan_to_excel", project_id=project_id, selected_option=selected_option))
-    top_features = sorted(project.appinspector.match, key=lambda match: len(match.tag), reverse=True)[:5]
+        return redirect(
+            url_for(
+                "projects_blueprint.scan_to_excel",
+                project_id=project_id,
+                selected_option=selected_option,
+            )
+        )
+    # Get the 5 first inspector matches
+    features = project.appinspector.match[0:5]
     return render_template(
         "project_dashboard.html",
         project=project,
         user=current_user,
         top_supported_language_lines_counts=top_supported_language_lines_counts,
         lang_icons=LANGUAGES_DEVICONS,
-        top_features=top_features,
+        features=features,
         segment="projects",
-        form=form
+        form=form,
     )
+
 
 @blueprint.route("/projects/<project_id>/status")
 @login_required
@@ -150,7 +172,9 @@ def projects_create():
         Global_team = Team.query.filter_by(name="Global").first()
         Global_team_project_ids = [project.id for project in Global_team.projects]
         Global_team_project_ids.append(project.id)
-        Global_team.projects = Project.query.filter(Project.id.in_(Global_team_project_ids)).all()
+        Global_team.projects = Project.query.filter(
+            Project.id.in_(Global_team_project_ids)
+        ).all()
         print(Global_team)
         db.session.commit()
         return str(project.id), 200
@@ -160,6 +184,7 @@ def projects_create():
             "Project add form invalid entries: %s", json.dumps(project_form.errors)
         )
         return json.dumps(project_form.errors), 403
+
 
 @blueprint.route("/projects/to_excel/<project_id>")
 @login_required
@@ -171,11 +196,11 @@ def scan_to_excel(project_id):
     wb = Workbook()
     wb.is_spellcheck_enabled = False
     vulnerabilities = project.analysis.vulnerabilities
-    selected_option = request.args.get('selected_option')
+    selected_option = request.args.get("selected_option")
 
-    # Create the sheets table
+    # Create the sheets table
     sheets = {}
-    # Set the first sheet
+    # Set the first sheet
     sheets["MainSheet"] = wb.active
     sheets["MainSheet"].title = "MainSheet"
     # Set all vulnerabilitie sheets
@@ -184,104 +209,114 @@ def scan_to_excel(project_id):
         sheets[sheet_name] = wb.create_sheet(title=sheet_name)
 
     # Set the MainSheet data
-    sheets["MainSheet"].merge_cells('A1:B1')
-    sheets["MainSheet"].merge_cells('A2:B2')
-    sheets["MainSheet"]['A1'] = 'Project name'
-    sheets["MainSheet"]['A2'] = project.name
-    sheets["MainSheet"]['C1'] = 'Project id'
-    sheets["MainSheet"]['C2'] = project.id
-    sheets["MainSheet"]['D1'] = 'Risk level'
-    sheets["MainSheet"]['D2'] = project.risk_level
-    sheets["MainSheet"]['E1'] = 'Lines'
-    sheets["MainSheet"]['E2'] = project.project_lines_count.total_line_count
+    sheets["MainSheet"].merge_cells("A1:B1")
+    sheets["MainSheet"].merge_cells("A2:B2")
+    sheets["MainSheet"]["A1"] = "Project name"
+    sheets["MainSheet"]["A2"] = project.name
+    sheets["MainSheet"]["C1"] = "Project id"
+    sheets["MainSheet"]["C2"] = project.id
+    sheets["MainSheet"]["D1"] = "Risk level"
+    sheets["MainSheet"]["D2"] = project.risk_level
+    sheets["MainSheet"]["E1"] = "Lines"
+    sheets["MainSheet"]["E2"] = project.project_lines_count.total_line_count
 
     # Set the vulnerabilites header
     sheets["MainSheet"].row_dimensions[4].height = 40
-    sheets["MainSheet"].merge_cells('A4:C4')
-    sheets["MainSheet"].merge_cells('G4:J4')
-    sheets["MainSheet"].merge_cells('M4:V4')
-    for row in sheets["MainSheet"]['A4':'X4']:
+    sheets["MainSheet"].merge_cells("A4:C4")
+    sheets["MainSheet"].merge_cells("G4:J4")
+    sheets["MainSheet"].merge_cells("M4:V4")
+    for row in sheets["MainSheet"]["A4":"X4"]:
         for cell in row:
             # Center text
-            cell.alignment = Alignment(horizontal='center', vertical='center')
-            # Set cells background color
-            cell.fill = PatternFill(start_color='DEE6BD', end_color='DEE6BD', fill_type='solid')
-    sheets["MainSheet"]['A4'] = 'Title'
-    sheets["MainSheet"]['D4'] = 'Id'
-    sheets["MainSheet"]['E4'] = 'Confidence'
-    sheets["MainSheet"].column_dimensions['E'].width = 15
-    sheets["MainSheet"]['F4'] = 'Severity'
-    sheets["MainSheet"]['G4'] = 'Owasp'
-    sheets["MainSheet"]['K4'] = 'Impact'
-    sheets["MainSheet"]['L4'] = 'Likelihood'
-    sheets["MainSheet"].column_dimensions['L'].width = 15
-    sheets["MainSheet"]['M4'] = 'Description'
-    sheets["MainSheet"]['W4'] = "Occurences"
-    sheets["MainSheet"].column_dimensions['W'].width = 15
-    sheets["MainSheet"]['X4'] = "Ctrl Click"
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            # Set cells background color
+            cell.fill = PatternFill(
+                start_color="DEE6BD", end_color="DEE6BD", fill_type="solid"
+            )
+    sheets["MainSheet"]["A4"] = "Title"
+    sheets["MainSheet"]["D4"] = "Id"
+    sheets["MainSheet"]["E4"] = "Confidence"
+    sheets["MainSheet"].column_dimensions["E"].width = 15
+    sheets["MainSheet"]["F4"] = "Severity"
+    sheets["MainSheet"]["G4"] = "Owasp"
+    sheets["MainSheet"]["K4"] = "Impact"
+    sheets["MainSheet"]["L4"] = "Likelihood"
+    sheets["MainSheet"].column_dimensions["L"].width = 15
+    sheets["MainSheet"]["M4"] = "Description"
+    sheets["MainSheet"]["W4"] = "Occurences"
+    sheets["MainSheet"].column_dimensions["W"].width = 15
+    sheets["MainSheet"]["X4"] = "Ctrl Click"
     # Take all vulnerabilities
     for index, vulnerabilitie in enumerate(vulnerabilities):
         # Upgrade de rosheets["MainSheet"] size
         sheets["MainSheet"].row_dimensions[5 + index].height = 40
-        # Set auto ligne return for description
-        sheets["MainSheet"][f'M{5 + index}'].alignment = Alignment(wrap_text=True)
-        # Set vulnerabilitie data
-        sheets["MainSheet"].merge_cells(f'A{5 + index}:C{5 + index}')
-        sheets["MainSheet"].merge_cells(f'G{5 + index}:J{5 + index}')
-        sheets["MainSheet"].merge_cells(f'M{5 + index}:V{5 + index}')
-        sheets["MainSheet"][f'A{5 + index}'] = vulnerabilitie.title
-        sheets["MainSheet"][f'D{5 + index}'] = vulnerabilitie.id
-        sheets["MainSheet"][f'E{5 + index}'] = vulnerabilitie.confidence
-        sheets["MainSheet"][f'F{5 + index}'] = vulnerabilitie.severity
-        sheets["MainSheet"][f'G{5 + index}'] = vulnerabilitie.owasp
-        sheets["MainSheet"][f'K{5 + index}'] = vulnerabilitie.impact
-        sheets["MainSheet"][f'L{5 + index}'] = vulnerabilitie.likelihood
-        sheets["MainSheet"][f'M{5 + index}'] = vulnerabilitie.description
-        sheets["MainSheet"][f'W{5 + index}'] = len(vulnerabilitie.occurences)
+        # Set auto ligne return for description
+        sheets["MainSheet"][f"M{5 + index}"].alignment = Alignment(wrap_text=True)
+        # Set vulnerabilitie data
+        sheets["MainSheet"].merge_cells(f"A{5 + index}:C{5 + index}")
+        sheets["MainSheet"].merge_cells(f"G{5 + index}:J{5 + index}")
+        sheets["MainSheet"].merge_cells(f"M{5 + index}:V{5 + index}")
+        sheets["MainSheet"][f"A{5 + index}"] = vulnerabilitie.title
+        sheets["MainSheet"][f"D{5 + index}"] = vulnerabilitie.id
+        sheets["MainSheet"][f"E{5 + index}"] = vulnerabilitie.confidence
+        sheets["MainSheet"][f"F{5 + index}"] = vulnerabilitie.severity
+        sheets["MainSheet"][f"G{5 + index}"] = vulnerabilitie.owasp
+        sheets["MainSheet"][f"K{5 + index}"] = vulnerabilitie.impact
+        sheets["MainSheet"][f"L{5 + index}"] = vulnerabilitie.likelihood
+        sheets["MainSheet"][f"M{5 + index}"] = vulnerabilitie.description
+        sheets["MainSheet"][f"W{5 + index}"] = len(vulnerabilitie.occurences)
         # Ceate the vulnerabilitie occurences sheets button
-        sheets["MainSheet"][f'X{5 + index}'] = f"{vulnerabilitie.id} details"
-        sheets["MainSheet"][f'X{5 + index}'].hyperlink = f"#'vulnerabilitie {vulnerabilitie.id}'!A1"
+        sheets["MainSheet"][f"X{5 + index}"] = f"{vulnerabilitie.id} details"
+        sheets["MainSheet"][
+            f"X{5 + index}"
+        ].hyperlink = f"#'vulnerabilitie {vulnerabilitie.id}'!A1"
 
     # Set the vulnerabilitie occurences sheets
     for index, vulnerabilitie in enumerate(vulnerabilities):
         # Set the mainSheet button
         sheet_name = f"vulnerabilitie {vulnerabilitie.id}"
-        sheets[sheet_name].column_dimensions['A'].width = 15
+        sheets[sheet_name].column_dimensions["A"].width = 15
         sheets[sheet_name]["A1"] = "MainSheet"
         # Set sheet data
         sheets[sheet_name]["A1"].hyperlink = f"#'MainSheet'!A1"
-        sheets[sheet_name].column_dimensions['B'].width = 15
+        sheets[sheet_name].column_dimensions["B"].width = 15
         sheets[sheet_name]["B1"] = f"Vulnerabilitie {vulnerabilitie.id}"
-        sheets[sheet_name].merge_cells('C1:D1')
-        sheets[sheet_name].column_dimensions['C'].width = 15
+        sheets[sheet_name].merge_cells("C1:D1")
+        sheets[sheet_name].column_dimensions["C"].width = 15
         sheets[sheet_name]["C1"] = vulnerabilitie.title
 
         # Set occurences header
-        sheets[sheet_name].merge_cells('A3:D3')
+        sheets[sheet_name].merge_cells("A3:D3")
         sheets[sheet_name]["A3"] = "File path"
         sheets[sheet_name]["E3"] = "Id"
-        sheets[sheet_name].merge_cells('F3:Z3')
+        sheets[sheet_name].merge_cells("F3:Z3")
         sheets[sheet_name]["F3"] = "Match_string"
 
-        for row in sheets[sheet_name]['A3':'Z3']:
+        for row in sheets[sheet_name]["A3":"Z3"]:
             for cell in row:
                 # Center header text
-                cell.alignment = Alignment(horizontal='center', vertical='center')
-                # Set cells background color
-                cell.fill = PatternFill(start_color='DEE6BD', end_color='DEE6BD', fill_type='solid')
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+                # Set cells background color
+                cell.fill = PatternFill(
+                    start_color="DEE6BD", end_color="DEE6BD", fill_type="solid"
+                )
 
         # Set occurences data
         for index, occurence in enumerate(vulnerabilitie.occurences):
-            if (selected_option == "only_confirmed" and occurence.status == 1) or \
-                (selected_option == "confirmed_and_undefined" and occurence.status in [1, 0]) or \
-                (selected_option == "all"):
-                sheets[sheet_name].merge_cells(f'A{4 + index}:D{4 + index}')
+            if (
+                (selected_option == "only_confirmed" and occurence.status == 1)
+                or (
+                    selected_option == "confirmed_and_undefined"
+                    and occurence.status in [1, 0]
+                )
+                or (selected_option == "all")
+            ):
+                sheets[sheet_name].merge_cells(f"A{4 + index}:D{4 + index}")
                 sheets[sheet_name][f"A{4 + index}"] = occurence.file_path
                 sheets[sheet_name][f"E{4 + index}"] = occurence.id
-                sheets[sheet_name].merge_cells(f'F{4 + index}:Z{4 + index}')
+                sheets[sheet_name].merge_cells(f"F{4 + index}:Z{4 + index}")
                 sheets[sheet_name][f"F{4 + index}"] = occurence.match_string
 
-
-    wb.save(f'excel_save/{project.name}.xlsx')
+    wb.save(f"excel_save/{project.name}.xlsx")
     # The excel file is deleted along with the proejct in /project/remove/<project_id>
-    return send_file(f'../excel_save/{project.name}.xlsx', as_attachment=True)
+    return send_file(f"../excel_save/{project.name}.xlsx", as_attachment=True)

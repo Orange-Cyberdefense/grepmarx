@@ -48,9 +48,6 @@ from app.constants import (
     PROJECTS_SRC_PATH,
     STATUS_PENDING,
     STATUS,
-    TO_REVIEW,
-    CONFIRMED,
-    FALSE_POSITIVE,
 )
 from app.projects.models import Project
 from app.projects.util import has_access, top_language_lines_counts

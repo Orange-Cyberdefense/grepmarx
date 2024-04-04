@@ -322,7 +322,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
             <div class="col-12 col-xl-4">
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title">Main features</h3>
+                        <h3 class="card-title">Detected features</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                 <i class="fas fa-minus"></i>
@@ -334,7 +334,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
                             <div class="col-sm-12">
                                 <table id="vulnerable-deps-table" class="table" role="grid">
                                     <tbody>
-                                        {% for c_feature in top_features %}
+                                        {% for c_feature in features %}
                                         <tr>
                                             <td class="align-middle">
                                                 {{ c_feature.description }}

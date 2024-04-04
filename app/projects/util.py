@@ -5,7 +5,6 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import json
 import os
-import re
 import subprocess
 from hashlib import sha256
 from shutil import rmtree
