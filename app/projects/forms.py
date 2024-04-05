@@ -17,8 +17,18 @@ class ProjectForm(FlaskForm):
         validators=[FileRequired(), FileAllowed(["zip"], "Zip archives only")],
     )
 
-class ExcelForm(FlaskForm):
-    choice = RadioField('Select Option', choices=[('only_confirmed', 'Only Confirmed'),
-                                                  ('confirmed_and_undefined', 'Confirmed and To review'),
-                                                  ('all', 'All')])
-    submit = SubmitField('Submit')
+
+class XLSExportForm(FlaskForm):
+    choice = RadioField(
+        "Filter findings to export",
+        choices=[
+            ("only_confirmed", "Export only Confirmed vulnerabilities"),
+            (
+                "confirmed_and_undefined",
+                "Export Confirmed and To review vulnerabilities",
+            ),
+            ("all", "Export all vulnerabilities"),
+        ],
+        default="all",
+    )
+    submit = SubmitField("Submit")

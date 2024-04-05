@@ -29,6 +29,7 @@ STATUS_PENDING = 4
 STATUS_ABORTED = 5
 PROJECTS_SRC_PATH = "data/projects/"
 EXTRACT_FOLDER_NAME = "extract"
+EXPORT_FOLDER_NAME = "exports"
 SCC = "app/third-party/scc/scc"
 
 # Vulnerability occurence Status

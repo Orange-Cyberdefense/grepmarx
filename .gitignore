@@ -35,5 +35,3 @@ package-lock.json
 
 dump.rdb
 
-# excel generated
-excel_save/*
