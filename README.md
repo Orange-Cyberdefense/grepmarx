@@ -137,9 +137,9 @@ $ flask run --host=0.0.0.0 --port=5000
 
 - The web application dashboard is based on [AdminLTE Flask](https://github.com/app-generator/flask-dashboard-adminlte)
 - SAST code scanning is powered by the [semgrep](https://semgrep.dev/) engine
-- SBOM generation is done with the great [CycloneDX cdxgen](https://github.com/CycloneDX/cdxgen), and SCA is performed using the awesome [AppThreat dep-scan](https://github.com/AppThreat/dep-scan)
+- SBOM generation is done with the great [CycloneDX cdxgen](https://github.com/CycloneDX/cdxgen), and SCA is performed using the awesome [OWASP dep-scan](https://github.com/owasp-dep-scan/dep-scan)
 - LOC counting is handled by [scc](https://github.com/boyter/scc)
-- Features discovery is done using A[pplication Inspector](https://github.com/microsoft/ApplicationInspector)
+- Features discovery is done using [Application Inspector](https://github.com/microsoft/ApplicationInspector)
 
 <br />
 
