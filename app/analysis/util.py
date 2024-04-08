@@ -13,6 +13,7 @@ from difflib import Match
 from glob import glob
 from shutil import copyfile, rmtree
 import subprocess
+import traceback
 
 from flask import current_app
 
@@ -96,7 +97,9 @@ def async_scan(self, analysis_id, app_inspector_id):
         analysis.project.error_message = repr(e)
         analysis.project.status = STATUS_ERROR
         current_app.logger.error(
-            "Error while scanning project with id=%i: %s", analysis.project.id, str(e)
+            "Error while scanning project with id=%i: %s",
+            analysis.project.id,
+            traceback.format_exc(),
         )
     # Done
     analysis.finished_on = datetime.now()
