@@ -16,7 +16,6 @@ from sqlalchemy import and_, func
 from app import db
 from app.administration.models import LdapConfiguration
 from app.analysis.models import Analysis
-from app.base import models
 from app.rules.models import SupportedLanguage
 
 

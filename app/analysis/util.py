@@ -484,9 +484,10 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 if "method" in c_vuln["ratings"][0]:
                     cvss_version = c_vuln["ratings"][0]["method"]
             # Search for affected and fixed versions
+            version = ""
             fix_version = ""
             for v in c_vuln["affects"][0]["versions"]:
-                if v["status"] == "affected":
+                if v["status"] == "affected" and v["version"] is not None:
                     version = v["version"]
                 elif v["status"] == "unaffected":
                     fix_version = v["version"]
