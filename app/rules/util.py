@@ -40,12 +40,12 @@ def get_languages_names():
     return language_names
 
 def sync_db(rules_folder):
-    """Parse all libsast/semgrep YAML rule files in the given folder, and for each
+    """Parse all semgrep YAML rule files in the given folder, and for each
     rule create new a Rule object and persist it in the database. Existing rules ID
     are kept to preserve rule packs consistency.
 
     Args:
-        rules_folder (str): path of the folder containing libsast/semgrep YAML rule files
+        rules_folder (str): path of the folder containing semgrep YAML rule files
     """
     # Get all YML files in the folder
     rules_filenames = list()
@@ -56,6 +56,17 @@ def sync_db(rules_folder):
     # Parse rules in these files
     for c_filename in rules_filenames:
         save_rule_in_db(c_filename)
+    db.session.commit()
+    # Research & destroy rules in DB which doesn't exist on the FS
+    all_rules = Rule.query.all()
+    for rule in all_rules:
+        if not os.path.isfile(rule.file_path):
+            current_app.logger.debug(
+                "Delete from DB rule which isn't in repos anymore: %s",
+                rule.repository.name + "/" + rule.category + "/" + rule.title,
+            )
+            db.session.delete(rule)
+    db.session.commit()
 
 
 def save_rule_in_db(filename):
@@ -94,17 +105,18 @@ def save_rule_in_db(filename):
                         # Create a new rule only if the file doesn't corresponds to an existing
                         # rule, in order to keep ids and not break RulePacks
                         if rule is None:
-                            rule = Rule(
-                                title=c_rule["id"],
-                                file_path=file_path,
-                                repository=RuleRepository.query.filter_by(
-                                    name=repository
-                                ).first(),
-                                category=category,
-                            )
+                            rule = Rule()
                             db.session.add(rule)
+                        # Basic rule information
+                        rule.title = c_rule["id"]
+                        rule.file_path = file_path
+                        rule.repository = RuleRepository.query.filter_by(
+                                name=repository
+                            ).first()
+                        rule.category = category
                         # Associate the rule with a known, supported language
                         if "languages" in c_rule:
+                            rule.languages = list() # reset to avoid duplicates in RuleToSupportedLanguageAssociation!
                             supported_languages = SupportedLanguage.query.all()
                             for c_language in c_rule["languages"]:
                                 for c_sl in supported_languages:
@@ -139,7 +151,7 @@ def save_rule_in_db(filename):
                             "Rule imported in DB: %s",
                             repository + "/" + rule.category + "/" + rule.title,
                         )
-                        db.session.commit()
+                        #db.session.commit()
 
 
 def add_new_rule(name, code):
