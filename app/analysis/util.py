@@ -560,7 +560,14 @@ def inspector_scan(project_id):
         capture_output=True,
     ).stdout
     f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
-    json_result = json.load(f)
+    try:
+        json_result = json.load(f)
+    except json.JSONDecodeError as e:
+        current_app.logger.error(
+            "Error when gathering results file for Application Inspector scan (file is probably empty) during analysis for project with id=%i",
+            project_id,
+        )
+        return ""
     f.close()
     current_app.logger.debug("Inspector scan (ApplicationInspector) finished")
     return json_result

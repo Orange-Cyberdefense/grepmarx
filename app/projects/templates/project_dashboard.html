@@ -329,6 +329,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
                         </div>
                     </div>
                     <div class="card-body" style="height: 21em;">
+                        {% if features | length > 0 %}
                         <div class="row">
                             <div class="col-sm-12">
                                 <table id="vulnerable-deps-table" class="table" role="grid">
@@ -348,6 +349,14 @@ that could compromise the confidentiality, integrity, or availability of the sys
                             <a href="/analysis/inspector/{{ project.analysis.id }}">View all features in the inspector
                                 &gt;&gt;</a>
                         </p>
+                        {% else %}
+                        <div class="text-center mt-5">
+                            <i class="fas fa-circle-question text-gray fa-5x"></i>
+                            <p class="lead mt-4">
+                                No feature has been identified.
+                            </p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
