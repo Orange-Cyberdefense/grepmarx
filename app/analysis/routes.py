@@ -7,6 +7,7 @@ import json
 import os
 import time
 
+import cchardet
 from flask import (
     current_app,
     flash,
@@ -194,7 +195,12 @@ def analysis_codeview(occurence_id):
     )
     if common_prefix != os.path.realpath(source_path):
         return "", 403
-    with open(file, "r") as f:
+    # Detect file encoding
+    with open(file, 'rb') as f:
+        raw_data = f.read()
+        encoding = cchardet.detect(raw_data)['encoding']
+    # Open the file with detected encoding
+    with open(file, 'r', encoding=encoding) as f:
         code = f.read()
     # Try to guess file language for syntax highlighting
     try:
