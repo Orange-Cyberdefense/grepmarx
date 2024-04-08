@@ -55,6 +55,11 @@ $ sudo docker-compose pull && sudo docker-compose build && sudo docker-compose u
 
 Visit `http://localhost:5000` in your browser. The app should be up & running.
 
+In order to run a scan you will need to manually add an entry in `Administration/Repository` with the following value : 
+`https://github.com/semgrep/semgrep-rules`
+
+At this stage, all you have to do is define the rules according to your needs and then launch your scans.
+
 
 #### [Gunicorn](https://gunicorn.org/)
 ---
