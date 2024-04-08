@@ -18,6 +18,9 @@ IGNORE_FOLDERS = {"vendor", "test", "Test"}
 DEPSCAN_RESULT_FOLDER = "reports"
 DEPSCAN = "depscan"
 APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.9.22/ApplicationInspector.CLI"
+APPLICATION_INSPECTOR_MAX_PROCESSING_TIME=60000 # 1 minute
+SEMGREP = "semgrep"
+SEMGREP_MAX_FILES = 10000
 
 # Project constants
 

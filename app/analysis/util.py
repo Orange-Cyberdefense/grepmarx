@@ -5,7 +5,6 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import json
 import re
-import multiprocessing
 import os
 import re
 from datetime import datetime
@@ -32,12 +31,15 @@ from app.analysis.models import (
 )
 from app.constants import (
     APPLICATION_INSPECTOR,
+    APPLICATION_INSPECTOR_MAX_PROCESSING_TIME,
     DEPSCAN,
     DEPSCAN_RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
     RULES_PATH,
+    SEMGREP,
+    SEMGREP_MAX_FILES,
     SEVERITY_CRITICAL,
     SEVERITY_HIGH,
     SEVERITY_INFO,
@@ -78,11 +80,7 @@ def async_scan(self, analysis_id, app_inspector_id):
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     try:
         # SAST scan: invoke semgrep
-        sast_result = sast_scan(files_to_scan, project_rules_path, ignore)
-        load_sast_scan_results(
-            analysis, sast_result
-        )  # Load results into the analysis object
-        save_sast_result(analysis, sast_result)  # Also save SAST results into a file
+        sast_scan(analysis, files_to_scan, project_rules_path, ignore)
 
         # SCA scan: invoke depscan
         sca_result = sca_scan(analysis.project)
@@ -141,9 +139,31 @@ def remove_ignored_files(files_paths, ignore):
     return result
 
 
-def sast_scan(files_to_scan, project_rules_path, ignore):
-    """Launch the actual semgrep scan. Credits to libsast:
-    https://github.com/ajinabraham/libsast/blob/master/libsast/core_sgrep/helpers.py
+def sast_scan(analysis, files_to_scan, project_rules_path, ignore):
+    """Run Semgrep, possibly multiple times if there is a lot of files,
+    in order to avoid issues with shell limits. The maximum number of files
+    for a specific scan is defined in utils.SEMGREP_MAX_FILES.
+
+    Args:
+        analysis (Analysis): analysis to populate with semgrep results
+        files_to_scan (list): files' paths to be scanned
+        project_rules_path (str): path to the folder with semgrep YML rules
+        ignore (list): patterns of paths / filenames to skip
+    """
+    current_app.logger.debug("Starting SAST scan (semgrep)")
+    total_scans = int(len(files_to_scan) / SEMGREP_MAX_FILES)
+    # Run semgrep multiple times if there is a lot of files to avoid issues with shell limits
+    for i in range(0, len(files_to_scan), SEMGREP_MAX_FILES):
+        current_app.logger.debug("%i / %i", int(i / SEMGREP_MAX_FILES), total_scans)
+        files_chunk = files_to_scan[i : i + SEMGREP_MAX_FILES]
+        sast_result = semgrep_invoke(files_chunk, project_rules_path, ignore)
+        # Load results into the analysis object
+        load_sast_scan_results(analysis, sast_result)
+    current_app.logger.debug("SAST scan (semgrep) finished")
+
+
+def semgrep_invoke(files_to_scan, project_rules_path, ignore):
+    """Launch a semgrep scan.
 
     Args:
         files_to_scan (list): files' paths to be scanned
@@ -153,13 +173,12 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
     Returns:
         [str]: Semgrep JSON output
     """
-    current_app.logger.debug("Starting SAST scan (semgrep)")
     files_to_scan = remove_ignored_files(files_to_scan, ignore)
     if len(files_to_scan) <= 0:
         return ""
     result = ""
     cmd = [
-        "semgrep",
+        SEMGREP,
         "scan",
         "--config",
         project_rules_path,
@@ -176,7 +195,6 @@ def sast_scan(files_to_scan, project_rules_path, ignore):
         print("No files found.")
     except Exception as e:
         print("There is an error :", e)
-    current_app.logger.debug("SAST scan (semgrep) finished")
     return result
 
 
@@ -204,7 +222,7 @@ def load_sast_scan_results(analysis, semgrep_output):
         analysis (Analysis): corresponding analysis
         semgrep_output (str): Semgrep JSON output as string
     """
-    vulns = list()
+    # vulns = list()
     if semgrep_output != "":
         json_result = json.loads(semgrep_output)
         if json_result is not None:
@@ -214,17 +232,16 @@ def load_sast_scan_results(analysis, semgrep_output):
                 for c_result in results:
                     title = c_result["check_id"].split(".")[-1]
                     # Is it a new vulnerability or another occurence of a known one?
-                    e_vulns = [v for v in vulns if v.title == title]
+                    e_vulns = [v for v in analysis.vulnerabilities if v.title == title]
                     if len(e_vulns) == 0:
                         # Create a new vulnerability
                         n_vuln = load_vulnerability(title, c_result)
                         n_vuln.occurences.append(load_occurence(c_result))
-                        vulns.append(n_vuln)
+                        analysis.vulnerabilities.append(n_vuln)
                     else:
                         # Add an occurence to an existing vulnerability
                         e_vuln = e_vulns[0]
                         e_vuln.occurences.append(load_occurence(c_result))
-                        analysis.vulnerabilities = vulns
 
 
 def load_vulnerability(title, sast_result):
@@ -440,6 +457,11 @@ def load_sca_scan_results(analysis, dict_sca_results):
     """
     vuln_deps = list()
     for sca_results in dict_sca_results:
+        current_app.logger.debug(
+            "Importing %i SCA vulnerabilities in analysis with id=%i",
+            len(sca_results["vulnerabilities"]),
+            analysis.id,
+        )
         for c_vuln in sca_results["vulnerabilities"]:
             # Identify affected dependency
             bom_ref = c_vuln["bom-ref"]
@@ -522,11 +544,6 @@ def load_sca_scan_results(analysis, dict_sca_results):
             )
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
-            current_app.logger.debug(
-                "New vulnerable dependency %s added to the analysis with id=%i",
-                c_vuln["id"],
-                analysis.id,
-            )
 
 
 ##
@@ -554,6 +571,7 @@ def inspector_scan(project_id):
             f"{source_path}/",
             "-f",
             "json",
+            f"-p {APPLICATION_INSPECTOR_MAX_PROCESSING_TIME}",
             "-o",
             f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json",
         ],
