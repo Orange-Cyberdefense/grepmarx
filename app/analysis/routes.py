@@ -7,7 +7,7 @@ import json
 import os
 import time
 
-import cchardet
+import chardet
 from flask import (
     current_app,
     flash,
@@ -198,7 +198,7 @@ def analysis_codeview(occurence_id):
     # Detect file encoding
     with open(file, 'rb') as f:
         raw_data = f.read()
-        encoding = cchardet.detect(raw_data)['encoding']
+        encoding = chardet.detect(raw_data)['encoding']
     # Open the file with detected encoding
     with open(file, 'r', encoding=encoding) as f:
         code = f.read()
