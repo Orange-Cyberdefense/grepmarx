@@ -35,6 +35,7 @@ from app.constants import (
     DEPSCAN,
     DEPSCAN_RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
+    LOCAL_RULES_PATH,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
     RULES_PATH,
@@ -361,15 +362,24 @@ def import_rules(analysis, rule_folder):
     for c_rule_pack in analysis.rule_packs:
         for c_rule in c_rule_pack.rules:
             src = os.path.join(RULES_PATH, c_rule.file_path)
-            dst = os.path.join(
-                rule_folder,
-                c_rule.repository.name
-                + "_"
-                + c_rule.category
-                + "."
-                + c_rule.title
-                + next(iter(RULE_EXTENSIONS)),
-            )
+            # Local custom rule
+            if c_rule.repository is None or c_rule.category is None:
+                dst = os.path.join(
+                    rule_folder,
+                    c_rule.title
+                    + next(iter(RULE_EXTENSIONS)),
+                )
+            # Repository rule
+            else:
+                dst = os.path.join(
+                    rule_folder,
+                    c_rule.repository.name
+                    + "_"
+                    + c_rule.category
+                    + "."
+                    + c_rule.title
+                    + next(iter(RULE_EXTENSIONS)),
+                )
             copyfile(src, dst)
             current_app.logger.debug(
                 "Imported rule for project with id=%i: %s",
