@@ -160,7 +160,7 @@
                         <div class="col-sm-12">
                             <div class="card card-tertiary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Detected languages</h3>
+                                    <h3 class="card-title">Detected languages (Top 10)</h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"
                                             title="Collapse">
@@ -190,14 +190,14 @@
 <script type="text/javascript">
 
     var data_labels = [
-        {% for c_top5 in top_language_lines_counts(project.project_lines_count, 5) %}
-        "{{ c_top5.language }}",
+        {% for c_top10 in top_language_lines_counts(project.project_lines_count, 10) %}
+        "{{ c_top10.language }}",
         {% endfor %}
     ];
 
     var data_values = [
-        {% for c_top5 in top_language_lines_counts(project.project_lines_count, 5) %}
-        {{ (c_top5.code_count / project.project_lines_count.total_code_count * 100) | round | int }},
+        {% for c_top10 in top_language_lines_counts(project.project_lines_count, 10) %}
+        {{ (c_top10.code_count / project.project_lines_count.total_code_count * 100) | round | int }},
         {% endfor %}
     ];
 
