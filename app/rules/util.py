@@ -30,6 +30,7 @@ from yaml import YAMLError, safe_load
 ## Rule utils
 ##
 
+
 def get_languages_names():
     supported_languages = SupportedLanguage.query.all()
     language_names = []
@@ -38,6 +39,7 @@ def get_languages_names():
         language_names.append(language.name)
 
     return language_names
+
 
 def sync_db(rules_folder):
     """Parse all semgrep YAML rule files in the given folder, and for each
@@ -60,7 +62,7 @@ def sync_db(rules_folder):
     # Research & destroy rules in DB which doesn't exist on the FS
     all_rules = Rule.query.all()
     for rule in all_rules:
-        if not os.path.isfile(rule.file_path):
+        if not os.path.isfile(os.path.join(rules_folder, rule.file_path)):
             current_app.logger.debug(
                 "Delete from DB rule which isn't in repos anymore: %s",
                 rule.repository.name + "/" + rule.category + "/" + rule.title,
@@ -95,7 +97,7 @@ def save_rule_in_db(filename):
             if yml_ok:
                 category = ".".join(file_path.split(os.path.sep)[1:][:-1])
                 # Extract rules from the file, if any
-                if "rules" in yml_rules and file_path[-10:] !=  ".test.yaml":
+                if "rules" in yml_rules and file_path[-10:] != ".test.yaml":
                     for c_rule in yml_rules["rules"]:
                         # Skip deprecated rules
                         if "metadata" in c_rule and "deprecated" in c_rule["metadata"]:
@@ -111,12 +113,14 @@ def save_rule_in_db(filename):
                         rule.title = c_rule["id"]
                         rule.file_path = file_path
                         rule.repository = RuleRepository.query.filter_by(
-                                name=repository
-                            ).first()
+                            name=repository
+                        ).first()
                         rule.category = category
                         # Associate the rule with a known, supported language
                         if "languages" in c_rule:
-                            rule.languages = list() # reset to avoid duplicates in RuleToSupportedLanguageAssociation!
+                            rule.languages = (
+                                list()
+                            )  # reset to avoid duplicates in RuleToSupportedLanguageAssociation!
                             supported_languages = SupportedLanguage.query.all()
                             for c_language in c_rule["languages"]:
                                 for c_sl in supported_languages:
@@ -151,7 +155,7 @@ def save_rule_in_db(filename):
                             "Rule imported in DB: %s",
                             repository + "/" + rule.category + "/" + rule.title,
                         )
-                        #db.session.commit()
+                        # db.session.commit()
 
 
 def add_new_rule(name, code):
