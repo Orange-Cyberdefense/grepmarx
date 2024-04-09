@@ -153,8 +153,8 @@ class LdapForm(FlaskForm):
         validators=[
             Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_\(\)=&|*:! ]+$",
-                message="User object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), ampersand (&), pipe (|) ans star (*) characters",
+                "^[a-zA-Z0-9-_\(\)=&|*:! ,]+$",
+                message="User object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), comma (,), ampersand (&), pipe (|) ans star (*) characters",
             )
         ],
     )
@@ -164,8 +164,8 @@ class LdapForm(FlaskForm):
         validators=[
             Optional(),
             Regexp(
-                "^[a-zA-Z0-9-_\(\)=&|*:! ]+$",
-                message="Group object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), ampersand (&), pipe (|) ans star (*) characters",
+                "^[a-zA-Z0-9-_\(\)=&|*:! ,]+$",
+                message="Group object filter must contain only letters, numbers, dash (-), underscore (_), parenthesis (), colon (:), exclamation mark (!), equal (=), space ( ), comma (,), ampersand (&), pipe (|) ans star (*) characters",
             )
         ],
     )
