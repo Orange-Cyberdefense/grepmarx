@@ -67,12 +67,21 @@ def scans_new(project_id, scan_form=None):
         scan_form = ScanForm(project_id=project.id)
     # Dynamically adds choices for multiple selection fields
     scan_form.rule_packs.choices = ((rp.id, rp.name) for rp in RulePack.query.all())
+    # Rule packs preselection depending on the project's detected languages
+    project_languages = [llc.language for llc in project.project_lines_count.language_lines_counts]
+    all_rules_packs = RulePack.query.all()
+    selected_rule_packs = list()
+    for rule_pack in all_rules_packs:
+        for supported_language in rule_pack.languages:
+            if supported_language.name in project_languages:
+                selected_rule_packs.append(rule_pack.id)
     return render_template(
         "analysis_scans_new.html",
         project=project,
         form=scan_form,
         user=current_user,
         top_language_lines_counts=top_language_lines_counts,
+        selected_rule_packs=selected_rule_packs,
         segment="projects",
     )
 
