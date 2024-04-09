@@ -106,7 +106,7 @@
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input"
                                                     id="lang{{ lang_id }}" name="languages" value="{{ lang_id }}""
-                                                    {% if lang_id in form.languages.data %} checked {% endif %}
+                                                    {% if edit and lang_id in form.languages.data %} checked {% endif %}
                                                     >
                                                 <label class="custom-control-label" for="lang{{ lang_id }}">
                                                     {{ lang_label }}
