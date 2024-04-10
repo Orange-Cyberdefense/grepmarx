@@ -68,7 +68,9 @@ def scans_new(project_id, scan_form=None):
     # Dynamically adds choices for multiple selection fields
     scan_form.rule_packs.choices = ((rp.id, rp.name) for rp in RulePack.query.all())
     # Rule packs preselection depending on the project's detected languages
-    project_languages = [llc.language for llc in project.project_lines_count.language_lines_counts]
+    project_languages = [
+        llc.language for llc in project.project_lines_count.language_lines_counts
+    ]
     all_rules_packs = RulePack.query.all()
     selected_rule_packs = list()
     for rule_pack in all_rules_packs:
@@ -205,11 +207,11 @@ def analysis_codeview(occurence_id):
     if common_prefix != os.path.realpath(source_path):
         return "", 403
     # Detect file encoding
-    with open(file, 'rb') as f:
+    with open(file, "rb") as f:
         raw_data = f.read()
-        encoding = chardet.detect(raw_data)['encoding']
+        encoding = chardet.detect(raw_data)["encoding"]
     # Open the file with detected encoding
-    with open(file, 'r', encoding=encoding) as f:
+    with open(file, "r", encoding=encoding, errors="replace") as f:
         code = f.read()
     # Try to guess file language for syntax highlighting
     try:
