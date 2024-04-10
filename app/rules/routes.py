@@ -9,7 +9,7 @@ import os
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from app import db
-from app.constants import OWASP_TOP10_LINKS, RULES_PATH
+from app.constants import LANGUAGES_DEVICONS, OWASP_TOP10_LINKS, RULES_PATH
 from app.rules import blueprint
 from app.rules.forms import RulePackForm, RulesAddForm
 from app.rules.models import Rule, RulePack, SupportedLanguage
@@ -91,7 +91,8 @@ def rule_packs_form_page(edit, rule_pack_form):
         owasp_links=OWASP_TOP10_LINKS,
         user=current_user,
         segment="rule_packs",
-        languages=languages_names
+        languages=languages_names,
+        lang_icons=LANGUAGES_DEVICONS,
     )
 
 

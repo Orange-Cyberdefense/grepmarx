@@ -108,8 +108,8 @@
                                                     id="lang{{ lang_id }}" name="languages" value="{{ lang_id }}""
                                                     {% if edit and lang_id in form.languages.data %} checked {% endif %}
                                                     >
-                                                <label class="custom-control-label" for="lang{{ lang_id }}">
-                                                    {{ lang_label }}
+                                                <label class=" custom-control-label" for="lang{{ lang_id }}">
+                                                {{ lang_label }}
                                                 </label>
                                             </div>
                                         </div>
@@ -137,14 +137,15 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-12 div-select-rules">
+                                    Filter by language:
+                                    {% for c_lang in languages %}
+                                    <a class="{{ lang_icons[c_lang] }} btn btn-lg text-gray l-filter" title="{{ c_lang }}"
+                                        onclick="filterRules('{{ c_lang }}');" id="filter-{{ c_lang }}"></a>
+                                    {% endfor %}
+                                    <a class="btn btn-sm btn-outline text-danger" onclick="filterRules('clear');">
+                                        <span class="fas fa-filter-circle-xmark"></span> Clear
+                                    </a>
                                     <div class="form-group">
-                                        <select id="language-filter" class="form-control">
-                                            <option value="all">All</option>
-                                            {%for language in languages%}
-                                            <option value="{{ language }}"> {{ language }} </option>
-                                            {% endfor %}
-                                        </select>
-                                        <br>
                                         <table id="rules-list-table" class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
@@ -300,20 +301,30 @@
             }],
             order: [[1, 'desc']]
         });
-        /* Detect changes on language filter select box */
-        $('#language-filter').change(function () {
-            var dataTable = $('#rules-list-table').DataTable();
-            var selectedLanguage = $(this).val();
-
-            if (selectedLanguage == "all") {
-                dataTable.columns(4).search('').draw();
-            } else {
-                dataTable.columns(4).search('(^|,| )' + selectedLanguage + '($|,| )', true, false, true).draw();
-            }
-        });
         refreshSelectedLines();
     });
 
+    function filterRules(selectedLanguage) {
+        var dataTable = $('#rules-list-table').DataTable();
+        
+        allFilters = document.getElementsByClassName("l-filter");
+        for (var i = 0; i < allFilters.length; i++) {
+            allFilters[i].classList.remove("text-orange");
+            allFilters[i].classList.add("text-gray");
+        }
+
+        if (selectedLanguage != "clear") {
+            filter = document.getElementById("filter-" + selectedLanguage);
+            filter.classList.remove("text-gray");
+            filter.classList.add("text-orange");
+        }
+
+        if (selectedLanguage == "clear") {
+            dataTable.columns(4).search('').draw();
+        } else {
+            dataTable.columns(4).search('(^|,| )' + selectedLanguage + '($|,| )', true, false, true).draw();
+        }
+    }
 
     /* Convert dataTable's controls to bootstrap
     document.getElementsByClassName("dataTable-top")[0].classList.add("row");
