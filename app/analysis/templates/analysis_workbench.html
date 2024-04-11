@@ -103,8 +103,10 @@
 
         tr = document.getElementById("occurence-" + occurenceId);
         if(status == 1) {
+            tr.classList.remove("false-positive");
             tr.classList.add("confirmed");
         } else if(status == 2) {
+            tr.classList.remove("confirmed");
             tr.classList.add("false-positive");
         } else {
             tr.classList.remove("confirmed");
