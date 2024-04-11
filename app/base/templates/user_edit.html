@@ -56,7 +56,6 @@
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
         <form class="form-horizontal" method="post"
             action="/user_edit">
             {{ form.hidden_tag() }}
@@ -297,5 +296,5 @@
     });
 </script>
 {% endblock javascripts %}
-
+{% include 'toasts.html' %}
 {% endblock content %}

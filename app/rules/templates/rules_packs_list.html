@@ -42,8 +42,6 @@
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-
         <div class="row">
             {% for c_rule_pack in rule_packs %}
             <div class="col-lg-3 col-6">
@@ -74,4 +72,6 @@
 </div>
 {% endblock content %}
 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+{% include 'toasts.html' %}
+{% endblock javascripts %}

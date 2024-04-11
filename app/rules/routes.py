@@ -9,6 +9,7 @@ import os
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from app import db
+from app.base import util
 from app.constants import LANGUAGES_DEVICONS, OWASP_TOP10_LINKS, RULES_PATH
 from app.rules import blueprint
 from app.rules.forms import RulePackForm, RulesAddForm
@@ -140,7 +141,7 @@ def rules_packs_create():
                 "Rule pack add form invalid entries: %s",
                 json.dumps(rule_pack_form.errors),
             )
-            flash(str(rule_pack_form.errors), "error")
+            flash(util.print_form_erros(rule_pack_form.errors), "error")
             return rule_packs_form_page(edit=False, rule_pack_form=rule_pack_form)
     # GET / Display form
     else:
@@ -190,7 +191,7 @@ def rules_packs_edit(rule_pack_id):
                 "Rule pack edit form invalid entries: %s",
                 json.dumps(rule_pack_form.errors),
             )
-            flash(rule_pack_form.errors, "error")
+            flash(util.print_form_erros(rule_pack_form.errors), "error")
             return rule_packs_form_page(edit=True, rule_pack_form=rule_pack_form)
     # GET / Display the rule pack
     else:
@@ -236,5 +237,5 @@ def rules_add():
                 "Invalid rule form entries: %s",
                 json.dumps(rule_form.errors),
             )
-            flash(rule_form.errors, "error")
+            flash(util.print_form_erros(rule_form.errors), "error")
     return render_template("add_rules.html", form=rule_form, user=current_user,)

@@ -76,7 +76,7 @@ def users_add():
                 current_app.logger.warning(
                     "User add form invalid entries: %s", json.dumps(user_form.errors)
                 )
-                flash(str(user_form.errors), "error")
+                flash(util.print_form_erros(user_form.errors), "error")
                 return render_template(
                     "users_edit.html",
                     edit=False,
@@ -141,7 +141,7 @@ def users_edit(user_id):
                 current_app.logger.warning(
                     "User edit form invalid entries: %s", json.dumps(user_form.errors)
                 )
-                flash(str(user_form.errors), "error")
+                flash(util.print_form_erros(user_form.errors), "error")
                 return render_template(
                     "users_edit.html",
                     edit=True,
@@ -235,7 +235,7 @@ def ldap_configuration():
                     "LDAP configuration form invalid entries: %s",
                     json.dumps(ldap_form.errors),
                 )
-                flash(str(ldap_form.errors), "error")
+                flash(util.print_form_erros(ldap_form.errors), "error")
                 return render_template(
                     "ldap_config.html",
                     form=ldap_form,
@@ -311,7 +311,7 @@ def repos_add():
                 current_app.logger.warning(
                     "Repository add form invalid entries: %s", json.dumps(repo_form.errors)
                 )
-                flash(str(repo_form.errors), "error")
+                flash(util.print_form_erros(repo_form.errors), "error")
                 return render_template(
                     "repos_edit.html",
                     edit=False,
@@ -353,7 +353,7 @@ def repos_edit(repo_id):
                 current_app.logger.warning(
                     "Repository edit form invalid entries: %s", json.dumps(repo_form.errors)
                 )
-                flash(str(repo_form.errors), "error")
+                flash(util.print_form_erros(repo_form.errors), "error")
                 return render_template(
                     "repos_edit.html",
                     edit=True,

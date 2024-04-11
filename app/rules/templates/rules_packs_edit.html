@@ -53,8 +53,6 @@
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-
         <form method="post" {% if edit %} action="/rules/packs/edit/{{ form.id.data }}" {% else %}
             action="/rules/packs/create" {% endif %}>
             {{ form.hidden_tag() }}
@@ -283,6 +281,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{% include 'toasts.html' %}
 <!-- DataTables -->
 <script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>

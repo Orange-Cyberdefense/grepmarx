@@ -34,8 +34,6 @@ Add a local rule
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-
         <form class="form-horizontal" method="post" action="/rules/add">
 
             {{ form.hidden_tag() }}
@@ -80,3 +78,7 @@ Add a local rule
 </div>
 
 {% endblock content %}
+
+{% block javascripts %}
+{% include 'toasts.html' %}
+{% endblock javascripts %}

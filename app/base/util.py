@@ -6,6 +6,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import binascii
 import hashlib
+import json
 import os
 import shutil
 from calendar import monthrange
@@ -151,3 +152,10 @@ def ldap_config_dict():
     config["LDAP_GROUP_OBJECT_FILTER"] = ldap_config.group_object_filter
     config["LDAP_ADD_SERVER"] = False
     return config
+
+def print_form_erros(errors):
+    ret = ""
+    for field in errors:
+        for error in errors[field]:
+            ret += f"{field}: {error}"
+    return ret

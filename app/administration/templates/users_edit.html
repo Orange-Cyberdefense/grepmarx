@@ -50,8 +50,6 @@
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-        
         <form class="form-horizontal" method="post" 
             {% if edit %}action="/users/edit/{{ form.id.data }}"{% else %}action="/users/add"{% endif %}>
             {{ form.hidden_tag() }}
@@ -166,4 +164,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{% include 'toasts.html' %}
 {% endblock javascripts %}

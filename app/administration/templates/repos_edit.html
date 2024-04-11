@@ -49,8 +49,6 @@
 
     <!-- Main content -->
     <section class="content">
-
-        {% include 'messages.html' %}
         
         <form class="form-horizontal" method="post" 
             {% if edit %}action="/repos/edit/{{ form.id.data }}"{% else %}action="/repos/add"{% endif %}>
@@ -159,4 +157,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{% include 'toasts.html' %}
 {% endblock javascripts %}

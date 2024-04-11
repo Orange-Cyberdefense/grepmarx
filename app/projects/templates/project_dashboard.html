@@ -64,8 +64,6 @@ that could compromise the confidentiality, integrity, or availability of the sys
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-
         <div class="row">
             <div class="col-12 col-sm-6 col-md-3">
                 <div class="info-box">
@@ -397,6 +395,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{% include 'toasts.html' %}
 <!-- ChartJS -->
 <script src="/static/assets/plugins/chart.js/chart.min.js"></script>
 

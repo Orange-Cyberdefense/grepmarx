@@ -52,8 +52,6 @@
     <!-- Main content -->
     <section class="content">
 
-        {% include 'messages.html' %}
-
         <!-- Default box -->
         <div class="card card-default">
             <div class="card-header">
@@ -327,6 +325,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{% include 'toasts.html' %}
 <!-- DataTables -->
 <script src="/static/assets/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/static/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>

@@ -28,7 +28,6 @@ from flask import (current_app, redirect, render_template, request, session,
 from flask_login import current_user, login_required, login_user, logout_user
 from is_safe_url import is_safe_url
 from ldap3 import Tls
-from sqlalchemy.orm import aliased
 
 
 @blueprint.route("/")
@@ -469,7 +468,7 @@ def user_edit() :
             current_app.logger.warning(
                 "User edit form invalid entries: %s", json.dumps(user_form.errors)
             )
-            flash(str(user_form.errors), "error")
+            flash(util.print_form_erros(user_form.errors), "error")
             return render_template(
                 "user_edit.html",
                 edit=True,

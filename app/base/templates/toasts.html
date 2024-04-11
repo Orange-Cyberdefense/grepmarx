@@ -1,0 +1,29 @@
+    <script>
+    <!-- Success messages -->
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                $(document).Toasts('create', {
+                    class: 'bg-success',
+                    title: 'Done',
+                    subtitle: 'Operation succeeded',
+                    body: '{{ message }}'
+                });
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+    <!-- Error messages -->
+    {% with messages = get_flashed_messages(category_filter=["error"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                $(document).Toasts('create', {
+                    class: 'bg-danger',
+                    title: 'Error',
+                    subtitle: 'Operation failed',
+                    body: '{{ message }}'
+                });
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </script>

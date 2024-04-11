@@ -43,6 +43,7 @@ from app.analysis.util import (
     stop_analysis,
     vulnerabilities_sorted_by_severity,
 )
+from app.base import util
 from app.constants import (
     EXTRACT_FOLDER_NAME,
     OWASP_TOP10_LINKS,
@@ -142,7 +143,7 @@ def scans_launch():
         current_app.logger.warning(
             "Analysis launch form invalid entries: %s", json.dumps(scan_form.errors)
         )
-        flash(str(scan_form.errors), "error")
+        flash(util.print_form_erros(scan_form.errors), "error")
         return scans_new(project_id=project.id, scan_form=scan_form)
 
 
