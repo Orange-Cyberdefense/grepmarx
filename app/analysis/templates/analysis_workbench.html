@@ -100,6 +100,16 @@
         }).catch(error => {
             console.error('Error:', error);
         });
+
+        tr = document.getElementById("occurence-" + occurenceId);
+        if(status == 1) {
+            tr.classList.add("confirmed");
+        } else if(status == 2) {
+            tr.classList.add("false-positive");
+        } else {
+            tr.classList.remove("confirmed");
+            tr.classList.remove("false-positive");
+        }
     }
 </script>
 {% endblock javascripts %}

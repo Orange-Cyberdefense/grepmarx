@@ -182,16 +182,34 @@ mark, .mark {
 
 /* mark selected occurence in the table */
 .tr-occurence.active {
-    background-color: #dee2e6 !important;
+    background-color: #dee2e6;
 }
 
 .dark-mode .tr-occurence.active {
-    background-color: var(--gray-dark) !important;
+    background-color: var(--gray-dark);
 }
 
 /* Larger modal dialog for occurence details */
 .modal-occurence-details {
     max-width: 800px;
+}
+
+/* mark confirmed occurences in the table */
+.tr-occurence.confirmed {
+    background-color: #ff000014 !important;
+}
+
+.tr-occurence.confirmed.active {
+    background-color: #ff000030 !important;
+}
+
+/* mark false positive occurences in the table */
+.tr-occurence.false-positive {
+    background-color: #2b6a0014 !important;
+}
+
+.tr-occurence.false-positive.active {
+    background-color: #2b6a0030 !important;
 }
 
 /* ------------ Loading div syles */

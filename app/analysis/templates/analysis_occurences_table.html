@@ -12,29 +12,30 @@
     </thead>
     <tbody>
         {% for occurence in vulnerability.occurences %}
-        <tr class="tr-occurence font-weight-normal">
+        <tr class="tr-occurence {% if occurence.status ==1 %}confirmed{% endif %} {% if occurence.status ==2 %}false-positive{% endif %}"
+            id="occurence-{{ occurence.id }}">
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
                 {{ loop.index }}
             </td>
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
-                <span class="font-weight-normal text-monospace text-sm occurence-snippet">
+                <span class="text-monospace text-sm occurence-snippet">
                     {{ occurence.match_string }}
                 </span>
             </td>
             {% set folder = occurence.file_path[:-(occurence.file_path.split('/') | last | length)] %}
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')" title="{{ folder }}">
-                <span class="font-weight-normal">
+                <span class="">
                     {{ folder }}
                 </span>
             </td>
             {% set file = occurence.file_path.split('/')|last %}
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')" title="{{ file }}">
-                <span class="font-weight-normal">
+                <span class="">
                     {{ file }}
                 </span>
             </td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
-                <span class="font-weight-normal">
+                <span class="">
                     {{ occurence.position.line_start }}
                     {% if occurence.position.line_end > occurence.position.line_start %}
                     -{{ occurence.position.line_end }}
@@ -43,14 +44,16 @@
             </td>
             <td class="table-action">
                 <button class="btn btn-sm bg-lightblue" onclick="ajaxOccurenceDetails(this, '{{ occurence.id }}')"
-                        data-toggle="modal" data-target="#modal-occurence-details">
-                        Details
+                    data-toggle="modal" data-target="#modal-occurence-details">
+                    Details
                 </button>
             </td>
             <td class="table-status">
-                <select id="status-filter" name="status" onchange="saveStatus('{{occurence.id }}', '{{vulnerability.id}}', this.value)">
+                <select class="form-control" id="status-filter" name="status"
+                    onchange="saveStatus('{{occurence.id }}', '{{vulnerability.id}}', this.value)">
                     {% for elem in status %}
-                        <option value="{{ elem['id'] }}" {% if occurence.status == elem['id'] %} selected {% endif %}> {{ elem['name'] }}</option>
+                    <option value="{{ elem['id'] }}" {% if occurence.status==elem['id'] %} selected {% endif %}> {{
+                        elem['name'] }}</option>
                     {% endfor %}
                 </select>
             </td>
