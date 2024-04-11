@@ -33,6 +33,7 @@ def rules_list():
         rules=rules,
         owasp_links=OWASP_TOP10_LINKS,
         user=current_user,
+        lang_icons=LANGUAGES_DEVICONS,
         segment="rules",
     )
 

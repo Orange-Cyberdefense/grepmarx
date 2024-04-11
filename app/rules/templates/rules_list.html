@@ -70,8 +70,6 @@
                                     <th>#</th>
                                     <th>Severity</th>
                                     <th>Title</th>
-                                    <th>Category</th>
-                                    <th>Repository</th>
                                     <th>Languages</th>
                                     <th>OWASP</th>
                                     <th>CWE</th>
@@ -81,12 +79,12 @@
                             <tbody>
                                 {% for c_rule in rules %}
                                 <tr>
-                                    <td>
+                                    <td class="align-middle">
                                         <span class="font-weight-normal">
                                             {{ c_rule.id }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <span class="font-weight-normal">
                                             {% if c_rule.severity == "critical" %}
                                             <span class="badge badge-sm bg-danger p-2 pl-3 pr-3">CRITICAL</span>
@@ -105,26 +103,19 @@
                                             {% endif %}
                                         </span>
                                     </td>
-                                    <td class="text-truncate">
+                                    <td class="align-middle">
                                         <span class="font-weight-bold text-smallcaps">
                                             {{ c_rule.title|replace('-',' ')|replace('_',' ') }}
                                         </span>
+                                        <br />
+                                        <small class="p-0">
+                                            {{ c_rule.repository.name }}/{{ c_rule.category }}
+                                        </small>
                                     </td>
-                                    <td class="text-truncate">
-                                        <span class="font-weight-normal">
-                                            {{ c_rule.category }}
-                                        </span>
-                                    </td>
-                                    <td class="text-truncate">
-                                        <span class="font-weight-normal">
-                                            {{ c_rule.repository.name }}
-                                        </span>
-                                    </td>
-                                    <td class="text-truncate" width="20px">
-                                        <span class="font-weight-normal">
-                                            {% for c_language in c_rule.languages %}
-                                            {{ c_language.name }}
-                                            {{ ", " if not loop.last }}
+                                    <td class="align-middle text-truncate" width="20px">
+                                        <span class="font-weight-normal text-lg">
+                                            {% for c_lang in c_rule.languages %}
+                                            <i class="{{ lang_icons[c_lang.name] }} text-secondary" title="{{ c_lang.name }}"></i>
                                             {% endfor %}
                                         </span>
                                     </td>
@@ -254,7 +245,7 @@
         $('#rules-list-table').DataTable({
             responsive: true,
             lengthChange: false,
-            autoWidth: false,
+            autoWidth: true,
         });
     });
 </script>
