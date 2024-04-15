@@ -166,6 +166,9 @@ def login():
                     local=AUTH_LDAP,
                 )
                 db.session.add(user)
+                # Add user to the "Global team"
+                Global_team = Team.query.filter_by(name="Global").first_or_404()
+                Global_team.members.append(user)
                 db.session.commit()
                 current_app.logger.info(
                     "New user configuration added (user.id=%i)", user.id
