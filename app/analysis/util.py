@@ -502,6 +502,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 elif v["status"] == "unaffected":
                     fix_version = v["version"]
             # Search for insights
+
             for v in c_vuln["properties"]:
                 prioritized = False
                 if v["name"] == "depscan:prioritized" and v["value"] == "true":
@@ -510,10 +511,24 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     vendor_confirmed = (
                         True if "Vendor Confirmed" in v["value"] else False
                     )
-                    has_poc = True if "Has PoC" in v["value"] else False
+                    has_PoC = True if "Has PoC" in v["value"] else False
                     has_exploit = True if "Known Exploits" in v["value"] else False
                     direct = True if "Direct usage" in v["value"] else False
                     indirect = True if "Indirect dependency" in v["value"] else False
+                    direct_dep = True if "Direct dependency" in v["value"] else False
+                    distro_specific = True if "Distro specific" in v["value"] else False
+                    known_exploit = True if "Known Exploits" in v["value"] else False
+                    exploitable = True if "Exploitable" in v["value"] else False
+                    flagged_weakness = True if "Flagged weakness" in v["value"] else False
+                    suppress_for_containers = True if "Suppress for containers" in v["value"] else False
+                    uninstall_candidate = True if "Uninstall candidate" in v["value"] else False
+                    indirect_dependency = True if "Indirect dependency" in v["value"] else False
+                    local_install = True if "Local install" in v["value"] else False
+                    reachable_Bounty_target = True if "Reachable Bounty target" in v["value"] else False
+                    bug_Bounty_target = True if "Bug Bounty target" in v["value"] else False
+                    has_PoC = True if "Has PoC" in v["value"] else False
+                    reachable = True if "Reachable" in v["value"] else False
+                    reachable_and_Exploitable = True if "Reachable and Exploitable" in v["value"] else False
             # Register CWEs if any
             cwes = ""
             if "cwes" in c_vuln and len(c_vuln["cwes"]) > 0:
@@ -546,11 +561,24 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     fix_version=fix_version,
                     prioritized=prioritized,
                     vendor_confirmed=vendor_confirmed,
-                    has_poc=has_poc,
                     has_exploit=has_exploit,
                     direct=direct,
                     indirect=indirect,
                     advisories=advisories,
+                    distro_specific=distro_specific,
+                    direct_dep=direct_dep,
+                    known_exploit=known_exploit,
+                    exploitable=exploitable,
+                    flagged_weakness=flagged_weakness,
+                    suppress_for_containers=suppress_for_containers,
+                    uninstall_candidate=uninstall_candidate,
+                    indirect_dependency=indirect_dependency,
+                    local_install=local_install,
+                    reachable_Bounty_target=reachable_Bounty_target,
+                    bug_Bounty_target=bug_Bounty_target,
+                    has_PoC=has_PoC,
+                    reachable=reachable,
+                    reachable_and_Exploitable=reachable_and_Exploitable,
                 )
             )
             # Add VulnerableDependency into the analysis
@@ -588,7 +616,8 @@ def inspector_scan(project_id):
         ],
         capture_output=True,
     ).stdout
-    f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
+    if (os.path.exists(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")):
+        f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
     try:
         json_result = json.load(f)
     except json.JSONDecodeError as e:
