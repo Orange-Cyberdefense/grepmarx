@@ -16,9 +16,10 @@ from app.administration.models import LdapConfiguration
 from app.administration.util import validate_ldap_form, validate_user_form
 from app.base import util
 from app.base.models import User, Team
-from app.constants import ROLE_USER
+from app.constants import ROLE_USER, ROLE_ADMIN
 from app.rules.models import RuleRepository
 from app.rules.util import clone_rule_repo, pull_rule_repo, remove_rule_repo
+from app.projects.models import Project
 
 
 @blueprint.route("/users")
@@ -168,6 +169,15 @@ def users_remove(user_id):
     admin = util.is_admin(current_user.role)
     if admin or int(user_id) == current_user.id:
         user = User.query.filter_by(id=user_id).first_or_404()
+        admin = User.query.filter_by(role=ROLE_ADMIN).first()
+        # give all user projects to admin
+        projects = Project.query.filter_by(creator_id=user_id).all()
+        for project in projects:
+            if admin is not None:
+                project.creator = admin
+                project.creator_id = admin.id
+            else :
+                db.session.delete(project)
         db.session.delete(user)
         db.session.commit()
         current_app.logger.info("User removed (user.id=%i)", user.id)
