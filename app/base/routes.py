@@ -223,7 +223,7 @@ def logout():
 def team_remove(team_id):
     team = Team.query.filter_by(id=team_id).first_or_404()
     admin = util.is_admin(current_user.role)
-    if current_user.username == team.creator:
+    if current_user.username == team.creator or admin:
         db.session.delete(team)
         db.session.commit()
         if admin:
