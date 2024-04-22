@@ -54,8 +54,8 @@ class User(db.Model, UserMixin):
             setattr(self, property, value)
 
     def __repr__(self):
-        self
-        return str(self.username)
+        return f"<User(username={self.username})>"
+
 
 class Team(db.Model):
 

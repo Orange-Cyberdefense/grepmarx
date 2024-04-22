@@ -166,23 +166,38 @@ def users_edit(user_id):
 @blueprint.route("/users/remove/<user_id>")
 @login_required
 def users_remove(user_id):
-    admin = util.is_admin(current_user.role)
-    if admin or int(user_id) == current_user.id:
+    role_admin = util.is_admin(current_user.role)
+    if role_admin or int(user_id) == current_user.id:
         user = User.query.filter_by(id=user_id).first_or_404()
         admin = User.query.filter_by(role=ROLE_ADMIN).first()
-        # give all user projects to admin
+        teams = Team.query.all()
+
+        if teams != None:
+            for team in teams:
+                # delete user to all the team
+                new_members = [member for member in team.members if member != user]
+                team.members = new_members
+                # give all user team to admin or delete them
+                if team.creator == user.username:
+                    if admin is not None and role_admin != True:
+                        team.creator = admin
+                        team.user_id = admin.id
+                    else :
+                        db.session.delete(team)
+        # give all user projects to admin or delete them
         projects = Project.query.filter_by(creator_id=user_id).all()
-        for project in projects:
-            if admin is not None:
-                project.creator = admin
-                project.creator_id = admin.id
-            else :
-                db.session.delete(project)
+        if projects != None:
+            for project in projects:
+                if admin is not None:
+                    project.creator = admin
+                    project.creator_id = admin.id
+                else :
+                    db.session.delete(project)
         db.session.delete(user)
         db.session.commit()
         current_app.logger.info("User removed (user.id=%i)", user.id)
         flash("User successfully deleted", "success")
-        if admin:
+        if role_admin:
             return redirect(url_for("administration_blueprint.users_list"))
         else :
             return redirect(url_for("base_blueprint.login"))
