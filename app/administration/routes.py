@@ -171,6 +171,7 @@ def users_remove(user_id):
         user = User.query.filter_by(id=user_id).first_or_404()
         admin = User.query.filter_by(role=ROLE_ADMIN).first()
         teams = Team.query.all()
+        projects = Project.query.filter_by(creator_id=user_id).all()
 
         if teams != None:
             for team in teams:
@@ -179,19 +180,18 @@ def users_remove(user_id):
                 team.members = new_members
                 # give all user team to admin or delete them
                 if team.creator == user.username:
-                    if admin is not None and role_admin != True:
-                        team.creator = admin
+                    if admin is not None:
+                        team.creator = admin.username
                         team.user_id = admin.id
-                    else :
+                    else:
                         db.session.delete(team)
         # give all user projects to admin or delete them
-        projects = Project.query.filter_by(creator_id=user_id).all()
         if projects != None:
             for project in projects:
                 if admin is not None:
                     project.creator = admin
                     project.creator_id = admin.id
-                else :
+                else:
                     db.session.delete(project)
         db.session.delete(user)
         db.session.commit()
