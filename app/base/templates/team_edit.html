@@ -73,7 +73,11 @@
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="project{{ project_id }}" name="projects" value="{{ project_id }}" {% for project in team.projects %} {% if project_id == project.id %} checked {% endif %} {% endfor %}>
                                         <label class="custom-control-label" for="project{{ project_id }}" style="white-space: nowrap;">
-                                            {{ project_label }}
+                                            {% if project_label|length > 9 %}
+                                                {{ project_label[:7] }} <span title=" {{ project_label }}">...</span>
+                                            {% else %}
+                                                {{ project_label }}
+                                            {% endif %}
                                         </label>
                                     </div>
                                     {% for error in form.projects.errors %}
