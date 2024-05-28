@@ -164,7 +164,7 @@
                                 <td>
                                     <p>
                                         {% for member in team.members[:3] %} {{
-                                        member }} {% if not loop.last %},{% endif %}
+                                        member.username }} {% if not loop.last %},{% endif %}
                                         {% endfor %} {% if team.members|length > 3
                                         %}
                                         <span
