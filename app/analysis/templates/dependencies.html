@@ -132,6 +132,96 @@
                                             Indirect dependency
                                         </span>
                                         {% endif %}
+                                        {% if c_vuln.distro_specific %}
+                                        <span class="badge badge-lg bg-green">
+                                            <i class="fas fa-bullseye"></i>
+                                            Distro specific
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.direct_dep %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-bullseye"></i>
+                                            Direct dependencies
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.known_exploit %}
+                                        <span class="badge badge-lg bg-red">
+                                            <i class="fas fa-exclamation"></i>
+                                            Known exploit
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.exploitable %}
+                                        <span class="badge badge-lg bg-red">
+                                            <i class="fas fa-exclamation"></i>
+                                            Exploitable
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.flagged_weakness %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-flag"></i>
+                                            Flagged weakness
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.suppress_for_containers %}
+                                        <span class="badge badge-lg bg-orange">
+                                            <i class="fas fa-volume-off"></i>
+                                            Suppress for containers
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.uninstall_candidate %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-cut"></i>
+                                            Uninstall candidate
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.indirect_dependency %}
+                                        <span class="badge badge-lg bg-blue">
+                                            <i class="fas fa-book"></i>
+                                            Indirect dependency
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.local_install %}
+                                        <span class="badge badge-lg bg-blue">
+                                            <i class="fas fa-book"></i>
+                                            Local install
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.reachable_Bounty_target %}
+                                        <span class="badge badge-lg bg-blue">
+                                            <i class="fas fa-book-bookmark"></i>
+                                            Reachable Bounty target
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.bug_Bounty_target %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-book-bookmark"></i>
+                                            Bug Bounty target
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.has_PoC %}
+                                        <span class="badge badge-lg bg-blue">
+                                            <i class="fas fa-book-bookmark"></i>
+                                            Has PoC
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.reachable %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-sheet-plastic"></i>
+                                            Reachable
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.vendor_Confirmed %}
+                                        <span class="badge badge-lg bg-grey">
+                                            <i class="fas fa-sheet-plastic"></i>
+                                            Vendor Confirmed
+                                        </span>
+                                        {% endif %}
+                                        {% if c_vuln.reachable_and_Exploitable %}
+                                        <span class="badge badge-lg bg-red">
+                                            <i class="fas "></i>
+                                            Reachable and Exploitable
+                                        </span>
+                                        {% endif %}
                                     </td>
                                     <td class="align-middle">
                                         {% if c_vuln.severity == "critical" %}
