@@ -433,6 +433,8 @@ def sca_scan(project):
     output_folder = os.path.join(
         os.getcwd(), PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER
     )
+    # Clean previous depscan results
+    empty_folder(output_folder)
     # Launch depscan analysis
     subprocess.run(
         cwd=source_path,
@@ -457,6 +459,15 @@ def sca_scan(project):
     current_app.logger.debug("SCA scan (depscan) finished")
     return result
 
+def empty_folder(folder):
+    current_app.logger.debug("Clean SCA previous results")
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            current_app.logger.error("Failed to delete %s: %s" % (file_path, e))
 
 def load_sca_scan_results(analysis, dict_sca_results):
     """Populate an Analysis object with the result of an SCA (depscan) scan.
