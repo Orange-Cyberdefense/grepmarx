@@ -346,6 +346,7 @@ def analysis_dependencies_export_csv(analysis_id):
             "Fix version",
             "Severity",
             "CVSS",
+            "Source files"
             "Vendor confirmed",
             "Has PoC",
             "Know exploit",
@@ -365,8 +366,9 @@ def analysis_dependencies_export_csv(analysis_id):
                 vuln_dep.fix_version,
                 vuln_dep.severity,
                 vuln_dep.cvss_score,
+                vuln_dep.source_files.replace(",", "\r\n"),
                 vuln_dep.vendor_confirmed,
-                vuln_dep.has_poc,
+                vuln_dep.has_PoC,
                 vuln_dep.has_exploit,
                 vuln_dep.direct,
                 vuln_dep.indirect,
