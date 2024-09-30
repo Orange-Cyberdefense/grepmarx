@@ -555,10 +555,9 @@ def load_sca_scan_results(analysis, dict_sca_results):
                             title=adv["title"], url=adv["url"]
                         )
                     )
-            # Gets the dependency type and source from the components dict (SLOW!)
+            # Gets the dependency's sources from the components dict
             for c_comp in sca_results["components"]:
                 if c_comp["bom-ref"] == c_vuln["affects"][0]["ref"]:
-                    comp_type = c_comp["type"]
                     if "properties" in c_comp:
                         comp_src = ""
                         for c_comp_property in c_comp["properties"]:
@@ -603,7 +602,6 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     has_PoC=has_PoC,
                     reachable=reachable,
                     reachable_and_Exploitable=reachable_and_Exploitable,
-                    type=comp_type,
                     source_files=comp_src
                 )
             )

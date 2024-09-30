@@ -55,8 +55,17 @@
                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                     {% for type in types %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" id="tab-{{ type }}" data-toggle="pill" href="#tabPane-{{ type }}" role="tab"
-                            aria-controls="ctrl-{{ type }}" aria-selected="true">
+                        <a class="nav-link text-dark
+                        {% if type == types[0] %}
+                        active
+                        {% endif %} 
+                        " id="tab-{{ type }}" data-toggle="pill" href="#tabPane-{{ type }}"
+                            role="tab" aria-controls="ctrl-{{ type }}" 
+                            {% if type==types[0] %} 
+                            aria-selected="true"
+                            {% else %}
+                            aria-selected="false"
+                            {% endif %}>
                             <i class="fas fa-list"></i> {{ type }}
                         </a>
                     </li>
@@ -66,8 +75,11 @@
             <div class="card-body">
                 <div class="tab-content" id="tabContent">
                     {% for type in types %}
-                    <div class="tab-pane fade" id="tabPane-{{ type }}" role="tabpanel"
-                        aria-labelledby="ctrl-{{ type }}">
+                    <div class="tab-pane fade 
+                    {% if type == types[0] %}
+                    show active
+                    {% endif %}                    
+                    " id="tabPane-{{ type }}" role="tabpanel" aria-labelledby="ctrl-{{ type }}">
                         <div class="row">
                             <div class="col-sm-12">
                                 <table id="vulnerable-deps-table-{{ type }}" class="table table-hover dataTable"
@@ -75,8 +87,8 @@
                                     <thead>
                                         <tr>
                                             <th>Reference</th>
-                                            <th>Dependency</th>
-                                            <th>Version</th>
+                                            <th>Vulnerable dependency</th>
+                                            <th>Fix version</th>
                                             <th>Insights</th>
                                             <th>Severity</th>
                                             <th>Actions</th>
@@ -91,24 +103,23 @@
                                             </td>
                                             <td class="align-middle">
                                                 <strong>{{ c_vuln.pkg_name | capitalize }}</strong>
+                                                {% if c_vuln.version != "" %}
+                                                v{{ c_vuln.version }}
+                                                {% endif %}
                                                 <br />
                                                 <small>
                                                     {% if c_vuln.source_files != None %}
-                                                        {% set sources = c_vuln.source_files.split(',') %}
-                                                        {% for c_src in sources %}
-                                                        {{ c_src }}
-                                                        {% endfor %}
+                                                    {% set sources = c_vuln.source_files.split(',') %}
+                                                    {% for c_src in sources %}
+                                                    {{ c_src }}
+                                                    {% endfor %}
                                                     {% endif %}
                                                 </small>
                                             </td>
                                             <td class="align-middle">
-                                                {% if c_vuln.version != "" %}
-                                                v{{ c_vuln.version }}
-                                                {% endif %}
                                                 {% if c_vuln.fix_version != "" %}
-                                                <br />
                                                 <span class="badge badge-lg bg-olive">
-                                                    Fix: v{{ c_vuln.fix_version }}
+                                                    v{{ c_vuln.fix_version }}
                                                 </span>
                                                 {% endif %}
                                             </td>

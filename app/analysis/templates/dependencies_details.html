@@ -38,7 +38,6 @@
             </span>
             {{ vulnerableDependency.pkg_ref }}
             <br /><br />
-
             {% if vulnerableDependency.source != "" %}
             <span class="badge badge-lg bg-gray">
                 <a class="mt-2" target="_blank" href="{{ vulnerableDependency.source }}">
@@ -87,8 +86,16 @@
                 Indirect dependency
             </span>
             {% endif %}
-            <br /><br />
-
+            <br />
+            <small>
+                <strong>Found in:</strong><br />
+                {% if vulnerableDependency.source_files != None %}
+                {% set sources = vulnerableDependency.source_files.split(',') %}
+                {% for c_src in sources %}
+                {{ c_src }}<br />
+                {% endfor %}
+                {% endif %}
+            </small>
             <div class="h5">Description:</div>
             <p>{{ vulnerableDependency.description | replace("\n", "<br />") | safe }}</p>
             {% if vulnerableDependency.recommendation != "" %}
