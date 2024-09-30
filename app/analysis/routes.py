@@ -311,7 +311,8 @@ def analysis_dependencies(analysis_id):
     # Check if the user has access to the project
     if not has_access(current_user, analysis.project):
         return render_template("403.html"), 403
-    return render_template("dependencies.html", user=current_user, analysis=analysis)
+    types = list({vuln.pkg_type for vuln in analysis.vulnerable_dependencies})
+    return render_template("dependencies.html", user=current_user, analysis=analysis, types=types)
 
 
 @blueprint.route("/analysis/dependencies/details/<vuln_dep_id>")

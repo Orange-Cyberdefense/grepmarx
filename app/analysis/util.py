@@ -477,6 +477,8 @@ def load_sca_scan_results(analysis, dict_sca_results):
         dict_sca_results (dict): depscan results (CycloneDX BOM+VEX)
     """
     vuln_deps = list()
+    # Prepare regex pattern to remove absolute path from filenames
+    pattern = f".*/{PROJECTS_SRC_PATH}{analysis.project.id}/{EXTRACT_FOLDER_NAME}/"
     for sca_results in dict_sca_results:
         current_app.logger.debug(
             "Importing %i SCA vulnerabilities in analysis with id=%i",
@@ -553,6 +555,17 @@ def load_sca_scan_results(analysis, dict_sca_results):
                             title=adv["title"], url=adv["url"]
                         )
                     )
+            # Gets the dependency type and source from the components dict (SLOW!)
+            for c_comp in sca_results["components"]:
+                if c_comp["bom-ref"] == c_vuln["affects"][0]["ref"]:
+                    comp_type = c_comp["type"]
+                    if "properties" in c_comp:
+                        comp_src = ""
+                        for c_comp_property in c_comp["properties"]:
+                            if c_comp_property["name"] == "SrcFile":
+                                new_src = re.sub(pattern, "", c_comp_property["value"])
+                                comp_src = f"{comp_src}{new_src},"
+                    break
             # Populate VulnerableDependency object
             vuln_deps.append(
                 VulnerableDependency(
@@ -590,6 +603,8 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     has_PoC=has_PoC,
                     reachable=reachable,
                     reachable_and_Exploitable=reachable_and_Exploitable,
+                    type=comp_type,
+                    source_files=comp_src
                 )
             )
             # Add VulnerableDependency into the analysis

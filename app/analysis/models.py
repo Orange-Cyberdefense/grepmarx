@@ -124,6 +124,7 @@ class VulnerableDependency(db.Model):
     has_PoC = Column(Boolean)
     reachable = Column(Boolean)
     reachable_and_Exploitable = Column(Boolean)
+    source_files = Column(String)
 
 class VulnerableDependencyReference(db.Model):
     __tablename__ = "VulnerableDependencyReference"
