@@ -65,6 +65,20 @@ body {
     color: var(--light);
 }
 
+/* Specific style for nav pills */
+
+.nav-pills > li > a.active, .nav-pills > li > a.active:hover  {
+    background-color: var(--orange) !important;
+}
+
+.nav-pills > li > a.active:hover {
+    background-color: var(--white) !important;
+}
+
+.nav-pills > li > a:hover {
+    color: var(--orange) !important;
+}
+
 /*
 .dataTable-selector, .dataTable-input {
     display: block;

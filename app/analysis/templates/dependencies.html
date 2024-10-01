@@ -50,12 +50,12 @@
     <section class="content">
 
         <!-- Vulnerable dependencies card -->
-        <div class="card card-tabs card-default">
-            <div class="card-header p-0 border-bottom-0">
-                <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+        <div class="card card-default">
+            <div class="card-header p-2">
+                <ul class="nav nav-pills" role="tablist">
                     {% for type in types %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark
+                        <a class="nav-link
                         {% if type == types[0] %}
                         active
                         {% endif %} 
