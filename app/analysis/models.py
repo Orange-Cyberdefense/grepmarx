@@ -107,9 +107,7 @@ class VulnerableDependency(db.Model):
     fix_version = Column(String)
     prioritized = Column(Boolean)
     vendor_confirmed = Column(Boolean)
-    has_exploit = Column(Boolean)
-    direct  = Column(Boolean)
-    indirect = Column(Boolean)
+    direct_usage  = Column(Boolean)
     distro_specific = Column(Boolean)
     direct_dep = Column(Boolean)
     known_exploit = Column(Boolean)
@@ -124,6 +122,7 @@ class VulnerableDependency(db.Model):
     has_PoC = Column(Boolean)
     reachable = Column(Boolean)
     reachable_and_Exploitable = Column(Boolean)
+    malicious = Column(Boolean)
     source_files = Column(String)
 
 class VulnerableDependencyReference(db.Model):

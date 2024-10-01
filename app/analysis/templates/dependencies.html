@@ -106,12 +106,11 @@
                                                 {% if c_vuln.version != "" %}
                                                 v{{ c_vuln.version }}
                                                 {% endif %}
-                                                <br />
                                                 <small>
                                                     {% if c_vuln.source_files != None %}
                                                     {% set sources = c_vuln.source_files.split(',') %}
                                                     {% for c_src in sources %}
-                                                    {{ c_src }}
+                                                    <br />{{ c_src }}
                                                     {% endfor %}
                                                     {% endif %}
                                                 </small>
@@ -124,120 +123,14 @@
                                                 {% endif %}
                                             </td>
                                             <td class="align-middle">
-                                                {% if c_vuln.vendor_confirmed %}
-                                                <span class="badge badge-lg bg-light">
-                                                    <i class="fas fa-stamp"></i>
-                                                    Vendor confirmed
-                                                </span><br />
-                                                {% endif %}
-                                                {% if c_vuln.has_poc %}
-                                                <span class="badge badge-lg bg-warning">
-                                                    <i class="fas fa-exclamation"></i>
-                                                    Has PoC
-                                                </span><br />
-                                                {% endif %}
-                                                {% if c_vuln.has_exploit %}
-                                                <span class="badge badge-lg bg-maroon">
-                                                    <i class="fas fa-skull-crossbones"></i>
-                                                    Known exploit
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.direct %}
-                                                <span class="badge badge-lg bg-gray-dark">
-                                                    <i class="fas fa-arrow-up"></i>
-                                                    Direct usage
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.indirect %}
-                                                <span class="badge badge-lg bg-gray">
-                                                    <i class="fas fa-arrow-down"></i>
-                                                    Indirect dependency
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.distro_specific %}
-                                                <span class="badge badge-lg bg-green">
-                                                    <i class="fas fa-bullseye"></i>
-                                                    Distro specific
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.direct_dep %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-bullseye"></i>
-                                                    Direct dependencies
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.exploitable %}
-                                                <span class="badge badge-lg bg-red">
-                                                    <i class="fas fa-exclamation"></i>
-                                                    Exploitable
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.flagged_weakness %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-flag"></i>
-                                                    Flagged weakness
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.suppress_for_containers %}
-                                                <span class="badge badge-lg bg-orange">
-                                                    <i class="fas fa-volume-off"></i>
-                                                    Suppress for containers
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.uninstall_candidate %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-cut"></i>
-                                                    Uninstall candidate
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.indirect_dependency %}
-                                                <span class="badge badge-lg bg-blue">
-                                                    <i class="fas fa-book"></i>
-                                                    Indirect dependency
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.local_install %}
-                                                <span class="badge badge-lg bg-blue">
-                                                    <i class="fas fa-book"></i>
-                                                    Local install
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.reachable_Bounty_target %}
-                                                <span class="badge badge-lg bg-blue">
-                                                    <i class="fas fa-book-bookmark"></i>
-                                                    Reachable Bounty target
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.bug_Bounty_target %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-book-bookmark"></i>
-                                                    Bug Bounty target
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.has_PoC %}
-                                                <span class="badge badge-lg bg-blue">
-                                                    <i class="fas fa-book-bookmark"></i>
-                                                    Has PoC
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.reachable %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-sheet-plastic"></i>
-                                                    Reachable
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.vendor_Confirmed %}
-                                                <span class="badge badge-lg bg-grey">
-                                                    <i class="fas fa-sheet-plastic"></i>
-                                                    Vendor Confirmed
-                                                </span>
-                                                {% endif %}
-                                                {% if c_vuln.reachable_and_Exploitable %}
-                                                <span class="badge badge-lg bg-red">
-                                                    <i class="fas "></i>
-                                                    Reachable and Exploitable
-                                                </span>
-                                                {% endif %}
+                                                {% for var in insights_mapping %}
+                                                    {% if c_vuln[var] %}
+                                                    <span class="badge badge-lg bg-{{ insights_colors[var] }}">
+                                                        <i class="{{ insights_icons[var] }}"></i>
+                                                        {{ insights_mapping[var] }}
+                                                    </span><br />
+                                                    {% endif %}
+                                                {% endfor %}
                                             </td>
                                             <td class="align-middle">
                                                 {% if c_vuln.severity == "critical" %}

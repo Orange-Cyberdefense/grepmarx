@@ -46,6 +46,9 @@ from app.analysis.util import (
 from app.base import util
 from app.constants import (
     EXTRACT_FOLDER_NAME,
+    INSIGHTS_COLORS,
+    INSIGHTS_ICONS,
+    INSIGHTS_MAPPING,
     OWASP_TOP10_LINKS,
     PROJECTS_SRC_PATH,
     STATUS_PENDING,
@@ -312,7 +315,15 @@ def analysis_dependencies(analysis_id):
     if not has_access(current_user, analysis.project):
         return render_template("403.html"), 403
     types = list({vuln.pkg_type for vuln in analysis.vulnerable_dependencies})
-    return render_template("dependencies.html", user=current_user, analysis=analysis, types=types)
+    return render_template(
+        "dependencies.html",
+        user=current_user,
+        analysis=analysis,
+        types=types,
+        insights_mapping=INSIGHTS_MAPPING,
+        insights_icons=INSIGHTS_ICONS,
+        insights_colors=INSIGHTS_COLORS,
+    )
 
 
 @blueprint.route("/analysis/dependencies/details/<vuln_dep_id>")
@@ -346,14 +357,26 @@ def analysis_dependencies_export_csv(analysis_id):
             "Fix version",
             "Severity",
             "CVSS",
-            "Source files"
-            "Vendor confirmed",
-            "Has PoC",
-            "Know exploit",
-            "Direct usage",
-            "Indirect dependency",
+            "Source files",
             "Prioritized",
-            "Reference",
+            "Malicious",
+            "Vendor confirmed",
+            "Direct usage",
+            "Distro specific",
+            "Direct dependency",
+            "Indirect dependency",
+            "Has PoC",
+            "Reachable",
+            "Reachable and exploitable",
+            "Reachable bounty target",
+            "Bug bounty target",
+            "Known exploit",
+            "Exploitable",
+            "Flagged weakness",
+            "Suppress for containers",
+            "Uninstall candidate",
+            "Local install,"
+            "Reference"
         ]
     ]
     for vuln_dep in analysis.vulnerable_dependencies:
@@ -367,12 +390,24 @@ def analysis_dependencies_export_csv(analysis_id):
                 vuln_dep.severity,
                 vuln_dep.cvss_score,
                 vuln_dep.source_files.replace(",", "\r\n"),
-                vuln_dep.vendor_confirmed,
-                vuln_dep.has_PoC,
-                vuln_dep.has_exploit,
-                vuln_dep.direct,
-                vuln_dep.indirect,
                 vuln_dep.prioritized,
+                vuln_dep.malicious,
+                vuln_dep.vendor_confirmed,
+                vuln_dep.direct_usage,
+                vuln_dep.distro_specific,
+                vuln_dep.direct_dep,
+                vuln_dep.indirect_dependency,
+                vuln_dep.has_PoC,
+                vuln_dep.reachable,
+                vuln_dep.reachable_and_Exploitable,
+                vuln_dep.reachable_Bounty_target,
+                vuln_dep.bug_Bounty_target,
+                vuln_dep.known_exploit,
+                vuln_dep.exploitable,
+                vuln_dep.flagged_weakness,
+                vuln_dep.suppress_for_containers,
+                vuln_dep.uninstall_candidate,
+                vuln_dep.local_install,
                 vuln_dep.source,
             ]
         )

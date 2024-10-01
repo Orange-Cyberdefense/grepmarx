@@ -90,3 +90,64 @@ LANGUAGES_DEVICONS = {
     "Swift": "devicon-swift-plain",
     "C#": "devicon-csharp-plain"
 }
+
+# Mapping for depscan insights
+INSIGHTS_MAPPING = {
+    "vendor_confirmed": "Vendor Confirmed",
+    "has_PoC": "Has PoC",
+    "direct_usage": "Direct usage",
+    "direct_dep": "Direct dependency",
+    "distro_specific": "Distro specific",
+    "known_exploit": "Known Exploits",
+    "exploitable": "Exploitable",
+    "flagged_weakness": "Flagged weakness",
+    "suppress_for_containers": "Suppress for containers",
+    "uninstall_candidate": "Uninstall candidate",
+    "indirect_dependency": "Indirect dependency",
+    "local_install": "Local install",
+    "reachable_Bounty_target": "Reachable Bounty target",
+    "bug_Bounty_target": "Bug Bounty target",
+    "reachable": "Reachable",
+    "reachable_and_Exploitable": "Reachable and Exploitable",
+    "malicious": "Malicious",
+}
+
+INSIGHTS_ICONS = {
+    "vendor_confirmed": "fa-solid fa-certificate",
+    "has_PoC": "fa-solid fa-vial",
+    "direct_usage": "fa-solid fa-arrow-right-to-bracket",
+    "direct_dep": "fa-solid fa-square-up-right",
+    "distro_specific": "fa-brands fa-linux",
+    "known_exploit": "fa-solid fa-book-skull",
+    "exploitable": "fa-solid fa-skull-crossbones",
+    "flagged_weakness": "fa-solid fa-flag",
+    "suppress_for_containers": "fa-solid fa-scissors",
+    "uninstall_candidate": "fa-solid fa-trash",
+    "indirect_dependency": "fa-solid fa-diamond-turn-right",
+    "local_install": "fa-solid fa-boxes-packing",
+    "reachable_Bounty_target": "fa-solid fa-road-circle-exclamation",
+    "bug_Bounty_target": "fa-solid fa-money-bill",
+    "reachable": "fa-regular fa-circle-dot",
+    "reachable_and_Exploitable": "fa-solid fa-bullseye",
+    "malicious": "fa-solid fa-skull"
+}
+
+INSIGHTS_COLORS = {
+    "vendor_confirmed": "navy",
+    "has_PoC": "warning",
+    "direct_usage": "purple",
+    "direct_dep": "info",
+    "distro_specific": "light",
+    "known_exploit": "danger",
+    "exploitable": "danger",
+    "flagged_weakness": "gray-dark",
+    "suppress_for_containers": "gray",
+    "uninstall_candidate": "pink",
+    "indirect_dependency": "light",
+    "local_install": "lime",
+    "reachable_Bounty_target": "fuchsia",
+    "bug_Bounty_target": "lightblue",
+    "reachable": "orange",
+    "reachable_and_Exploitable": "danger",
+    "malicious": "danger"
+}

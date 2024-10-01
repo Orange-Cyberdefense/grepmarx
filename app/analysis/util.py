@@ -50,6 +50,7 @@ from app.constants import (
     STATUS_ANALYZING,
     STATUS_ERROR,
     STATUS_FINISHED,
+    INSIGHTS_MAPPING
 )
 from app.projects.util import (
     calculate_risk_level,
@@ -515,33 +516,14 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 elif v["status"] == "unaffected":
                     fix_version = v["version"]
             # Search for insights
-
+            insights = {}
             for v in c_vuln["properties"]:
                 prioritized = False
                 if v["name"] == "depscan:prioritized" and v["value"] == "true":
                     prioritized = True
                 elif v["name"] == "depscan:insights":
-                    vendor_confirmed = (
-                        True if "Vendor Confirmed" in v["value"] else False
-                    )
-                    has_PoC = True if "Has PoC" in v["value"] else False
-                    has_exploit = True if "Known Exploits" in v["value"] else False
-                    direct = True if "Direct usage" in v["value"] else False
-                    indirect = True if "Indirect dependency" in v["value"] else False
-                    direct_dep = True if "Direct dependency" in v["value"] else False
-                    distro_specific = True if "Distro specific" in v["value"] else False
-                    known_exploit = True if "Known Exploits" in v["value"] else False
-                    exploitable = True if "Exploitable" in v["value"] else False
-                    flagged_weakness = True if "Flagged weakness" in v["value"] else False
-                    suppress_for_containers = True if "Suppress for containers" in v["value"] else False
-                    uninstall_candidate = True if "Uninstall candidate" in v["value"] else False
-                    indirect_dependency = True if "Indirect dependency" in v["value"] else False
-                    local_install = True if "Local install" in v["value"] else False
-                    reachable_Bounty_target = True if "Reachable Bounty target" in v["value"] else False
-                    bug_Bounty_target = True if "Bug Bounty target" in v["value"] else False
-                    has_PoC = True if "Has PoC" in v["value"] else False
-                    reachable = True if "Reachable" in v["value"] else False
-                    reachable_and_Exploitable = True if "Reachable and Exploitable" in v["value"] else False
+                    for key, value in INSIGHTS_MAPPING.items():
+                        insights[key] = True if value in v["value"] else False
             # Register CWEs if any
             cwes = ""
             if "cwes" in c_vuln and len(c_vuln["cwes"]) > 0:
@@ -566,8 +548,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                                 comp_src = f"{comp_src}{new_src},"
                     break
             # Populate VulnerableDependency object
-            vuln_deps.append(
-                VulnerableDependency(
+            vuln_dep = VulnerableDependency(
                     common_id=c_vuln["id"],
                     bom_ref=bom_ref,
                     pkg_type=pkg_type,
@@ -583,28 +564,12 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     version=version,
                     fix_version=fix_version,
                     prioritized=prioritized,
-                    vendor_confirmed=vendor_confirmed,
-                    has_exploit=has_exploit,
-                    direct=direct,
-                    indirect=indirect,
-                    advisories=advisories,
-                    distro_specific=distro_specific,
-                    direct_dep=direct_dep,
-                    known_exploit=known_exploit,
-                    exploitable=exploitable,
-                    flagged_weakness=flagged_weakness,
-                    suppress_for_containers=suppress_for_containers,
-                    uninstall_candidate=uninstall_candidate,
-                    indirect_dependency=indirect_dependency,
-                    local_install=local_install,
-                    reachable_Bounty_target=reachable_Bounty_target,
-                    bug_Bounty_target=bug_Bounty_target,
-                    has_PoC=has_PoC,
-                    reachable=reachable,
-                    reachable_and_Exploitable=reachable_and_Exploitable,
                     source_files=comp_src
                 )
-            )
+            # Add insights
+            for key, value in insights.items():
+                setattr(vuln_dep, key, value)
+            vuln_deps.append(vuln_dep)
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
 
