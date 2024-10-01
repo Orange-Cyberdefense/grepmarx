@@ -110,10 +110,19 @@
                                                 {% endif %}
                                                 <small>
                                                     {% if c_vuln.source_files != None %}
-                                                    {% set sources = c_vuln.source_files.split(',') %}
-                                                    {% for c_src in sources %}
-                                                    <br />{{ c_src }}
-                                                    {% endfor %}
+                                                        {% set sources = c_vuln.source_files.rstrip(',').split(',') %}
+                                                        <br />{{ sources[0] }}
+                                                        {% if sources | length > 1 %}
+                                                            <a data-toggle="collapse" href="#collapse-{{ c_vuln.id }}" aria-expanded="false" aria-controls="collapse-{{ c_vuln.id }}">
+                                                                [ {{ sources | length - 1 }} more... ]
+                                                            </a>
+                                                            <div class="collapse multi-collapse" id="collapse-{{ c_vuln.id }}">
+                                                            {% set cut_list = sources | length -1 %}
+                                                            {% for c_src in sources[-cut_list:] %}
+                                                                {{ c_src }}<br />
+                                                            {% endfor %}
+                                                            </div>
+                                                        {% endif %}
                                                     {% endif %}
                                                 </small>
                                             </td>
