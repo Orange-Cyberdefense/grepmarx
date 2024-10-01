@@ -56,36 +56,14 @@
             {% if vulnerableDependency.fix_version != "" %}
             <span class="badge badge-lg bg-success">Fix version: {{ vulnerableDependency.fix_version }}</span>
             {% endif %}
-            {% if vulnerableDependency.vendor_confirmed %}
-            <span class="badge badge-lg bg-light">
-                <i class="fas fa-stamp"></i>
-                Vendor confirmed
-            </span>
-            {% endif %}
-            {% if vulnerableDependency.has_poc %}
-            <span class="badge badge-lg bg-warning">
-                <i class="fas fa-exclamation"></i>
-                Has PoC
-            </span>
-            {% endif %}
-            {% if vulnerableDependency.has_exploit %}
-            <span class="badge badge-lg bg-maroon">
-                <i class="fas fa-skull-crossbones"></i>
-                Known exploit
-            </span>
-            {% endif %}
-            {% if vulnerableDependency.direct %}
-            <span class="badge badge-lg bg-gray-dark">
-                <i class="fas fa-arrow-up"></i>
-                Direct usage
-            </span>
-            {% endif %}
-            {% if vulnerableDependency.indirect %}
-            <span class="badge badge-lg bg-gray">
-                <i class="fas fa-arrow-down"></i>
-                Indirect dependency
-            </span>
-            {% endif %}
+            {% for var in insights_mapping %}
+                {% if vulnerableDependency[var] %}
+                <span class="badge badge-lg bg-{{ insights_colors[var] }}">
+                    <i class="{{ insights_icons[var] }}"></i>
+                    {{ insights_mapping[var] }}
+                </span>
+                {% endif %}
+            {% endfor %}
             <br />
             <small>
                 <strong>Found in:</strong><br />

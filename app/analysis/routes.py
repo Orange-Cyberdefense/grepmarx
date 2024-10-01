@@ -338,6 +338,9 @@ def analysis_dependencies_details(vuln_dep_id):
     return render_template(
         "dependencies_details.html",
         vulnerableDependency=vulnerableDependency,
+        insights_mapping=INSIGHTS_MAPPING,
+        insights_icons=INSIGHTS_ICONS,
+        insights_colors=INSIGHTS_COLORS,
     )
 
 
