@@ -40,6 +40,7 @@ from app.analysis.models import (
 from app.analysis.util import (
     async_scan,
     import_rules,
+    md2html,
     stop_analysis,
     vulnerabilities_sorted_by_severity,
 )
@@ -335,6 +336,8 @@ def analysis_dependencies_details(vuln_dep_id):
     # Check if the user has access to the project
     if not has_access(current_user, vulnerableDependency.analysis.project):
         return render_template("403.html"), 403
+    # Quick and dirty management of markdown descriptions
+    vulnerableDependency.description = md2html(vulnerableDependency.description)
     return render_template(
         "dependencies_details.html",
         vulnerableDependency=vulnerableDependency,

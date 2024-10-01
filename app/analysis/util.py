@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+import html
 import json
 import re
 import os
@@ -573,6 +574,27 @@ def load_sca_scan_results(analysis, dict_sca_results):
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
 
+def md2html(string):
+    """A very quick and dirty way to make markdown descriptions a bit more presentable
+    in HTML. The goal is not to have full markdown support, but only to handle
+    most commonly used syntax in CVE descriptions: titles, code, line breaks...
+
+    Args:
+        string (String): markdown string to convert to HTML
+    """
+    # Encode any HTML present in the original description to avoid XSS
+    string = html.escape(string)
+    # Place titles in <strong>
+    string = re.sub(r'^#+\s*(.*)', r'<strong>\1</strong>', string, flags=re.MULTILINE)
+    # Place code samples in <pre>
+    string = re.sub(r'```(.*?)```', r'<pre class="modal-code text-monospace">\1</pre>', string, flags=re.DOTALL)
+    # Place backticks terms in <code>
+    string = re.sub(r'`(.*?)`', r'<code>\1</code>', string)
+    # Replace line breaks with <br />
+    string = re.sub(r'\n', '<br />', string)
+    # Allow maximum 2 consecutive <br />
+    string = re.sub(r'(<br\s*/?>\s*){3,}', '<br /><br />', string)
+    return string
 
 ##
 ## Inspector scan utils
