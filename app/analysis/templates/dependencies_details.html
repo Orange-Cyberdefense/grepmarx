@@ -76,12 +76,13 @@
             </small>
             <div class="h5">Description:</div>
             <p>{{ vulnerableDependency.description | replace("\n", "<br />") | safe }}</p>
+            
             {% if vulnerableDependency.recommendation != "" %}
-
             <div class="h5">Recommendation:</div>
             <p>{{ vulnerableDependency.recommendation | replace("\n", "<br />") | safe }}</p>
             {% endif %}
 
+            {% if vulnerableDependency.advisories | length > 0 %}
             <div class="h5">Advisories:</div>
             <ul>
                 {% for adv in vulnerableDependency.advisories %}
@@ -91,6 +92,8 @@
                 </li>
                 {% endfor %}
             </ul>
+            {% endif %}
+            
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
