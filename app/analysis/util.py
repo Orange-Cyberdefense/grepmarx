@@ -34,7 +34,7 @@ from app.constants import (
     APPLICATION_INSPECTOR,
     APPLICATION_INSPECTOR_MAX_PROCESSING_TIME,
     DEPSCAN,
-    DEPSCAN_RESULT_FOLDER,
+    RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
@@ -159,6 +159,8 @@ def sast_scan(analysis, files_to_scan, project_rules_path, ignore):
         current_app.logger.debug("%i / %i", int(i / SEMGREP_MAX_FILES), total_scans)
         files_chunk = files_to_scan[i : i + SEMGREP_MAX_FILES]
         sast_result = semgrep_invoke(files_chunk, project_rules_path, ignore)
+        # Save results on disk to allow download
+        save_sast_result(analysis, sast_result, i)
         # Load results into the analysis object
         load_sast_scan_results(analysis, sast_result)
     current_app.logger.debug("SAST scan (semgrep) finished")
@@ -200,7 +202,7 @@ def semgrep_invoke(files_to_scan, project_rules_path, ignore):
     return result
 
 
-def save_sast_result(analysis, sast_result):
+def save_sast_result(analysis, sast_result, step):
     """Save Semgrep JSON results as a file in the project's directory.
 
     Args:
@@ -210,7 +212,8 @@ def save_sast_result(analysis, sast_result):
     filename = os.path.join(
         PROJECTS_SRC_PATH,
         str(analysis.project.id),
-        "sast_analysis_" + str(analysis.id) + ".json",
+        RESULT_FOLDER,
+        f"sast_report_{step}.json",
     )
     f = open(filename, "a")
     f.write(sast_result)
@@ -432,10 +435,10 @@ def sca_scan(project):
         os.getcwd(), PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME
     )
     output_folder = os.path.join(
-        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), DEPSCAN_RESULT_FOLDER
+        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), RESULT_FOLDER
     )
     # Clean previous depscan results
-    empty_folder(output_folder)
+    delete_sca_files(output_folder)
     # Launch depscan analysis
     subprocess.run(
         cwd=source_path,
@@ -460,15 +463,16 @@ def sca_scan(project):
     current_app.logger.debug("SCA scan (depscan) finished")
     return result
 
-def empty_folder(folder):
+def delete_sca_files(folder):
     current_app.logger.debug("Clean SCA previous results")
     for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
+        if "depscan" in filename or "sbom" in filename:
+            file_path = os.path.join(folder, filename)
             if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            current_app.logger.error("Failed to delete %s: %s" % (file_path, e))
+                try:
+                    os.unlink(file_path)
+                except Exception as e:
+                    current_app.logger.error("Failed to delete %s: %s" % (file_path, e))
 
 def load_sca_scan_results(analysis, dict_sca_results):
     """Populate an Analysis object with the result of an SCA (depscan) scan.
@@ -616,8 +620,9 @@ def inspector_scan(project_id):
     """
     current_app.logger.debug("Starting Inspector scan (ApplicationInspector)")
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
-    # Call to external binary: ApplicationInspector.CLI
     cwd = os.getcwd()
+    output_file = f"{cwd}/data/projects/{project_id}/{RESULT_FOLDER}/inspector_report.json"
+    # Call to external binary: ApplicationInspector.CLI
     subprocess.run(
         [
             APPLICATION_INSPECTOR,
@@ -628,12 +633,12 @@ def inspector_scan(project_id):
             "json",
             f"-p {APPLICATION_INSPECTOR_MAX_PROCESSING_TIME}",
             "-o",
-            f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json",
+            output_file,
         ],
         capture_output=True,
     ).stdout
-    if (os.path.exists(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")):
-        f = open(f"{cwd}/data/projects/{project_id}/{EXTRACT_FOLDER_NAME}.json")
+    if (os.path.exists(output_file)):
+        f = open(output_file)
     try:
         json_result = json.load(f)
     except json.JSONDecodeError as e:
