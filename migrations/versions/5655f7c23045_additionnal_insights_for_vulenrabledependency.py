@@ -1,4 +1,4 @@
-"""empty message
+"""Additionnal insights for VulenrableDependency
 
 Revision ID: 5655f7c23045
 Revises: 3965ec26d479
