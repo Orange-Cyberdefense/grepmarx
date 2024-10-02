@@ -52,6 +52,7 @@ from app.constants import (
     INSIGHTS_MAPPING,
     OWASP_TOP10_LINKS,
     PROJECTS_SRC_PATH,
+    RESULT_FOLDER,
     STATUS_PENDING,
     STATUS,
 )
@@ -132,6 +133,10 @@ def scans_launch():
                 "error",
             )
             return scans_new(project_id=project.id, scan_form=scan_form)
+        # Create a folder for reports if it's not already there
+        reports_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), RESULT_FOLDER)
+        if not os.path.isdir(reports_path):
+            os.mkdir(reports_path)
         # Start celery asynchronous scan
         project.status = STATUS_PENDING
         db.session.commit()
@@ -229,12 +234,18 @@ def analysis_codeview(occurence_id):
         if occurence.position.line_end > occurence.position.line_start
         else str(occurence.position.line_start)
     )
+
+    #col_start = occurence.position.column_start
+    #col_count = occurence.position.column_end - occurence.position.column_start
+
     # code = Markup(code)
     return render_template(
         "analysis_occurence_codeview.html",
         code=code,
         language=language,
         hl_lines=hl_lines,
+        #col_start=col_start,
+        #col_count=col_count,
         user=current_user,
         path=occurence.file_path,
         project_id=project_id,
