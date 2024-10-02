@@ -96,6 +96,7 @@ class VulnerableDependency(db.Model):
     pkg_type = Column(String, nullable=False)
     pkg_ref = Column(String, nullable=False)
     pkg_name = Column(String, nullable=False)
+    dependency_tree = Column(String)
     source = Column(String, nullable=False)
     severity = Column(String, nullable=False)
     cvss_score = Column(String)

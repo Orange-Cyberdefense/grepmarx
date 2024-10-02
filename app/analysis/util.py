@@ -36,7 +36,6 @@ from app.constants import (
     DEPSCAN,
     DEPSCAN_RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
-    LOCAL_RULES_PATH,
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
     RULES_PATH,
@@ -538,6 +537,11 @@ def load_sca_scan_results(analysis, dict_sca_results):
                             title=adv["title"], url=adv["url"]
                         )
                     )
+            # Gets dependency tree
+            dep_str = None
+            if "analysis" in c_vuln and "detail" in c_vuln["analysis"] and "Dependency Tree: " in c_vuln["analysis"]["detail"]:
+                dep_lst = json.loads(c_vuln["analysis"]["detail"].replace("Dependency Tree: ", ""))
+                dep_str = ",".join([dep.split("/")[-1] for dep in dep_lst])
             # Gets the dependency's sources from the components dict
             for c_comp in sca_results["components"]:
                 if c_comp["bom-ref"] == c_vuln["affects"][0]["ref"]:
@@ -555,6 +559,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     pkg_type=pkg_type,
                     pkg_ref=pkg_ref,
                     pkg_name=pkg_name,
+                    dependency_tree=dep_str,
                     source=source,
                     severity=severity,
                     cvss_score=cvss_score,

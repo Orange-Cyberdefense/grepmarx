@@ -104,14 +104,23 @@
                                                 <strong>{{ c_vuln.common_id }}</strong>
                                             </td>
                                             <td class="align-middle">
-                                                <strong>{{ c_vuln.pkg_name | capitalize }}</strong>
+                                                <strong>{{ c_vuln.pkg_name | capitalize }}
                                                 {% if c_vuln.version != "" %}
                                                 v{{ c_vuln.version }}
+                                                {% endif %}</strong>
+                                                {% if c_vuln.dependency_tree != None %}
+                                                    <span class="text-secondary text-sm">
+                                                    from 
+                                                    {% for dep in c_vuln.dependency_tree.split(",") %}
+                                                    {{ dep }}
+                                                    {{ " > " if not loop.last else "" }}
+                                                    {% endfor %}
+                                                    </span>
                                                 {% endif %}
                                                 <small>
                                                     {% if c_vuln.source_files != None %}
                                                         {% set sources = c_vuln.source_files.rstrip(',').split(',') %}
-                                                        <br />{{ sources[0] }}
+                                                        <br /><i class="fa-regular fa-file"></i> {{ sources[0] }}
                                                         {% if sources | length > 1 %}
                                                             <a data-toggle="collapse" href="#collapse-{{ c_vuln.id }}" aria-expanded="false" aria-controls="collapse-{{ c_vuln.id }}">
                                                                 [ {{ sources | length - 1 }} more... ]
@@ -119,7 +128,7 @@
                                                             <div class="collapse multi-collapse" id="collapse-{{ c_vuln.id }}">
                                                             {% set cut_list = sources | length -1 %}
                                                             {% for c_src in sources[-cut_list:] %}
-                                                                {{ c_src }}<br />
+                                                            <i class="fa-regular fa-file"></i> {{ c_src }}<br />
                                                             {% endfor %}
                                                             </div>
                                                         {% endif %}

@@ -36,8 +36,12 @@
             <span class="badge badge-lg bg-lightblue">
                 {{ vulnerableDependency.pkg_type }}
             </span>
-            {{ vulnerableDependency.pkg_ref }}
-            <br /><br />
+            {% if vulnerableDependency.dependency_tree != None %}
+                {% for dep in vulnerableDependency.dependency_tree.split(",") %}
+                 > {{ dep }}
+                {% endfor %}
+            {% endif %}
+            <br />
             {% if vulnerableDependency.source != "" %}
             <span class="badge badge-lg bg-gray">
                 <a class="mt-2" target="_blank" href="{{ vulnerableDependency.source }}">
@@ -64,9 +68,9 @@
                 </span>
                 {% endif %}
             {% endfor %}
-            <br />
+            <br /><br />
             <small>
-                <strong>Found in:</strong><br />
+                <strong><i class="fa-regular fa-file"></i> Source files:</strong><br />
                 {% if vulnerableDependency.source_files != None %}
                 {% set sources = vulnerableDependency.source_files.split(',') %}
                 {% for c_src in sources %}
