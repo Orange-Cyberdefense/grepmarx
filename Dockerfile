@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir -r requirements-pgsql.txt
 
 # Dependency scan (cdxgen / depscan) requirements
 RUN apt-get install -y npm openjdk-17-jdk maven gradle golang composer
-RUN npm install -g @cyclonedx/cdxgen@10.2.6
+RUN npm install -g @cyclonedx/cdxgen@10.10.1
 
 # Application Inspector dependencies (dotnet runtime)
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -  
