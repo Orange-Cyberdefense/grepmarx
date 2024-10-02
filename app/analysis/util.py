@@ -547,10 +547,10 @@ def load_sca_scan_results(analysis, dict_sca_results):
                 dep_lst = json.loads(c_vuln["analysis"]["detail"].replace("Dependency Tree: ", ""))
                 dep_str = ",".join([dep.split("/")[-1] for dep in dep_lst])
             # Gets the dependency's sources from the components dict
+            comp_src = ""
             for c_comp in sca_results["components"]:
                 if c_comp["bom-ref"] == c_vuln["affects"][0]["ref"]:
                     if "properties" in c_comp:
-                        comp_src = ""
                         for c_comp_property in c_comp["properties"]:
                             if c_comp_property["name"] == "SrcFile":
                                 new_src = re.sub(pattern, "", c_comp_property["value"])
