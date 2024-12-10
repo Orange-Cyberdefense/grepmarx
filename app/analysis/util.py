@@ -70,7 +70,7 @@ def async_scan(self, analysis_id, app_inspector_id):
     Args:
         analysis_id (int): ID of the analysis to populate with the results
     """
-    current_app.logger.debug("Entering async scan for analysis with id=%i", analysis_id)
+    current_app.logger.info("Entering async scan for analysis with id=%i", analysis_id)
     analysis = Analysis.query.filter_by(id=analysis_id).first()
     app_inspector = AppInspector.query.filter_by(id=app_inspector_id).first()
     # Status in now Analysing
@@ -116,7 +116,7 @@ def stop_analysis(analysis):
     analysis.project.status = STATUS_ABORTED
     analysis.task_id = ""
     db.session.commit()
-    current_app.logger.debug(
+    current_app.logger.info(
         "Analysis stopped for project with id=%i", analysis.project.id
     )
 
@@ -152,18 +152,18 @@ def sast_scan(analysis, files_to_scan, project_rules_path, ignore):
         project_rules_path (str): path to the folder with semgrep YML rules
         ignore (list): patterns of paths / filenames to skip
     """
-    current_app.logger.debug("Starting SAST scan (semgrep)")
+    current_app.logger.info("Starting SAST scan (semgrep)")
     total_scans = int(len(files_to_scan) / SEMGREP_MAX_FILES)
     # Run semgrep multiple times if there is a lot of files to avoid issues with shell limits
     for i in range(0, len(files_to_scan), SEMGREP_MAX_FILES):
-        current_app.logger.debug("%i / %i", int(i / SEMGREP_MAX_FILES), total_scans)
+        current_app.logger.info("%i / %i", int(i / SEMGREP_MAX_FILES), total_scans)
         files_chunk = files_to_scan[i : i + SEMGREP_MAX_FILES]
         sast_result = semgrep_invoke(files_chunk, project_rules_path, ignore)
         # Save results on disk to allow download
         save_sast_result(analysis, sast_result, i)
         # Load results into the analysis object
         load_sast_scan_results(analysis, sast_result)
-    current_app.logger.debug("SAST scan (semgrep) finished")
+    current_app.logger.info("SAST scan (semgrep) finished")
 
 
 def semgrep_invoke(files_to_scan, project_rules_path, ignore):
@@ -430,7 +430,7 @@ def sca_scan(project):
     Returns:
         [dict]: depscan results (CycloneDX BOM+VEX)
     """
-    current_app.logger.debug("Starting SCA scan (depscan)")
+    current_app.logger.info("Starting SCA scan (depscan)")
     source_path = os.path.join(
         os.getcwd(), PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME
     )
@@ -460,11 +460,11 @@ def sca_scan(project):
     for file in vex_files:
         with open(file) as f:
             result.append(json.load(f))
-    current_app.logger.debug("SCA scan (depscan) finished")
+    current_app.logger.info("SCA scan (depscan) finished")
     return result
 
 def delete_sca_files(folder):
-    current_app.logger.debug("Clean SCA previous results")
+    current_app.logger.info("Clean SCA previous results")
     for filename in os.listdir(folder):
         if "depscan" in filename or "sbom" in filename:
             file_path = os.path.join(folder, filename)
@@ -485,7 +485,7 @@ def load_sca_scan_results(analysis, dict_sca_results):
     # Prepare regex pattern to remove absolute path from filenames
     pattern = f".*/{PROJECTS_SRC_PATH}{analysis.project.id}/{EXTRACT_FOLDER_NAME}/"
     for sca_results in dict_sca_results:
-        current_app.logger.debug(
+        current_app.logger.info(
             "Importing %i SCA vulnerabilities in analysis with id=%i",
             len(sca_results["vulnerabilities"]),
             analysis.id,
@@ -618,7 +618,7 @@ def inspector_scan(project_id):
     Args:
         project_id (Project): project.id
     """
-    current_app.logger.debug("Starting Inspector scan (ApplicationInspector)")
+    current_app.logger.info("Starting Inspector scan (ApplicationInspector)")
     source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
     cwd = os.getcwd()
     output_file = f"{cwd}/data/projects/{project_id}/{RESULT_FOLDER}/inspector_report.json"
@@ -648,7 +648,7 @@ def inspector_scan(project_id):
         )
         return ""
     f.close()
-    current_app.logger.debug("Inspector scan (ApplicationInspector) finished")
+    current_app.logger.info("Inspector scan (ApplicationInspector) finished")
     return json_result
 
 

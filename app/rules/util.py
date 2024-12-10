@@ -63,7 +63,7 @@ def sync_db(rules_folder):
     all_rules = Rule.query.all()
     for rule in all_rules:
         if not os.path.isfile(os.path.join(rules_folder, rule.file_path)):
-            current_app.logger.debug(
+            current_app.logger.info(
                 "Delete from DB rule which isn't in repos anymore: %s",
                 rule.repository.name + "/" + rule.category + "/" + rule.title,
             )
@@ -81,7 +81,7 @@ def save_rule_in_db(filename):
             RuleRepository.query.filter_by(name=repository).first()
             and repository != LOCAL_RULES is None
         ):
-            current_app.logger.debug(
+            current_app.logger.info(
                 "Folder does not match a registered rule repository. You should manually remove the unused `%s' folder.",
                 repository,
             )
@@ -92,6 +92,7 @@ def save_rule_in_db(filename):
                 yml_rules = safe_load(yml_stream)
             # Skip file if not parseable
             except YAMLError as e:
+                current_app.logger.info("Rule YAML file was skipped because not parseable: %s", filename)
                 current_app.logger.debug(e)
                 yml_ok = False
             if yml_ok:
