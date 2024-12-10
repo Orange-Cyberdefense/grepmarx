@@ -169,11 +169,20 @@ that could compromise the confidentiality, integrity, or availability of the sys
                                                 Inspector
                                             </a>
                                         </div>
-                                        <a class="btn btn-default" data-toggle="modal"
-                                            data-target="#confirm-xls-export">
-                                            <span title="Download" class="fas fa-download"></span>
-                                            XLS Export
-                                        </a>
+
+                                        <div class="btn-group">
+                                            <a class="btn btn-default btn-sm" data-toggle="modal"
+                                                data-target="#confirm-xls-export">
+                                                <span title="Export results as XLS" class="fas fa-download"></span>
+                                                XLS Export
+                                            </a>
+                                            <a class="btn btn-default btn-sm"
+                                                href="/projects/{{ project.id }}/download_sources">
+                                                <span title="Download sources" class="fas fa-file-zipper"></span>
+                                                Sources
+                                            </a>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

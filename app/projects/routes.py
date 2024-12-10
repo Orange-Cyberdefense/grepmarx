@@ -196,3 +196,15 @@ def xls_export(project_id):
     xls_path = generate_xls(project, selected_option)
     # Return generated file to the browser
     return send_file(xls_path, as_attachment=True)
+
+@blueprint.route("/projects/<project_id>/download_sources")
+@login_required
+def download_sources(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
+    # Path to the source archive file
+    source_archive = os.path.join(os.getcwd(), PROJECTS_SRC_PATH, str(project.id), project.archive_filename)
+    # Return generated file to the browser
+    return send_file(source_archive, as_attachment=True)
