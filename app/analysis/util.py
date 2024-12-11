@@ -68,7 +68,7 @@ from app.rules.util import generate_severity
 
 
 @celery.task(name="grepmarx-scan", bind=True)
-def async_scan(self, analysis_id, app_inspector_id):
+def async_scan(self, analysis_id):
     """Launch a new code scan on the project corresponding to the given analysis ID, asynchronously through celery.
 
     Args:
@@ -78,7 +78,6 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis = Analysis.query.filter_by(id=analysis_id).first()
     # Create a dedicated logging handler for this scan
     analysis_log_to_file(analysis)
-    app_inspector = AppInspector.query.filter_by(id=app_inspector_id).first()
     # Status in now Analysing
     analysis.started_on = datetime.now()
     analysis.project.status = STATUS_ANALYZING
@@ -102,7 +101,7 @@ def async_scan(self, analysis_id, app_inspector_id):
 
         # Inspector scan: invoke ApplicationInspector
         inspector_result = inspector_scan(analysis)
-        load_inspector_results(analysis, app_inspector, inspector_result)
+        load_inspector_results(analysis, inspector_result)
 
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
@@ -746,17 +745,19 @@ def inspector_scan(analysis):
     return json_result
 
 
-def load_inspector_results(analysis, app_inspector, inspector_result):
+def load_inspector_results(analysis, inspector_result):
     """Populate an AppInspector object with the result of a Application Inspector scan.
 
     Args:
-        inspector_result (str): Application Inspector JSON output.
-        app_inspector(AppInspector): Application Inspector object filter by ID.
+        inspector_result (str): Application Inspector JSON output
+        Analysis (Analysis): Corresponding analysis
     """
     current_app.logger.info(
         "[Analysis %i] Loading AppInspector results in database", analysis.id
     )
     match = list()
+    # create a new app inspector
+    analysis.project.appinspector = AppInspector()
     if inspector_result != "":
         if "metaData" in inspector_result:
             data = inspector_result["metaData"]
@@ -779,7 +780,7 @@ def load_inspector_results(analysis, app_inspector, inspector_result):
                     else:
                         e_matchs = e_match[0]
                         e_matchs.tag.append(load_tags(data_in_detailed))
-                        app_inspector.match = match
+                        analysis.project.appinspector.match = match
 
 
 def load_match(title, detailed):

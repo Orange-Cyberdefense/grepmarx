@@ -120,8 +120,6 @@ def scans_launch():
             ignore_paths=scan_form.ignore_paths.data,
             ignore_filenames=scan_form.ignore_filenames.data,
         )
-        # create a new app inspector
-        project.appinspector = AppInspector()
         # Set rule folder for the project
         project_rules_path = os.path.join(PROJECTS_SRC_PATH, str(project.id), "rules")
         # Copy all applicable rules in a folder under the project's directory
@@ -141,10 +139,9 @@ def scans_launch():
         project.status = STATUS_PENDING
         db.session.commit()
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
-        async_scan.delay(project.analysis.id, project.appinspector.id)
-        # async_scan.apply_async(args=(project.analysis.id, project.appinspector.id))
+        async_scan.delay(project.analysis.id)
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
-        time.sleep(1.0)
+        #time.sleep(1.0)
         flash("Analysis successfully launched", "success")
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated
