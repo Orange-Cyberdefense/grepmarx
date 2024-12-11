@@ -26,6 +26,7 @@ from app.constants import (
     EXTRACT_FOLDER_NAME,
     LANGUAGES_DEVICONS,
     PROJECTS_SRC_PATH,
+    SCAN_LOGS_FOLDER,
 )
 from app.base import util
 from app.projects import blueprint
@@ -208,3 +209,15 @@ def download_sources(project_id):
     source_archive = os.path.join(os.getcwd(), PROJECTS_SRC_PATH, str(project.id), project.archive_filename)
     # Return generated file to the browser
     return send_file(source_archive, as_attachment=True)
+
+@blueprint.route("/projects/<project_id>/download_analysis_logs")
+@login_required
+def download_analysis_logs(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
+    # Path to the log file
+    log_file = os.path.join(os.getcwd(), PROJECTS_SRC_PATH, str(project.id), SCAN_LOGS_FOLDER, str(project.analysis.id) + ".log")
+    # Return generated file to the browser
+    return send_file(log_file, as_attachment=True)

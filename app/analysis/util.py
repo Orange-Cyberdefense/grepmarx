@@ -5,6 +5,7 @@ Copyright (c) 2021 - present Orange Cyberdefense
 
 import html
 import json
+import logging
 import re
 import os
 import re
@@ -39,6 +40,7 @@ from app.constants import (
     PROJECTS_SRC_PATH,
     RULE_EXTENSIONS,
     RULES_PATH,
+    SCAN_LOGS_FOLDER,
     SEMGREP,
     SEMGREP_MAX_FILES,
     SEVERITY_CRITICAL,
@@ -50,7 +52,7 @@ from app.constants import (
     STATUS_ANALYZING,
     STATUS_ERROR,
     STATUS_FINISHED,
-    INSIGHTS_MAPPING
+    INSIGHTS_MAPPING,
 )
 from app.projects.util import (
     calculate_risk_level,
@@ -72,12 +74,20 @@ def async_scan(self, analysis_id, app_inspector_id):
     """
     current_app.logger.info("Entering async scan for analysis with id=%i", analysis_id)
     analysis = Analysis.query.filter_by(id=analysis_id).first()
+    # Create a dedicated logging handler for this scan
+    analysis_log_to_file(analysis)
     app_inspector = AppInspector.query.filter_by(id=app_inspector_id).first()
     # Status in now Analysing
     analysis.started_on = datetime.now()
     analysis.project.status = STATUS_ANALYZING
     analysis.task_id = self.request.id
     db.session.commit()
+    current_app.logger.info(
+        "[Analysis %i] New analysis started for project '%s' (project id=%i)",
+        analysis.id,
+        analysis.project.name,
+        analysis.project.id,
+    )
     # Prepare semgrep options
     files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     try:
@@ -85,22 +95,24 @@ def async_scan(self, analysis_id, app_inspector_id):
         sast_scan(analysis, files_to_scan, project_rules_path, ignore)
 
         # SCA scan: invoke depscan
-        sca_result = sca_scan(analysis.project)
+        sca_result = sca_scan(analysis)
         load_sca_scan_results(analysis, sca_result)
 
         # Inspector scan: invoke ApplicationInspector
-        inspector_result = inspector_scan(app_inspector.project.id)
-        load_inspector_results(app_inspector, inspector_result)
+        inspector_result = inspector_scan(analysis)
+        load_inspector_results(analysis, app_inspector, inspector_result)
 
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
-        analysis.project.error_message = repr(e)
-        analysis.project.status = STATUS_ERROR
-        current_app.logger.error(
-            "Error while scanning project with id=%i: %s",
+        current_app.logger.exception(
+            "[Analysis %i] Error while scanning project '%s' (project id=%i)",
+            analysis.id,
+            analysis.project.name,
             analysis.project.id,
-            traceback.format_exc(),
         )
+        analysis.project.error_message = repr(e) + "\nCheck analysis logs for more details"
+        analysis.project.status = STATUS_ERROR
+
     # Done
     analysis.finished_on = datetime.now()
     analysis.task_id = ""
@@ -108,6 +120,12 @@ def async_scan(self, analysis_id, app_inspector_id):
     analysis.project.occurences_count = count_occurences(analysis.project)
     analysis.project.risk_level = calculate_risk_level(analysis.project)
     db.session.commit()
+    current_app.logger.info(
+        "[Analysis %i] Analysis ended for project '%s' (project id=%i)",
+        analysis.id,
+        analysis.project.name,
+        analysis.project.id,
+    )
 
 
 def stop_analysis(analysis):
@@ -152,18 +170,25 @@ def sast_scan(analysis, files_to_scan, project_rules_path, ignore):
         project_rules_path (str): path to the folder with semgrep YML rules
         ignore (list): patterns of paths / filenames to skip
     """
-    current_app.logger.info("Starting SAST scan (semgrep)")
-    total_scans = int(len(files_to_scan) / SEMGREP_MAX_FILES)
+    current_app.logger.info("[Analysis %i] Starting SAST scan (semgrep)", analysis.id)
+    total_scans = int(len(files_to_scan) / SEMGREP_MAX_FILES) + 1
     # Run semgrep multiple times if there is a lot of files to avoid issues with shell limits
     for i in range(0, len(files_to_scan), SEMGREP_MAX_FILES):
-        current_app.logger.info("%i / %i", int(i / SEMGREP_MAX_FILES), total_scans)
+        current_app.logger.info(
+            "[Analysis %i] Semgrep execution %i / %i",
+            analysis.id,
+            int(i / SEMGREP_MAX_FILES) + 1,
+            total_scans,
+        )
         files_chunk = files_to_scan[i : i + SEMGREP_MAX_FILES]
         sast_result = semgrep_invoke(files_chunk, project_rules_path, ignore)
         # Save results on disk to allow download
         save_sast_result(analysis, sast_result, i)
         # Load results into the analysis object
         load_sast_scan_results(analysis, sast_result)
-    current_app.logger.info("SAST scan (semgrep) finished")
+        current_app.logger.info(
+            "[Analysis %i] SAST scan (semgrep) finished", analysis.id
+        )
 
 
 def semgrep_invoke(files_to_scan, project_rules_path, ignore):
@@ -187,18 +212,16 @@ def semgrep_invoke(files_to_scan, project_rules_path, ignore):
         "--config",
         project_rules_path,
         "--disable-nosem",
-        "--json",
+        "--json"
     ] + files_to_scan
-    try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-        ).stdout
-    except FileNotFoundError:
-        print("No files found.")
-    except Exception as e:
-        print("There is an error :", e)
+
+    # Call to semgrep, exceptions will be catched in async_scan()
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+    ).stdout
+
     return result
 
 
@@ -215,6 +238,9 @@ def save_sast_result(analysis, sast_result, step):
         RESULT_FOLDER,
         f"sast_report_{step}.json",
     )
+    current_app.logger.info(
+        "[Analysis %i] Saving semgrep results on disk: %s", analysis.id, filename
+    )
     f = open(filename, "a")
     f.write(sast_result)
     f.close()
@@ -228,12 +254,18 @@ def load_sast_scan_results(analysis, semgrep_output):
         semgrep_output (str): Semgrep JSON output as string
     """
     # vulns = list()
+    current_app.logger.info(
+        "[Analysis %i] Loading semgrep results in database", analysis.id
+    )
     if semgrep_output != "":
         json_result = json.loads(semgrep_output)
         if json_result is not None:
             # Ignore errors, focus on results
             if "results" in json_result:
                 results = json_result["results"]
+                current_app.logger.info(
+                    "[Analysis %i] Found %i semgrep results", analysis.id, len(results)
+                )
                 for c_result in results:
                     title = c_result["check_id"].split(".")[-1]
                     # Is it a new vulnerability or another occurence of a known one?
@@ -326,19 +358,23 @@ def generate_semgrep_options(analysis):
         project_rules_path (str): path to the folder with semgrep YML rules
         ignore (list): patterns of paths / filenames to skip
     """
+    current_app.logger.info("[Analysis %i] Setting up semgrep options", analysis.id)
     # Define the scan path
     scan_path = os.path.join(
         PROJECTS_SRC_PATH, str(analysis.project.id), EXTRACT_FOLDER_NAME
     )
+    current_app.logger.info("[Analysis %i] Scan path: %s", analysis.id, scan_path)
     # Define rules path
     project_rules_path = os.path.join(
         PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
     )
+    current_app.logger.info("[Analysis %i] Rules path: %s", analysis.id, project_rules_path)
     # Consolidate ignore list
     ignore = set(
         # Remove empty elements
         filter(None, analysis.ignore_filenames.split(","))
     )
+    current_app.logger.info("[Analysis %i] Ignore list: %s", analysis.id, str(ignore))
     # Get all files corresponding to target extensions in project's source
     files_to_scan = list()
     for c_rule_pack in analysis.rule_packs:
@@ -346,10 +382,12 @@ def generate_semgrep_options(analysis):
             # Remove empty elements
             extensions = filter(None, c_language.extensions.split(","))
             for c_ext in extensions:
-                print(c_ext)
                 files_to_scan += glob(
                     pathname=os.path.join(scan_path, "**", "*" + c_ext), recursive=True
                 )
+    current_app.logger.info(
+        "[Analysis %i] Found %i files to scan", analysis.id, len(files_to_scan)
+    )
     return (files_to_scan, project_rules_path, ignore)
 
 
@@ -370,8 +408,7 @@ def import_rules(analysis, rule_folder):
             if c_rule.repository is None or c_rule.category is None:
                 dst = os.path.join(
                     rule_folder,
-                    c_rule.title
-                    + next(iter(RULE_EXTENSIONS)),
+                    c_rule.title + next(iter(RULE_EXTENSIONS)),
                 )
             # Repository rule
             else:
@@ -420,26 +457,33 @@ def vulnerabilities_sorted_by_severity(analysis):
 ##
 
 
-def sca_scan(project):
-    """Launch a depscan analysis. SBOM (Software Bill Of Material) will firstly be generated
+def sca_scan(analysis):
+    """Launch a depscan scan. SBOM (Software Bill Of Material) will firstly be generated
     using `cdxgen'. The resulting BOM file will then be analyzed with depscan.
 
     Args:
-        project (Project): corresponding target projet
+        analysis (Analysis): corresponding analysis
 
     Returns:
         [dict]: depscan results (CycloneDX BOM+VEX)
     """
-    current_app.logger.info("Starting SCA scan (depscan)")
+    current_app.logger.info("[Analysis %i] Starting SCA scan (depscan)", analysis.id)
     source_path = os.path.join(
-        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), EXTRACT_FOLDER_NAME
+        os.getcwd(), PROJECTS_SRC_PATH, str(analysis.project.id), EXTRACT_FOLDER_NAME
+    )
+    current_app.logger.info(
+        "[Analysis %i] Depscan source path: %s", analysis.id, source_path
     )
     output_folder = os.path.join(
-        os.getcwd(), PROJECTS_SRC_PATH, str(project.id), RESULT_FOLDER
+        os.getcwd(), PROJECTS_SRC_PATH, str(analysis.project.id), RESULT_FOLDER
+    )
+    current_app.logger.info(
+        "[Analysis %i] Depscan output folder: %s", analysis.id, output_folder
     )
     # Clean previous depscan results
     delete_sca_files(output_folder)
     # Launch depscan analysis
+    current_app.logger.info("[Analysis %i] Depscan execution", analysis.id)
     subprocess.run(
         cwd=source_path,
         args=[
@@ -460,11 +504,11 @@ def sca_scan(project):
     for file in vex_files:
         with open(file) as f:
             result.append(json.load(f))
-    current_app.logger.info("SCA scan (depscan) finished")
+    current_app.logger.info("[Analysis %i] SCA scan (depscan) finished", analysis.id)
     return result
 
+
 def delete_sca_files(folder):
-    current_app.logger.info("Clean SCA previous results")
     for filename in os.listdir(folder):
         if "depscan" in filename or "sbom" in filename:
             file_path = os.path.join(folder, filename)
@@ -474,6 +518,7 @@ def delete_sca_files(folder):
                 except Exception as e:
                     current_app.logger.error("Failed to delete %s: %s" % (file_path, e))
 
+
 def load_sca_scan_results(analysis, dict_sca_results):
     """Populate an Analysis object with the result of an SCA (depscan) scan.
 
@@ -482,13 +527,16 @@ def load_sca_scan_results(analysis, dict_sca_results):
         dict_sca_results (dict): depscan results (CycloneDX BOM+VEX)
     """
     vuln_deps = list()
+    current_app.logger.info(
+        "[Analysis %i] Loading depscan results in database", analysis.id
+    )
     # Prepare regex pattern to remove absolute path from filenames
     pattern = f".*/{PROJECTS_SRC_PATH}{analysis.project.id}/{EXTRACT_FOLDER_NAME}/"
     for sca_results in dict_sca_results:
         current_app.logger.info(
-            "Importing %i SCA vulnerabilities in analysis with id=%i",
-            len(sca_results["vulnerabilities"]),
+            "[Analysis %i] Found %i depscan results",
             analysis.id,
+            len(sca_results["vulnerabilities"]),
         )
         for c_vuln in sca_results["vulnerabilities"]:
             # Identify affected dependency
@@ -543,8 +591,14 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     )
             # Gets dependency tree
             dep_str = None
-            if "analysis" in c_vuln and "detail" in c_vuln["analysis"] and "Dependency Tree: " in c_vuln["analysis"]["detail"]:
-                dep_lst = json.loads(c_vuln["analysis"]["detail"].replace("Dependency Tree: ", ""))
+            if (
+                "analysis" in c_vuln
+                and "detail" in c_vuln["analysis"]
+                and "Dependency Tree: " in c_vuln["analysis"]["detail"]
+            ):
+                dep_lst = json.loads(
+                    c_vuln["analysis"]["detail"].replace("Dependency Tree: ", "")
+                )
                 dep_str = ",".join([dep.split("/")[-1] for dep in dep_lst])
             # Gets the dependency's sources from the components dict
             comp_src = ""
@@ -558,30 +612,31 @@ def load_sca_scan_results(analysis, dict_sca_results):
                     break
             # Populate VulnerableDependency object
             vuln_dep = VulnerableDependency(
-                    common_id=c_vuln["id"],
-                    bom_ref=bom_ref,
-                    pkg_type=pkg_type,
-                    pkg_ref=pkg_ref,
-                    pkg_name=pkg_name,
-                    dependency_tree=dep_str,
-                    source=source,
-                    severity=severity,
-                    cvss_score=cvss_score,
-                    cvss_version=cvss_version,
-                    cwes=cwes,
-                    description=c_vuln["description"],
-                    recommendation=c_vuln["recommendation"],
-                    version=version,
-                    fix_version=fix_version,
-                    prioritized=prioritized,
-                    source_files=comp_src
-                )
+                common_id=c_vuln["id"],
+                bom_ref=bom_ref,
+                pkg_type=pkg_type,
+                pkg_ref=pkg_ref,
+                pkg_name=pkg_name,
+                dependency_tree=dep_str,
+                source=source,
+                severity=severity,
+                cvss_score=cvss_score,
+                cvss_version=cvss_version,
+                cwes=cwes,
+                description=c_vuln["description"],
+                recommendation=c_vuln["recommendation"],
+                version=version,
+                fix_version=fix_version,
+                prioritized=prioritized,
+                source_files=comp_src,
+            )
             # Add insights
             for key, value in insights.items():
                 setattr(vuln_dep, key, value)
             vuln_deps.append(vuln_dep)
             # Add VulnerableDependency into the analysis
             analysis.vulnerable_dependencies = vuln_deps
+
 
 def md2html(string):
     """A very quick and dirty way to make markdown descriptions a bit more presentable
@@ -594,23 +649,29 @@ def md2html(string):
     # Encode any HTML present in the original description to avoid XSS
     string = html.escape(string)
     # Place titles in <strong>
-    string = re.sub(r'^#+\s*(.*)', r'<strong>\1</strong>', string, flags=re.MULTILINE)
+    string = re.sub(r"^#+\s*(.*)", r"<strong>\1</strong>", string, flags=re.MULTILINE)
     # Place code samples in <pre>
-    string = re.sub(r'```(.*?)```', r'<pre class="modal-code text-monospace">\1</pre>', string, flags=re.DOTALL)
+    string = re.sub(
+        r"```(.*?)```",
+        r'<pre class="modal-code text-monospace">\1</pre>',
+        string,
+        flags=re.DOTALL,
+    )
     # Place backticks terms in <code>
-    string = re.sub(r'`(.*?)`', r'<code>\1</code>', string)
+    string = re.sub(r"`(.*?)`", r"<code>\1</code>", string)
     # Replace line breaks with <br />
-    string = re.sub(r'\n', '<br />', string)
+    string = re.sub(r"\n", "<br />", string)
     # Allow maximum 2 consecutive <br />
-    string = re.sub(r'(<br\s*/?>\s*){3,}', '<br /><br />', string)
+    string = re.sub(r"(<br\s*/?>\s*){3,}", "<br /><br />", string)
     return string
+
 
 ##
 ## Inspector scan utils
 ##
 
 
-def inspector_scan(project_id):
+def inspector_scan(analysis):
     """Microsoft Application Inspector is a software source code characterization tool
     that helps identify coding features of first or third party software components based
     on well-known library/API calls and is helpful in security and non-security use cases.
@@ -618,10 +679,14 @@ def inspector_scan(project_id):
     Args:
         project_id (Project): project.id
     """
-    current_app.logger.info("Starting Inspector scan (ApplicationInspector)")
-    source_path = os.path.join(PROJECTS_SRC_PATH, str(project_id), EXTRACT_FOLDER_NAME)
+    current_app.logger.info(
+        "[Analysis %i] Starting Inspector scan (ApplicationInspector)", analysis.id
+    )
+    source_path = os.path.join(
+        PROJECTS_SRC_PATH, str(analysis.project.id), EXTRACT_FOLDER_NAME
+    )
     cwd = os.getcwd()
-    output_file = f"{cwd}/data/projects/{project_id}/{RESULT_FOLDER}/inspector_report.json"
+    output_file = f"{cwd}/data/projects/{analysis.project.id}/{RESULT_FOLDER}/inspector_report.json"
     # Call to external binary: ApplicationInspector.CLI
     subprocess.run(
         [
@@ -637,35 +702,44 @@ def inspector_scan(project_id):
         ],
         capture_output=True,
     ).stdout
-    if (os.path.exists(output_file)):
+    if os.path.exists(output_file):
         f = open(output_file)
     try:
         json_result = json.load(f)
     except json.JSONDecodeError as e:
         current_app.logger.error(
-            "Error when gathering results file for Application Inspector scan (file is probably empty) during analysis for project with id=%i",
-            project_id,
+            "[Analysis %i] Error when gathering results file for Application Inspector scan (file is probably empty)",
+            analysis.id,
         )
         return ""
     f.close()
-    current_app.logger.info("Inspector scan (ApplicationInspector) finished")
+    current_app.logger.info(
+        "[Analysis %i] Inspector scan (ApplicationInspector) finished", analysis.id
+    )
     return json_result
 
 
-def load_inspector_results(app_inspector, inspector_result):
+def load_inspector_results(analysis, app_inspector, inspector_result):
     """Populate an AppInspector object with the result of a Application Inspector scan.
 
     Args:
         inspector_result (str): Application Inspector JSON output.
         app_inspector(AppInspector): Application Inspector object filter by ID.
     """
+    current_app.logger.info(
+        "[Analysis %i] Loading AppInspector results in database", analysis.id
+    )
     match = list()
-
     if inspector_result != "":
         if "metaData" in inspector_result:
             data = inspector_result["metaData"]
             if "detailedMatchList" in data:
                 detailed = data["detailedMatchList"]
+                current_app.logger.info(
+                    "[Analysis %i] Found %i AppInspector results",
+                    analysis.id,
+                    len(detailed),
+                )
                 # we go through the dictionary again and again
                 for data_in_detailed in detailed:
                     title = data_in_detailed["ruleName"]
@@ -726,3 +800,25 @@ def load_tags(data_in_detailed):
     if "severity" in data_in_detailed:
         tags.severity = data_in_detailed["severity"]
     return tags
+
+
+def analysis_log_to_file(analysis):
+    """Add to the current logger a handler in order to log analysis events into a local file.
+
+    Args:
+        analysis (Analysis): corresponding analysis
+    """
+    # Remove remaining handlers from other scans
+    current_app.logger.handlers.clear()
+    # Create folder for logs if not already there
+    logs_path = os.path.join(
+        os.getcwd(), PROJECTS_SRC_PATH, str(analysis.project.id), SCAN_LOGS_FOLDER
+    )
+    if not os.path.isdir(logs_path):
+        os.mkdir(logs_path)
+    # Add a new handler to write in the current analysis local logs
+    log_file = os.path.join(logs_path, str(analysis.id) + ".log")
+    handler = logging.FileHandler(log_file)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    current_app.logger.addHandler(handler)

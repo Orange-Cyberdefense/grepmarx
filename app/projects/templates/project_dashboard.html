@@ -210,7 +210,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
                             </div>
                             <div class="col-md-12">
                                 <span class="fas fa-clock"></span>
-                                Analysis duration:
+                                Scan duration:
                                 {% set duration = (project.analysis.finished_on - project.analysis.started_on) | string
                                 %}
                                 {{ duration.split('.', 2)[0] }}

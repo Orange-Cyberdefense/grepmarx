@@ -70,7 +70,7 @@
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Creator</th>
-                                <th>Analysis duration</th>
+                                <th>Scan duration</th>
                                 <th>Risk level</th>
                                 <th>Findings</th>
                                 <th>Languages</th>
@@ -81,8 +81,8 @@
                         </thead>
                         <tbody>
                             {% for c_project in projects %}
-                            {# Trigger auto-refresh if state is Analyzing or Pending % #}
-                                {% if admin or c_project.id in user_projects_ids%}
+                                {% if admin or c_project.id in user_projects_ids %}
+                                    {# Trigger auto-refresh if state is Analyzing or Pending % #}
                                     {% if c_project.status == 2 or c_project.status == 4 %}
                                         <div id="{{ c_project.id}}" class="check-status"></div>
                                     {% endif %}
@@ -166,7 +166,7 @@
                                             {% if c_project.status == 0 %}
                                             <span class="badge badge-lg bg-primary p-2 pl-3 pr-3">New</span>
                                             {% elif c_project.status == 1 %}
-                                            <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Ready</span>
+                                            <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Done</span>
                                             {% elif c_project.status == 2 %}
                                             <span
                                                 class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
@@ -182,8 +182,8 @@
                                             {% endif %}
                                         </td>
                                         <td class="project-actions">
-                                            {% if c_project.status == 2 or c_project.status == 4 %}
-                                            <!-- PENDING / ANALYSING -->
+                                            {# PENDING or ANALYSING #}
+                                            {% if c_project.status == 2 or c_project.status == 4 %}                                            
                                             <div class="btn-group">
                                                 <a class="btn btn-default btn-sm text-danger"
                                                     href="/analysis/scans/stop/{{ c_project.analysis.id }}">
@@ -191,18 +191,21 @@
                                                 </a>
                                             </div>
                                             {% else %}
-                                                {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}
-                                                <!-- NEW / ABORTED / ERROR -->
                                                 <div class="btn-group">
+                                                {# NEW or ERROR or ABORTED #}
+                                                {% if c_project.status == 0 or c_project.status == 3 or c_project.status == 5 %}                                                
                                                     <a href="/analysis/scans/new/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
-                                                        <i title="New analysis" class="fas fa-circle-play"></i> Analyze now
+                                                        <i title="New analysis" class="far fa-circle-play"></i> Scan now
                                                     </a>
-                                                </div>
+                                                    <button type="button"
+                                                        class="btn btn-default btn-sm dropdown-toggle dropdown-icon"
+                                                        data-toggle="dropdown" aria-expanded="false">
+                                                    </button>
+                                                    <div class="dropdown-menu text-sm">
+                                                {# FINISHED #}
                                                 {% elif c_project.status == 1 %}
-                                                <!-- FINISHED -->
-                                                <div class="btn-group">
                                                     <a href="/projects/{{ c_project.id }}" type="button" class="btn btn-default btn-sm">
-                                                        <i title="Project dashboard" class="fas fa-chart-bar"></i> Dashboard
+                                                        <i title="Project dashboard" class="far fa-chart-bar"></i> Dashboard
                                                     </a>
                                                     <div class="btn-group">
                                                         <button type="button"
@@ -227,17 +230,25 @@
                                                             </a>
                                                             <div class="dropdown-divider"></div>
                                                             <a href="/analysis/scans/new/{{ c_project.id }}" type="button" class="dropdown-item">
-                                                                <i title="New analysis" class="fas fa-circle-play"></i> New analysis
+                                                                <i title="New analysis" class="far fa-circle-play"></i> New scan
                                                             </a>
+                                                {% endif %}            
                                                             <a class="dropdown-item"
                                                                 href="/projects/{{ c_project.id }}/download_sources">
-                                                                <i title="Dependencies" class="fas fa-file-zipper"></i>
+                                                                <i title="Dependencies" class="far fa-file-zipper"></i>
                                                                 Project sources
                                                             </a>
+                                                            {# not NEW #}
+                                                            {% if c_project.status != 0 %}
+                                                            <a class="dropdown-item"
+                                                                href="/projects/{{ c_project.id }}/download_analysis_logs">
+                                                                <i title="Dependencies" class="far fa-file-lines"></i>
+                                                                Scan logs
+                                                            </a>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {% endif %}
                                                 <a class="btn btn-default btn-sm text-danger" href="#"
                                                     onclick="setConfirmAction('confirm-project-removal-button', '/projects/remove/{{ c_project.id }}')"
                                                     data-toggle="modal" data-target="#confirm-removal">

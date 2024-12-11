@@ -16,6 +16,7 @@ ROLE_GUEST = "2"
 IGNORE_EXTENSIONS = {".min.js"}
 IGNORE_FOLDERS = {"vendor", "test", "Test"}
 RESULT_FOLDER = "reports"
+SCAN_LOGS_FOLDER = "logs"
 DEPSCAN = "depscan"
 APPLICATION_INSPECTOR="app/third-party/app-inspector/ApplicationInspector_linux_1.9.22/ApplicationInspector.CLI"
 APPLICATION_INSPECTOR_MAX_PROCESSING_TIME=60000 # 1 minute
