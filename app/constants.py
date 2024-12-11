@@ -13,8 +13,7 @@ ROLE_GUEST = "2"
 
 # Analysis constants
 
-IGNORE_EXTENSIONS = {".min.js"}
-IGNORE_FOLDERS = {"vendor", "test", "Test"}
+IGNORE_LIST = ".min.js,.spec.ts,/nodes_modules/,/pods/,/vendor/,/test/,/tests/,/Test/,/Tests/,mock,Mock"
 RESULT_FOLDER = "reports"
 SCAN_LOGS_FOLDER = "logs"
 DEPSCAN = "depscan"
