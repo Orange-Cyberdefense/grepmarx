@@ -494,13 +494,14 @@ def sca_scan(analysis):
     # Launch depscan analysis
     current_app.logger.info("[Analysis %i] Depscan execution", analysis.id)
     try:
-        subprocess.run(
+        result = subprocess.run(
             cwd=source_path,
             timeout=DEPSCAN_TIMEOUT,
+            capture_output=True, 
+            text=True,
             args=[
                 DEPSCAN,
                 "--no-banner",
-                "--no-error",
                 "--no-vuln-table",
                 "--sync",
                 "--src",
@@ -508,7 +509,8 @@ def sca_scan(analysis):
                 "--reports-dir",
                 output_folder,
             ],
-        )
+        ).stdout
+        current_app.logger.info(result)
     # Other exceptions will be catched in async_scan()
     except subprocess.TimeoutExpired:
         current_app.logger.warning(
@@ -707,20 +709,25 @@ def inspector_scan(analysis):
 
     try:
         # Call to external binary: ApplicationInspector.CLI
-        subprocess.run(
+        result = subprocess.run(
             [
                 APPLICATION_INSPECTOR,
                 "analyze",
-                "-s",
+                "--no-show-progress",
+                "--console-verbosity",
+                "Information",
+                "--source-path",
                 f"{source_path}/",
-                "-f",
+                "--output-file-format",
                 "json",
-                "-o",
+                "--output-file-path",
                 output_file,
             ],
             capture_output=True,
+            text=True,
             timeout=APPLICATION_INSPECTOR_TIMEOUT,
         ).stdout
+        current_app.logger.info(result)
     # Other exceptions will be catched in async_scan()
     except subprocess.TimeoutExpired:
         current_app.logger.warning(
