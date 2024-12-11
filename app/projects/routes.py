@@ -207,6 +207,9 @@ def download_sources(project_id):
         return render_template("403.html"), 403
     # Path to the source archive file
     source_archive = os.path.join(os.getcwd(), PROJECTS_SRC_PATH, str(project.id), project.archive_filename)
+    if not os.path.isfile(source_archive):
+        flash("Source code archive not found for this project.", "error")
+        return redirect(url_for("projects_blueprint.projects_list"))
     # Return generated file to the browser
     return send_file(source_archive, as_attachment=True)
 
@@ -219,5 +222,8 @@ def download_analysis_logs(project_id):
         return render_template("403.html"), 403
     # Path to the log file
     log_file = os.path.join(os.getcwd(), PROJECTS_SRC_PATH, str(project.id), SCAN_LOGS_FOLDER, str(project.analysis.id) + ".log")
+    if not os.path.isfile(log_file):
+        flash("No log file found for this project.", "error")
+        return redirect(url_for("projects_blueprint.projects_list"))
     # Return generated file to the browser
     return send_file(log_file, as_attachment=True)
