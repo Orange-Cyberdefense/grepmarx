@@ -141,7 +141,7 @@ def scans_launch():
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id)
         # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
-        #time.sleep(1.0)
+        time.sleep(2.0)
         flash("Analysis successfully launched", "success")
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated

@@ -84,7 +84,7 @@
                                 {% if admin or c_project.id in user_projects_ids %}
                                     {# Trigger auto-refresh if state is Analyzing or Pending % #}
                                     {% if c_project.status == 2 or c_project.status == 4 %}
-                                        <div id="{{ c_project.id}}" class="check-status"></div>
+                                        <div id="{{ c_project.id }}" class="check-status"></div>
                                     {% endif %}
                                         <tr>
                                         <td>
