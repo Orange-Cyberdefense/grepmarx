@@ -33,8 +33,9 @@ from app.analysis.models import (
 )
 from app.constants import (
     APPLICATION_INSPECTOR,
-    APPLICATION_INSPECTOR_MAX_PROCESSING_TIME,
+    APPLICATION_INSPECTOR_TIMEOUT,
     DEPSCAN,
+    DEPSCAN_TIMEOUT,
     RESULT_FOLDER,
     EXTRACT_FOLDER_NAME,
     PROJECTS_SRC_PATH,
@@ -43,6 +44,7 @@ from app.constants import (
     SCAN_LOGS_FOLDER,
     SEMGREP,
     SEMGREP_MAX_FILES,
+    SEMGREP_TIMEOUT,
     SEVERITY_CRITICAL,
     SEVERITY_HIGH,
     SEVERITY_INFO,
@@ -110,7 +112,9 @@ def async_scan(self, analysis_id, app_inspector_id):
             analysis.project.name,
             analysis.project.id,
         )
-        analysis.project.error_message = repr(e) + "\nCheck analysis logs for more details"
+        analysis.project.error_message = (
+            repr(e) + "\nCheck scan logs for more details"
+        )
         analysis.project.status = STATUS_ERROR
 
     # Done
@@ -212,15 +216,19 @@ def semgrep_invoke(files_to_scan, project_rules_path, ignore):
         "--config",
         project_rules_path,
         "--disable-nosem",
-        "--json"
+        "--json",
     ] + files_to_scan
 
-    # Call to semgrep, exceptions will be catched in async_scan()
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-    ).stdout
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=SEMGREP_TIMEOUT
+        ).stdout
+    # Other exceptions will be catched in async_scan()
+    except subprocess.TimeoutExpired:
+        current_app.logger.warning(
+            "Semgrep scan was cancelled because exceeding defined timeout (%i seconds)",
+            SEMGREP_TIMEOUT,
+        )
 
     return result
 
@@ -368,7 +376,9 @@ def generate_semgrep_options(analysis):
     project_rules_path = os.path.join(
         PROJECTS_SRC_PATH, str(analysis.project.id), "rules"
     )
-    current_app.logger.info("[Analysis %i] Rules path: %s", analysis.id, project_rules_path)
+    current_app.logger.info(
+        "[Analysis %i] Rules path: %s", analysis.id, project_rules_path
+    )
     # Consolidate ignore list
     ignore = set(
         # Remove empty elements
@@ -484,20 +494,28 @@ def sca_scan(analysis):
     delete_sca_files(output_folder)
     # Launch depscan analysis
     current_app.logger.info("[Analysis %i] Depscan execution", analysis.id)
-    subprocess.run(
-        cwd=source_path,
-        args=[
-            DEPSCAN,
-            "--no-banner",
-            "--no-error",
-            "--no-vuln-table",
-            "--sync",
-            "--src",
-            source_path,
-            "--reports-dir",
-            output_folder,
-        ],
-    )
+    try:
+        subprocess.run(
+            cwd=source_path,
+            timeout=DEPSCAN_TIMEOUT,
+            args=[
+                DEPSCAN,
+                "--no-banner",
+                "--no-error",
+                "--no-vuln-table",
+                "--sync",
+                "--src",
+                source_path,
+                "--reports-dir",
+                output_folder,
+            ],
+        )
+    # Other exceptions will be catched in async_scan()
+    except subprocess.TimeoutExpired:
+        current_app.logger.warning(
+            "Depscan scan was cancelled because exceeding defined timeout (%i seconds)",
+            DEPSCAN_TIMEOUT,
+        )
     # Return depscan JSON result as list of dicts
     result = list()
     vex_files = glob(pathname=os.path.join(output_folder, "*.vdr.json"))
@@ -687,21 +705,30 @@ def inspector_scan(analysis):
     )
     cwd = os.getcwd()
     output_file = f"{cwd}/data/projects/{analysis.project.id}/{RESULT_FOLDER}/inspector_report.json"
-    # Call to external binary: ApplicationInspector.CLI
-    subprocess.run(
-        [
-            APPLICATION_INSPECTOR,
-            "analyze",
-            "-s",
-            f"{source_path}/",
-            "-f",
-            "json",
-            f"-p {APPLICATION_INSPECTOR_MAX_PROCESSING_TIME}",
-            "-o",
-            output_file,
-        ],
-        capture_output=True,
-    ).stdout
+
+    try:
+        # Call to external binary: ApplicationInspector.CLI
+        subprocess.run(
+            [
+                APPLICATION_INSPECTOR,
+                "analyze",
+                "-s",
+                f"{source_path}/",
+                "-f",
+                "json",
+                "-o",
+                output_file,
+            ],
+            capture_output=True,
+            timeout=APPLICATION_INSPECTOR_TIMEOUT,
+        ).stdout
+    # Other exceptions will be catched in async_scan()
+    except subprocess.TimeoutExpired:
+        current_app.logger.warning(
+            "ApplicationInspector scan was cancelled because exceeding defined timeout (%i seconds)",
+            APPLICATION_INSPECTOR_TIMEOUT,
+        )
+
     if os.path.exists(output_file):
         f = open(output_file)
     try:
@@ -819,6 +846,8 @@ def analysis_log_to_file(analysis):
     # Add a new handler to write in the current analysis local logs
     log_file = os.path.join(logs_path, str(analysis.id) + ".log")
     handler = logging.FileHandler(log_file)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     handler.setFormatter(formatter)
     current_app.logger.addHandler(handler)
