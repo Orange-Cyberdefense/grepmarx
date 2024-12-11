@@ -170,19 +170,11 @@ that could compromise the confidentiality, integrity, or availability of the sys
                                             </a>
                                         </div>
 
-                                        <div class="btn-group">
-                                            <a class="btn btn-default btn-sm" data-toggle="modal"
-                                                data-target="#confirm-xls-export">
-                                                <span title="Export results as XLS" class="fas fa-download"></span>
-                                                XLS Export
-                                            </a>
-                                            <a class="btn btn-default btn-sm"
-                                                href="/projects/{{ project.id }}/download_sources">
-                                                <span title="Download sources" class="fas fa-file-zipper"></span>
-                                                Sources
-                                            </a>
-                                        </div>
-
+                                        <a class="btn btn-light btn-sm" data-toggle="modal"
+                                            data-target="#confirm-xls-export">
+                                            <span title="Export results as XLS" class="fas fa-file-excel"></span>
+                                            Export results as XLS
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +186,7 @@ that could compromise the confidentiality, integrity, or availability of the sys
             <div class="col-12 col-xl-4">
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title">Project information</h3>
+                        <h3 class="card-title">Scan information</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                 <i class="fas fa-minus"></i>
@@ -203,17 +195,29 @@ that could compromise the confidentiality, integrity, or availability of the sys
                     </div>
                     <div class="card-body" style="height: 12em;">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <span class="fas fa-user"></span>
                                 Created by:
                                 {{ project.creator.username }}
-                            </div>
-                            <div class="col-md-12">
+                                <br />
                                 <span class="fas fa-clock"></span>
                                 Scan duration:
                                 {% set duration = (project.analysis.finished_on - project.analysis.started_on) | string
                                 %}
                                 {{ duration.split('.', 2)[0] }}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-2">
+                                    <a class="btn btn-default btn-sm"
+                                        href="/projects/{{ project.id }}/download_sources">
+                                        <span title="Download security archive" class="far fa-file-zipper"></span>
+                                        Sources archive
+                                    </a>
+                                    <a class="btn btn-default btn-sm" href="/projects/{{ project.id }}/download_analysis_logs">
+                                        <i title="Download scan logs" class="far fa-file-lines"></i>
+                                        Scan logs
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         <br />
