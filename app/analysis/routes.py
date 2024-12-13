@@ -231,18 +231,14 @@ def analysis_codeview(occurence_id):
         if occurence.position.line_end > occurence.position.line_start
         else str(occurence.position.line_start)
     )
-
-    #col_start = occurence.position.column_start
-    #col_count = occurence.position.column_end - occurence.position.column_start
-
     # code = Markup(code)
     return render_template(
         "analysis_occurence_codeview.html",
         code=code,
         language=language,
         hl_lines=hl_lines,
-        #col_start=col_start,
-        #col_count=col_count,
+        col_start=occurence.position.column_start,
+        col_end=occurence.position.column_end,
         user=current_user,
         path=occurence.file_path,
         project_id=project_id,
@@ -389,8 +385,7 @@ def analysis_dependencies_export_csv(analysis_id):
             "Flagged weakness",
             "Suppress for containers",
             "Uninstall candidate",
-            "Local install,"
-            "Reference"
+            "Local install," "Reference",
         ]
     ]
     for vuln_dep in analysis.vulnerable_dependencies:
