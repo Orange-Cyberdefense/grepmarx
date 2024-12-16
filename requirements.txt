@@ -1,7 +1,7 @@
 celery==5.4.0
 chardet==5.2.0
 email_validator==2.2.0
-flask-ldap3-login==1.0.2
+flask-ldap3-login==0.9.18
 flask==2.3.3
 flask_admin==1.6.1
 flask_login==0.6.3
