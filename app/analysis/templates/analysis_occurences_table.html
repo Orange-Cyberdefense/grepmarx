@@ -36,10 +36,7 @@
             </td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
             <td onclick="ajaxOccurenceCode(this, '{{ occurence.id }}')">
                 <span class="">
-                    {{ occurence.position.line_start }}
-                    {% if occurence.position.line_end > occurence.position.line_start %}
-                    -{{ occurence.position.line_end }}
-                    {% endif %}
+                    {{ occurence.position.line_start }}{% if occurence.position.line_end > occurence.position.line_start %}-{{ occurence.position.line_end }}{% endif %}
                 </span>
             </td>
             <td class="table-action">

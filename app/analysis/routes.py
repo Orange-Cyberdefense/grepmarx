@@ -237,11 +237,9 @@ def analysis_codeview(occurence_id):
         code=code,
         language=language,
         hl_lines=hl_lines,
-        col_start=occurence.position.column_start,
-        col_end=occurence.position.column_end,
         user=current_user,
-        path=occurence.file_path,
         project_id=project_id,
+        occurence=occurence
     )
 
 

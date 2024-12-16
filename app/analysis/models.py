@@ -80,6 +80,23 @@ class Position(db.Model):
     column_end = Column(Integer)
 
 
+class DataflowPosition(db.Model):
+
+    __tablename__ = "DataflowPosition"
+
+    id = Column(Integer, primary_key=True)
+    occurence_id = db.Column(db.Integer, db.ForeignKey("Occurence.id"), nullable=True)
+    occurence = db.relationship(
+        "Occurence",
+        backref=db.backref("dataflow", lazy=True, cascade="all, delete-orphan"),
+    )
+    content = Column(String)
+    line_start = Column(Integer)
+    line_end = Column(Integer)
+    column_start = Column(Integer)
+    column_end = Column(Integer)
+
+
 class VulnerableDependency(db.Model):
     __tablename__ = "VulnerableDependency"
 

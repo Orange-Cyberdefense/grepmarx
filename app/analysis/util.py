@@ -23,6 +23,7 @@ from app import celery, db
 from app.analysis.models import (
     Analysis,
     AppInspector,
+    DataflowPosition,
     InspectorTag,
     Match,
     Occurence,
@@ -111,9 +112,7 @@ def async_scan(self, analysis_id):
             analysis.project.name,
             analysis.project.id,
         )
-        analysis.project.error_message = (
-            repr(e) + "\nCheck scan logs for more details"
-        )
+        analysis.project.error_message = repr(e) + "\nCheck scan logs for more details"
         analysis.project.status = STATUS_ERROR
 
     # Done
@@ -351,6 +350,46 @@ def load_occurence(sast_result):
         column_start=sast_result["start"]["col"],
         column_end=sast_result["end"]["col"],
     )
+    # Handle dataflow in case of taint mode rule
+    if "extra" in sast_result and "dataflow_trace" in sast_result["extra"]:
+        occurence.dataflow = list()
+        current_dataflow = sast_result["extra"]["dataflow_trace"]
+        # Taint source
+        if "taint_source" in current_dataflow:
+            taint_source = current_dataflow["taint_source"][1]
+            occurence.dataflow.append(
+                DataflowPosition(
+                    content=taint_source[1],
+                    line_start=taint_source[0]["start"]["line"],
+                    line_end=taint_source[0]["end"]["line"],
+                    column_start=taint_source[0]["start"]["col"],
+                    column_end=taint_source[0]["end"]["col"],
+                )
+            )
+        # Intermediate variables
+        if "intermediate_vars" in current_dataflow:
+            for c_var in current_dataflow["intermediate_vars"]:
+                occurence.dataflow.append(
+                DataflowPosition(
+                    content=c_var["content"],
+                    line_start=c_var["location"]["start"]["line"],
+                    line_end=c_var["location"]["end"]["line"],
+                    column_start=c_var["location"]["start"]["col"],
+                    column_end=c_var["location"]["end"]["col"],
+                )
+            )
+        # Taint sink
+        if "taint_sink" in current_dataflow:
+            taint_sink = current_dataflow["taint_sink"][1]
+            occurence.dataflow.append(
+                DataflowPosition(
+                    content=taint_sink[1],
+                    line_start=taint_sink[0]["start"]["line"],
+                    line_end=taint_sink[0]["end"]["line"],
+                    column_start=taint_sink[0]["start"]["col"],
+                    column_end=taint_sink[0]["end"]["col"],
+                )
+            )
     return occurence
 
 
@@ -497,7 +536,7 @@ def sca_scan(analysis):
         result = subprocess.run(
             cwd=source_path,
             timeout=DEPSCAN_TIMEOUT,
-            capture_output=True, 
+            capture_output=True,
             text=True,
             args=[
                 DEPSCAN,

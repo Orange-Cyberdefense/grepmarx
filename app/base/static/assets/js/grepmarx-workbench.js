@@ -66,13 +66,10 @@ function ajaxOccurenceCode(el, occurence_id) {
         if (reqOccurenceCode.readyState === XMLHttpRequest.DONE) {
             var e = document.getElementById('code');
             e.innerHTML = reqOccurenceCode.responseText;
-            language = document.getElementById('language').innerText;
             anchorLines = document.getElementById('anchor-line').innerText;
-            highlightTheme = document.getElementById('highlight-theme').innerText;
-            highLightCode(language, anchorLines, highlightTheme);
             anchorColStart = document.getElementById('anchor-col-start').innerText;
             anchorColEnd = document.getElementById('anchor-col-end').innerText;
-            highLightMore(anchorColStart, anchorColEnd);
+            highLightCode(anchorLines, anchorColStart, anchorColEnd);
         }
     };
     reqOccurenceCode.open('GET', '/analysis/codeview/' + occurence_id);
@@ -81,8 +78,14 @@ function ajaxOccurenceCode(el, occurence_id) {
 
 // ------------ Code highlighting
 
-function highLightCode(language, anchorLines, highlightTheme) {
+function highLightCode(anchorLines, anchorColStart, anchorColEnd) {
+    /* Get highlighting information from the current page */
+    const language = document.getElementById('language').innerText;
+    const highlightTheme = document.getElementById('highlight-theme').innerText;
+    
+    /* Highlight lines */
     const codeEnlight = document.getElementById('code-englight');
+    EnlighterJS.enlight(codeEnlight, false); // Remove existing highlighting if any
     EnlighterJS.enlight(codeEnlight, {
         theme: highlightTheme,
         toolbarTop: '',
@@ -96,112 +99,277 @@ function highLightCode(language, anchorLines, highlightTheme) {
         behavior: 'smooth',
         inline: 'center'
     });
+    /* Stronger highlight inside columns numbers */
+    highlightSpansBetweenColumns(anchorColStart, anchorColEnd);
 }
 
 /**
- * Highlights HTML content between specified columns across multiple elements
+ * Constants for column-based highlighting
+ */
+const CONSTANTS = {
+    HIGHLIGHT_CLASS: 'strong-highlight',
+    DIV_CLASS: 'enlighter-special',
+    LEADING_SPACES_REGEX: /^\s{2,}/,
+    SPACES_SPLIT_REGEX: /^(\s{2,})(.*)/
+};
+
+/**
+ * Function to highlight spans between specific columns
  * @param {number} startCol - Starting column for highlighting
  * @param {number} endCol - Ending column for highlighting
  */
-function highLightMore(startCol, endCol) {
-    // Get all elements with class 'enlighter-special'
-    // Convert HTMLCollection to Array for forEach usage
-    const elements = Array.from(document.getElementsByClassName('enlighter-special'));
+function highlightSpansBetweenColumns(startCol, endCol) {
+    const divs = Array.from(document.getElementsByClassName(CONSTANTS.DIV_CLASS));
+    if (!divs.length) return;
 
-    elements.forEach((element, index) => {
-        let before, after;
-        const isFirst = index === 0;
-        const isLast = index === elements.length - 1;
-        const content = element.innerHTML;
+    if (divs.length === 1) {
+        divs[0].innerHTML = processSingleDiv(divs[0].innerHTML, startCol, endCol);
+        return;
+    }
 
-        // Different handling based on element position:
-        // - First element: highlight from startCol to end
-        // - Last element: highlight from start to endCol
-        // - Middle elements: highlight entirely
-        if (isFirst) {
-            // For first line, split at startCol and highlight after
-            const pos = findLastTagPosition(content, startCol) + 1;
-            [before, after] = [content.slice(0, pos - 1), content.slice(pos - 1)];
-            element.innerHTML = before + decorateSpansFromHtmlText(after);
-        } else if (isLast) {
-            // For last line, split at endCol and highlight before
-            const pos = findLastTagPosition(content, endCol);
-            [before, after] = [content.slice(0, pos - 1), content.slice(pos - 1)];
-            element.innerHTML = decorateSpansFromHtmlText(before) + after;
+    processMultipleDivs(divs, startCol, endCol);
+}
+
+/**
+ * Process multiple divs for highlighting
+ * @param {Element[]} divs - Array of div elements
+ * @param {number} startCol - Starting column
+ * @param {number} endCol - Ending column
+ */
+function processMultipleDivs(divs, startCol, endCol) {
+    let isFirstSpanFound = false;
+    divs.forEach((div, index) => {
+        if (index === 0) {
+            [div.innerHTML, isFirstSpanFound] = processDiv(div.innerHTML, startCol, null, true);
+        } else if (index === divs.length - 1) {
+            div.innerHTML = processLastDiv(div.innerHTML, endCol);
         } else {
-            // For intermediate lines, highlight everything
-            element.innerHTML = decorateSpansFromHtmlText(content);
+            div.innerHTML = processAllSpans(div.innerHTML);
         }
     });
 }
 
-function findLastTagPosition(htmlString, targetColumn) {
-    let visibleCharCount = 0;
-    let actualPosition = 0;
-    let inTag = false;
-    let lastTagPosition = 0;
-
-    // Loop through the string character by character
-    for (let i = 0; i < htmlString.length; i++) {
-        const char = htmlString[i];
-
-        // Handle entering/exiting HTML tags
-        if (char === '<') {
-            inTag = true;
-            lastTagPosition = i;
-        } else if (char === '>') {
-            inTag = false;
-            continue;
-        }
-
-        // Count only visible characters (outside tags)
-        if (!inTag) {
-            visibleCharCount++;
-        }
-
-        // If we reach the target column
-        if (visibleCharCount === targetColumn) {
-            actualPosition = i;
-            break;
-        }
-    }
-
-    // Find the last opening tag before the current position
-    for (let i = actualPosition; i >= 0; i--) {
-        if (htmlString[i] === '<') {
-            return i;
-        }
-    }
-
-    return -1; // If no tag is found
+function processLastDiv(html, endCol) {
+    return processDiv(html, null, endCol, false)[0];
 }
 
-function decorateSpansFromHtmlText(htmlString) {
-  // First, handle the special case of leading spaces in first span
-  const firstSpanRegex = /(<span(?:\s+class\s*=\s*["']([^"']*)["'])?[^>]*>)([\s\t]{2,})(.*?<\/span>)/;
-  htmlString = htmlString.replace(firstSpanRegex, (match, openingTag, existingClasses, spaces, rest) => {
-    const classAttr = existingClasses ? ` class="${existingClasses}"` : '';
-    return `${openingTag}${spaces}</span><span${classAttr}>${rest}`;
-  });
+/**
+ * Process a single div with both start and end columns
+ * @param {string} html - HTML content to process
+ * @param {number} startCol - Starting column
+ * @param {number} endCol - Ending column
+ * @returns {string} Processed HTML
+ */
+function processSingleDiv(html, startCol, endCol) {
+    return processDiv(html, startCol, endCol, true)[0];
+}
 
-  // Then add strong-highlight class to all spans except the first one
-  const spanRegex = /<span(?:\s+class\s*=\s*["']([^"']*)["'])?([^>]*)>/g;
-  let isFirstSpan = true;
+/**
+ * Process all spans in a div without column constraints
+ * @param {string} html - HTML content to process
+ * @returns {string} Processed HTML
+ */
+function processAllSpans(html) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    Array.from(tempDiv.getElementsByTagName('span')).forEach(span => {
+        const text = span.textContent;
+        if (hasLeadingSpaces(text)) {
+            splitSpanAtSpaces(span);
+        } else {
+            span.classList.add(CONSTANTS.HIGHLIGHT_CLASS);
+        }
+    });
+    
+    return tempDiv.innerHTML;
+}
 
-  return htmlString.replace(spanRegex, (match, existingClasses, otherAttributes) => {
-    if (isFirstSpan) {
-      isFirstSpan = false;
-      return match;
+/**
+ * Check if text has leading spaces
+ * @param {string} text - Text to check
+ * @returns {boolean}
+ */
+function hasLeadingSpaces(text) {
+    return CONSTANTS.LEADING_SPACES_REGEX.test(text);
+}
+
+/**
+ * Calculate position information for text processing
+ * @param {number} visibleCharCount - Current visible character count
+ * @param {number} textLength - Length of text being processed
+ * @returns {Object} Position information
+ */
+function calculatePosition(visibleCharCount, textLength) {
+    return {
+        startPos: visibleCharCount,
+        endPos: visibleCharCount + textLength
+    };
+}
+
+/**
+ * Generic div processor that handles both start and end constraints
+ * @param {string} html - HTML content to process
+ * @param {number|null} startCol - Starting column (null if no start constraint)
+ * @param {number|null} endCol - Ending column (null if no end constraint)
+ * @param {boolean} isFirstDiv - Whether this is the first div being processed
+ * @returns {[string, boolean]} Processed HTML and whether first span was found
+ */
+function processDiv(html, startCol, endCol, isFirstDiv) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    let isFirstSpanFound = false;
+    let visibleCharCount = 1;
+    
+    const spans = Array.from(tempDiv.getElementsByTagName('span'));
+    spans.forEach(span => {
+        const text = span.textContent;
+        const position = calculatePosition(visibleCharCount, text.length);
+        
+        if (endCol && position.startPos >= endCol) return;
+        
+        if (startCol !== null && !isFirstSpanFound && position.endPos > startCol) {
+            isFirstSpanFound = true;
+            const offset = startCol - position.startPos;
+            
+            if (offset > 0) {
+                processSpanWithOffset(span, offset, endCol, position);
+            } else {
+                processSpanWithoutOffset(span, endCol, position);
+            }
+        } else if (startCol === null || isFirstSpanFound) {
+            processMiddleOrEndSpan(span, endCol, position, startCol);
+        }
+        
+        visibleCharCount = position.endPos;
+    });
+    
+    return [tempDiv.innerHTML, isFirstSpanFound];
+}
+
+/**
+ * Process span with offset from start column
+ * @param {Element} span - Span element to process
+ * @param {number} offset - Offset from start
+ * @param {number|null} endCol - Ending column
+ * @param {Object} position - Position information
+ */
+function processSpanWithOffset(span, offset, endCol, position) {
+    const text = span.textContent;
+    let beforeText = text.substring(0, offset);
+    let afterText = text.substring(offset);
+    
+    if (endCol && position.endPos > endCol) {
+        const endOffset = endCol - position.startPos;
+        afterText = text.substring(offset, endOffset);
+        const remainingText = text.substring(endOffset);
+        createTripleSpans(span, beforeText, afterText, remainingText);
+    } else {
+        createSplitSpans(span, beforeText, afterText, true);
     }
+}
 
-    if (existingClasses) {
-      if (!existingClasses.includes('strong-highlight')) {
-        return `<span class="${existingClasses} strong-highlight"${otherAttributes}>`;
-      }
-      return match;
+/**
+ * Process span without offset
+ * @param {Element} span - Span element to process
+ * @param {number|null} endCol - Ending column
+ * @param {Object} position - Position information
+ */
+function processSpanWithoutOffset(span, endCol, position) {
+    if (endCol && position.endPos > endCol) {
+        const splitPosition = endCol - position.startPos;
+        const highlightText = span.textContent.substring(0, splitPosition);
+        const remainingText = span.textContent.substring(splitPosition);
+        createSplitSpans(span, highlightText, remainingText, false);
+    } else {
+        span.classList.add(CONSTANTS.HIGHLIGHT_CLASS);
     }
-    return `<span class="strong-highlight"${otherAttributes}>`;
-  });
+}
+
+/**
+ * Process middle or end spans
+ * @param {Element} span - Span element to process
+ * @param {number|null} endCol - Ending column
+ * @param {Object} position - Position information
+ * @param {number|null} startCol - Starting column
+ */
+function processMiddleOrEndSpan(span, endCol, position, startCol) {
+    if (endCol && position.endPos > endCol) {
+        const splitPosition = endCol - position.startPos;
+        const highlightText = span.textContent.substring(0, splitPosition);
+        const remainingText = span.textContent.substring(splitPosition);
+        createSplitSpans(span, highlightText, remainingText, false);
+    } else {
+        if (startCol === null && hasLeadingSpaces(span.textContent)) {
+            splitSpanAtSpaces(span);
+        } else {
+            span.classList.add(CONSTANTS.HIGHLIGHT_CLASS);
+        }
+    }
+}
+
+/**
+ * Split span at spaces and highlight second part
+ * @param {Element} span - Span element to split
+ */
+function splitSpanAtSpaces(span) {
+    const text = span.textContent;
+    const match = text.match(CONSTANTS.SPACES_SPLIT_REGEX);
+    if (!match) return;
+    createSplitSpans(span, match[1], match[2], true);
+}
+
+/**
+ * Create split spans with proper classes
+ * @param {Element} originalSpan - Original span element
+ * @param {string} firstText - Text for first span
+ * @param {string} secondText - Text for second span
+ * @param {boolean} highlightSecond - Whether to highlight second span
+ */
+function createSplitSpans(originalSpan, firstText, secondText, highlightSecond) {
+    const parent = originalSpan.parentNode;
+    const baseClass = originalSpan.className.replace(` ${CONSTANTS.HIGHLIGHT_CLASS}`, '');
+    
+    createSpan(parent, firstText, baseClass, !highlightSecond, originalSpan);
+    createSpan(parent, secondText, baseClass, highlightSecond, originalSpan);
+    
+    parent.removeChild(originalSpan);
+}
+
+/**
+ * Create triple spans for complex cases
+ * @param {Element} originalSpan - Original span element
+ * @param {string} firstText - Text for first span
+ * @param {string} middleText - Text for middle span
+ * @param {string} lastText - Text for last span
+ */
+function createTripleSpans(originalSpan, firstText, middleText, lastText) {
+    const parent = originalSpan.parentNode;
+    const baseClass = originalSpan.className.replace(` ${CONSTANTS.HIGHLIGHT_CLASS}`, '');
+    
+    createSpan(parent, firstText, baseClass, false, originalSpan);
+    createSpan(parent, middleText, baseClass, true, originalSpan);
+    createSpan(parent, lastText, baseClass, false, originalSpan);
+    
+    parent.removeChild(originalSpan);
+}
+
+/**
+ * Create a single span element
+ * @param {Element} parent - Parent element
+ * @param {string} text - Text content
+ * @param {string} baseClass - Base CSS class
+ * @param {boolean} highlight - Whether to highlight the span
+ * @param {Element} referenceNode - Reference node for insertion
+ */
+function createSpan(parent, text, baseClass, highlight, referenceNode) {
+    if (!text) return;
+    
+    const span = document.createElement('span');
+    span.className = highlight ? `${baseClass} ${CONSTANTS.HIGHLIGHT_CLASS}` : baseClass;
+    span.textContent = text;
+    parent.insertBefore(span, referenceNode);
 }
 
 // ------------ User selection highlighting

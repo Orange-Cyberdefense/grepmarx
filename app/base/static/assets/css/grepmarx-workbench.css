@@ -125,6 +125,17 @@ mark, .mark {
     padding-right: 5.5em;
 }
 
+/* Fixed dataflow on the right */
+.dataflow {
+    position: fixed;
+    z-index: 1;
+    background-color: transparent;
+    top: 30%; 
+    right: 5%; 
+    transform: translateY(-50%);
+    width: 200px;
+}
+
 /* Force englighter.js font and background
 .enlighter {
     font-size: 1.05em !important;
