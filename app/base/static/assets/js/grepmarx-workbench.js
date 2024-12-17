@@ -97,7 +97,7 @@ function highLightCode(anchorLines, anchorColStart, anchorColEnd) {
     document.getElementsByClassName('enlighter-special')[0].scrollIntoView({
         block: 'center',
         behavior: 'smooth',
-        inline: 'center'
+        inline: 'start'
     });
     /* Stronger highlight inside columns numbers */
     highlightSpansBetweenColumns(anchorColStart, anchorColEnd);

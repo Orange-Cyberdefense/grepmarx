@@ -1,58 +1,60 @@
 <div class="split-panel-block">
-    <div id="language" hidden="true">{{ language }}</div>
-    <div id="highlight-theme" hidden="true">{% if user is defined and user.dark_theme %}atomic{% else %}droide{% endif
-        %}</div>
-    <div id="anchor-line" hidden="true">{{ hl_lines }}</div>
-    <div id="anchor-col-start" hidden="true">{{ occurence.position.column_start }}</div>
-    <div id="anchor-col-end" hidden="true">{{ occurence.position.column_end }}</div>
+    <div class="codeview-container">
+        <div id="language" hidden="true">{{ language }}</div>
+        <div id="highlight-theme" hidden="true">{% if user is defined and user.dark_theme %}atomic{% else %}droide{% endif
+            %}</div>
+        <div id="anchor-line" hidden="true">{{ hl_lines }}</div>
+        <div id="anchor-col-start" hidden="true">{{ occurence.position.column_start }}</div>
+        <div id="anchor-col-end" hidden="true">{{ occurence.position.column_end }}</div>
 
-    <!-- Begin toolbar -->
-    <div class="toolbar">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-            <div class="toolbar-grp">
-                <a class="btn btn-sm btn-secondary text-white"
-                    href="/projects/{{ project_id }}">
-                    <span class="fas fa-arrow-circle-left"></span> Back
-                </a>
-                <a class="btn btn-sm btn-secondary text-white" href="/switch-theme">
-                    <span class="fas fa-adjust"></span></a>
-            </div>
-            <div class="toolbar-grp">
-                <span class="badge badge-secondary badge-lg p-2 font-weight-normal text-md text-white">
-                    {{ occurence.file_path }}
-                </span>
+        <!-- Begin toolbar -->
+        <div class="toolbar">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+                <div class="toolbar-grp">
+                    <a class="btn btn-sm btn-secondary text-white"
+                        href="/projects/{{ project_id }}">
+                        <span class="fas fa-arrow-circle-left"></span> Back
+                    </a>
+                    <a class="btn btn-sm btn-secondary text-white" href="/switch-theme">
+                        <span class="fas fa-adjust"></span></a>
+                </div>
+                <div class="toolbar-grp">
+                    <span class="badge badge-secondary badge-lg p-2 font-weight-normal text-md text-white">
+                        {{ occurence.file_path }}
+                    </span>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- End toolbar -->
+        <!-- End toolbar -->
 
-    {% if occurence.dataflow | length > 0 %}
-    <!-- Begin dataflow -->
-    <div class="dataflow d-flex flex-column align-items-center">
-        {% for c_dataflow in occurence.dataflow %}
-            {% if loop.first %}
-            {% set fa_icon = "fa-right-to-bracket" %}
-            {% elif loop.last %}
-            {% set fa_icon = "fa-skull" %}
-            <i class="fa-solid fa-arrow-down m-1 w-100 text-center"></i>
-            {% else %}
-            {% set fa_icon = "fa-arrow-down-short-wide" %}
-            <i class="fa-solid fa-arrow-down m-1 w-100 text-center"></i>
-            {% endif %}
-            {% if c_dataflow["line_end"] > c_dataflow["line_start"] %}
-            {% set lines = c_dataflow["line_start"] ~ "-" ~ c_dataflow["line_end"] %}
-            {% else %}
-            {% set lines = c_dataflow["line_start"] %}
-            {% endif %}
-            <a class="w-100 btn btn-sm btn-secondary position-relative d-flex align-items-center text-truncate" href="#" 
-            onclick="highLightCode('{{ lines }}', '{{ c_dataflow["column_start"] }}', '{{ c_dataflow["column_end"] }}')">
-                <span class="fa-solid {{ fa_icon }} position-absolute left-2"></span>
-                <span class="w-100 text-center text-truncate px-4">{{ c_dataflow["content"] }}</span>
-            </a>
-        {% endfor %}
-    </div>
-    <!-- End dataflow -->
-    {% endif %}
+        {% if occurence.dataflow | length > 0 %}
+        <!-- Begin dataflow -->
+        <div class="dataflow d-flex flex-column align-items-center">
+            {% for c_dataflow in occurence.dataflow %}
+                {% if loop.first %}
+                {% set fa_icon = "fa-right-to-bracket" %}
+                {% elif loop.last %}
+                {% set fa_icon = "fa-skull" %}
+                <i class="fa-solid fa-arrow-down m-1 w-100 text-center"></i>
+                {% else %}
+                {% set fa_icon = "fa-arrow-down-short-wide" %}
+                <i class="fa-solid fa-arrow-down m-1 w-100 text-center"></i>
+                {% endif %}
+                {% if c_dataflow["line_end"] > c_dataflow["line_start"] %}
+                {% set lines = c_dataflow["line_start"] ~ "-" ~ c_dataflow["line_end"] %}
+                {% else %}
+                {% set lines = c_dataflow["line_start"] %}
+                {% endif %}
+                <a class="w-100 btn btn-sm btn-secondary position-relative d-flex align-items-center text-truncate" href="#" 
+                onclick="highLightCode('{{ lines }}', '{{ c_dataflow["column_start"] }}', '{{ c_dataflow["column_end"] }}')">
+                    <span class="fa-solid {{ fa_icon }} position-absolute left-2"></span>
+                    <span class="w-100 text-center text-truncate px-4">{{ c_dataflow["content"] }}</span>
+                </a>
+            {% endfor %}
+        </div>
+        <!-- End dataflow -->
+        {% endif %}
 
-    <pre id="code-englight">{{ code }}</pre>
+        <pre id="code-englight">{{ code }}</pre>
+    </div>
 </div>

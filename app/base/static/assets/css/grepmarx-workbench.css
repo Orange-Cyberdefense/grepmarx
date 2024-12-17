@@ -57,6 +57,9 @@ html {
 .split-bottom {
     float: left;
     height: 100%;
+    z-index: 10; 
+    position: relative; 
+    background: #f4f6f9;
 }
 
 /* ------------ Workbench styles */
@@ -123,6 +126,12 @@ mark, .mark {
     padding-left: 3.5em;
     padding-top: 1em;
     padding-right: 5.5em;
+}
+
+/* Fix for codeview missing vertical scrollbar */
+.codeview-container {
+    display: inline-block; 
+    min-width: 100%;
 }
 
 /* Fixed dataflow on the right */
