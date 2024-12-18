@@ -62,6 +62,10 @@ html {
     background: #f4f6f9;
 }
 
+.dark-mode .split-bottom {
+    background: #454d55;
+}
+
 /* ------------ Workbench styles */
 
 /* Normalize font size for highligthed source code */ 
