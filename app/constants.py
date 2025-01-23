@@ -92,7 +92,14 @@ LANGUAGES_DEVICONS = {
     "Swift": "devicon-swift-plain",
     "C#": "devicon-csharp-plain",
     "Yaml": "devicon-yaml-plain",
-    "HCL": "devicon-nomad-plain"
+    "HCL": "devicon-nomad-plain",
+    "HTML": "devicon-html5-plain",
+    "Apex": "devicon-salesforce-plain",
+    "Dockerfile": "devicon-docker-plain",
+    "Clojure": "devicon-clojure-plain",
+    "Dart": "devicon-dart-plain",
+    "Elixir": "devicon-elixir-plain",
+    "Regex": "devicon-nomad-plain",
 }
 
 # Mapping for depscan insights

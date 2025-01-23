@@ -115,6 +115,13 @@ def init_db():
     )
     db.session.add(SupportedLanguage(name="Yaml", shortname="yml", extensions=".yml,.yaml"))
     db.session.add(SupportedLanguage(name="HCL", extensions=".hcl,.tf,.tfvars,.nomad,.vcl"))
+    db.session.add(SupportedLanguage(name="HTML", extensions=".html,.htm,.xhtml"))
+    db.session.add(SupportedLanguage(name="Apex", extensions=".cls,.trigger"))
+    db.session.add(SupportedLanguage(name="Dockerfile", extensions="Dockerfile,.dockerfile"))
+    db.session.add(SupportedLanguage(name="Clojure", extensions=".clj,.cljs,.cljc,.edn"))
+    db.session.add(SupportedLanguage(name="Dart", extensions=".dart,.dart.js"))
+    db.session.add(SupportedLanguage(name="Elixir", extensions=".ex,.exs,.eex,.leex"))
+    db.session.add(SupportedLanguage(name="Regex", extensions=""))
     db.session.commit()
 
 
