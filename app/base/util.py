@@ -79,8 +79,8 @@ def init_db():
             name="C", extensions=".cpp,.c++,.cxx,.hpp,.hh,.h++,.hxx,.c,.cc,.h"
         )
     )
-    db.session.add(SupportedLanguage(name="JavaScript", extensions=".js,.htm,.html"))
-    db.session.add(SupportedLanguage(name="TypeScript", extensions=".ts,.html"))
+    db.session.add(SupportedLanguage(name="JavaScript", shortname="js", extensions=".js,.htm,.html"))
+    db.session.add(SupportedLanguage(name="TypeScript", shortname="ts", extensions=".ts,.html"))
     db.session.add(SupportedLanguage(name="JSON", extensions=".json"))
     db.session.add(
         SupportedLanguage(
@@ -99,7 +99,7 @@ def init_db():
     db.session.add(
         SupportedLanguage(name="Ruby", extensions=".rb,.rhtml,.rxml,.rjs,.erb")
     )
-    db.session.add(SupportedLanguage(name="Kotlin", extensions=".kt,.kts"))
+    db.session.add(SupportedLanguage(name="Kotlin", shortname="kt", extensions=".kt,.kts"))
     db.session.add(SupportedLanguage(name="Bash", extensions=".sh,.bash"))
     db.session.add(SupportedLanguage(name="Rust", extensions=".rs,.rlib"))
     db.session.add(SupportedLanguage(name="Scala", extensions=".scala,.sc"))
@@ -113,6 +113,8 @@ def init_db():
             extensions=".cs,.cshtml,.xaml,.vb,.config,.aspx,.ascx,.asax,.tag,.master,.xml",
         )
     )
+    db.session.add(SupportedLanguage(name="Yaml", shortname="yml", extensions=".yml,.yaml"))
+    db.session.add(SupportedLanguage(name="HCL", extensions=".hcl,.tf,.tfvars,.nomad,.vcl"))
     db.session.commit()
 
 
