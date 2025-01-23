@@ -1,4 +1,4 @@
-"""fix team class test in database
+"""Fix team class test in database
 
 Revision ID: 0914a29d984d
 Revises: 6201ea3d70cc

@@ -1,4 +1,4 @@
-"""3 SUPPORT CSHARP
+"""Add support for C#
 
 Revision ID: e391e32b3394
 Revises: 51b79bdb33b2
