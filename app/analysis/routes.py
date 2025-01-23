@@ -81,7 +81,10 @@ def scans_new(project_id, scan_form=None):
     selected_rule_packs = list()
     for rule_pack in all_rules_packs:
         for supported_language in rule_pack.languages:
-            if supported_language.name in project_languages:
+            if any(
+                s.casefold() == supported_language.name.casefold()
+                for s in project_languages
+            ):
                 selected_rule_packs.append(rule_pack.id)
     return render_template(
         "analysis_scans_new.html",
@@ -239,7 +242,7 @@ def analysis_codeview(occurence_id):
         hl_lines=hl_lines,
         user=current_user,
         project_id=project_id,
-        occurence=occurence
+        occurence=occurence,
     )
 
 

@@ -90,7 +90,8 @@ LANGUAGES_DEVICONS = {
     "Terraform": "devicon-terraform-plain",
     "Generic": "devicon-devicon-plain",
     "Swift": "devicon-swift-plain",
-    "C#": "devicon-csharp-plain"
+    "C#": "devicon-csharp-plain",
+    "Yaml": "devicon-yaml-plain"
 }
 
 # Mapping for depscan insights
