@@ -124,6 +124,7 @@ def save_rule_in_db(filename):
                             )  # reset to avoid duplicates in RuleToSupportedLanguageAssociation!
                             supported_languages = SupportedLanguage.query.all()
                             for c_language in c_rule["languages"]:
+                                print(c_language)
                                 for c_sl in supported_languages:
                                     if c_sl.name.lower() == c_language.lower():
                                         rule.languages.append(c_sl)

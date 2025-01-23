@@ -91,7 +91,8 @@ LANGUAGES_DEVICONS = {
     "Generic": "devicon-devicon-plain",
     "Swift": "devicon-swift-plain",
     "C#": "devicon-csharp-plain",
-    "Yaml": "devicon-yaml-plain"
+    "Yaml": "devicon-yaml-plain",
+    "HCL": "devicon-nomad-plain"
 }
 
 # Mapping for depscan insights
