@@ -99,7 +99,7 @@ LANGUAGES_DEVICONS = {
     "Clojure": "devicon-clojure-plain",
     "Dart": "devicon-dart-plain",
     "Elixir": "devicon-elixir-plain",
-    "Regex": "devicon-nomad-plain",
+    "Regex": "devicon-devicon-plain",
 }
 
 # Mapping for depscan insights

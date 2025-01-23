@@ -136,10 +136,12 @@
                             <div class="row">
                                 <div class="col-sm-12 div-select-rules">
                                     Filter by language:
-                                    {% for c_lang in languages %}
-                                    <a class="{{ lang_icons[c_lang] }} btn btn-lg text-gray l-filter" title="{{ c_lang }}"
-                                        onclick="filterRules('{{ c_lang }}');" id="filter-{{ c_lang }}"></a>
-                                    {% endfor %}
+                                    <div class="btn-group">
+                                        {% for c_lang in languages %}
+                                        <a class="{{ lang_icons[c_lang] }} btn btn-lg text-gray l-filter" title="{{ c_lang }}"
+                                            onclick="filterRules('{{ c_lang }}');" id="filter-{{ c_lang }}"></a>
+                                        {% endfor %}
+                                    </div>
                                     <a class="btn btn-sm btn-outline text-danger" onclick="filterRules('clear');">
                                         <span class="fas fa-filter-circle-xmark"></span> Clear
                                     </a>
