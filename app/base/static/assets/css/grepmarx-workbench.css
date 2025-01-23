@@ -73,6 +73,11 @@ html {
     font-size: .875rem !important;
 }
 
+/* Add top margin to avoid first line of code being hidden by the Back button */
+.enlighter {
+    margin-top: 5em !important;
+}
+
 /* Stronger highlight for words in the line */
 .strong-highlight {
     background-color: rgba(255, 166, 0, 0.40) !important;
