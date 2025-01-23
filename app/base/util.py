@@ -109,7 +109,7 @@ def init_db():
     db.session.add(SupportedLanguage(name="Swift", extensions=".swift,.SWIFT"))
     db.session.add(
         SupportedLanguage(
-            name="C#",
+            name="C#", shortname="csharp",
             extensions=".cs,.cshtml,.xaml,.vb,.config,.aspx,.ascx,.asax,.tag,.master,.xml",
         )
     )

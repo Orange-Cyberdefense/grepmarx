@@ -92,7 +92,9 @@ def save_rule_in_db(filename):
                 yml_rules = safe_load(yml_stream)
             # Skip file if not parseable
             except YAMLError as e:
-                current_app.logger.info("Rule YAML file was skipped because not parseable: %s", filename)
+                current_app.logger.info(
+                    "Rule YAML file was skipped because not parseable: %s", filename
+                )
                 current_app.logger.debug(e)
                 yml_ok = False
             if yml_ok:
@@ -126,7 +128,11 @@ def save_rule_in_db(filename):
                             for c_language in c_rule["languages"]:
                                 print(c_language)
                                 for c_sl in supported_languages:
-                                    if c_sl.name.lower() == c_language.lower():
+                                    # Check if the SupportedLanguage's name or shortname matches with the rule's language
+                                    if c_sl.name.lower() == c_language.lower() or (
+                                        c_sl.shortname is not None
+                                        and c_sl.shortname.lower() == c_language.lower()
+                                    ):
                                         rule.languages.append(c_sl)
                         # Add metadata: OWASP and CWE ids
                         if "metadata" in c_rule:

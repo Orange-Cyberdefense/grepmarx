@@ -111,6 +111,7 @@ class SupportedLanguage(db.Model):
 
     id = Column("id", Integer, primary_key=True)
     name = Column(String, unique=True)
+    shortname = Column(String, unique=True)
     extensions = Column(String)
     rule_packs = db.relationship(
         "RulePack",
