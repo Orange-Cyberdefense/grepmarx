@@ -40,6 +40,8 @@ from app.projects.util import (
     remove_project,
     sha256sum,
     top_supported_language_lines_counts,
+    duration_format,
+    format_metric_prefix,
     get_user_projects_ids,
 )
 from app.base.models import Team
@@ -60,6 +62,8 @@ def projects_list():
         admin=admin,
         user_projects_ids=user_projects_ids,
         top_supported_language_lines_counts=top_supported_language_lines_counts,
+        format_metric_prefix=format_metric_prefix,
+        duration_format=duration_format,
         lang_icons=LANGUAGES_DEVICONS,
         segment="projects",
     )

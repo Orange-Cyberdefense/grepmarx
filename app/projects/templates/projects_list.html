@@ -72,9 +72,8 @@
                                 <th>Creator</th>
                                 <th>Scan duration</th>
                                 <th>Risk level</th>
-                                <th>Findings</th>
                                 <th>Languages</th>
-                                <th>Lines of code</th>
+                                <th>LoC</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -120,7 +119,7 @@
                                             %}
                                             {% set duration = (c_project.analysis.finished_on -
                                             c_project.analysis.started_on)|string %}
-                                            {{ duration.split('.', 2)[0] }}
+                                            {{ duration_format(duration) }}
                                             {% else %}
                                             -
                                             {% endif %}
@@ -144,14 +143,14 @@
                                                 </div>
                                                 {% endif %}
                                             </div>
-                                            <small>{{ c_project.risk_level }}%</small>
-                                        </td>
-                                        <td>
-                                            {{ c_project.occurences_count }}
+                                            <small>
+                                                {{ c_project.risk_level }}% 
+                                                <div class="d-inline text-secondary">({{ c_project.occurences_count }} findings)</div>
+                                            </small>
                                         </td>
                                         <td class="text-lg text-left">
                                             {% if c_project.project_lines_count is not none %}
-                                            {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count)
+                                            {% for c_lang in top_supported_language_lines_counts(c_project.project_lines_count)[0:5]
                                             %}
                                             <i class="{{ lang_icons[c_lang.name] }} text-secondary"
                                                 title="{{ c_lang.name }}"></i>
@@ -160,25 +159,25 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {{ c_project.project_lines_count.total_code_count }}
+                                            {{ format_metric_prefix(c_project.project_lines_count.total_code_count) }}
                                         </td>
                                         <td>
                                             {% if c_project.status == 0 %}
-                                            <span class="badge badge-lg bg-primary p-2 pl-3 pr-3">New</span>
+                                            <span class="badge badge-lg bg-primary p-2 pl-3 pr-3 w-100">New</span>
                                             {% elif c_project.status == 1 %}
-                                            <span class="badge badge-lg bg-success p-2 pl-3 pr-3">Done</span>
+                                            <span class="badge badge-lg bg-success p-2 pl-3 pr-3 w-100">Done</span>
                                             {% elif c_project.status == 2 %}
                                             <span
                                                 class="badge badge-lg bg-warning progress-bar progress-bar-striped progress-bar-animated p-2 w-100">
                                                 Analyzing
                                             </span>
                                             {% elif c_project.status == 3 %}
-                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3"
+                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3 w-100"
                                                 title="{{ c_project.error_message }}">Error</span>
                                             {% elif c_project.status == 4 %}
-                                            <span class="badge badge-lg bg-warning p-2 pl-3 pr-3">Pending</span>
+                                            <span class="badge badge-lg bg-warning p-2 pl-3 pr-3 w-100">Pending</span>
                                             {% elif c_project.status == 5 %}
-                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3">Aborted</span>
+                                            <span class="badge badge-lg bg-danger p-2 pl-3 pr-3 w-100">Aborted</span>
                                             {% endif %}
                                         </td>
                                         <td class="project-actions">

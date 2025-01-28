@@ -251,6 +251,60 @@ def top_supported_language_lines_counts(project_lc):
     return ret
 
 
+def format_metric_prefix(number: int) -> str:
+    """
+    Format an integer with metric prefixes (K for thousands, M for millions).
+
+    Args:
+        number: Integer to format
+
+    Returns:
+        str: Number formatted with appropriate metric prefix
+
+    Examples:
+        >>> format_metric_prefix(3426876)
+        '3.4M'
+        >>> format_metric_prefix(7832)
+        '7.8K'
+        >>> format_metric_prefix(345)
+        '345'
+    """
+    if number >= 1000000:
+        return f"{number/1000000:.1f}M"  # Format in millions
+    elif number >= 1000:
+        return f"{number/1000:.1f}K"  # Format in thousands
+    else:
+        return str(number)  # No formatting needed
+
+def duration_format(value):
+    """
+    Format duration string to human readable format
+    
+    Examples:
+        49:10:58.300324 => 2d 1h 10m
+        1:40:58.300324 => 1h 40m  
+        0:20:58.300324 => 20m 58s
+        0:00:37.300324 => 37s
+    """
+    try:
+        hours, minutes, seconds = str(value).split(':')
+        hours = int(hours)
+        minutes = int(minutes)
+        seconds = int(float(seconds))
+
+        if hours >= 24:
+            days = hours // 24
+            hours = hours % 24
+            return f"{days}d {hours}h {minutes}m"
+        elif hours >= 1:
+            return f"{hours}h {minutes}m"
+        elif minutes >= 1:
+            return f"{minutes}m {seconds}s"
+        else:
+            return f"{seconds}s"
+    except:
+        return value
+
 def load_project_lines_count(scc_result):
     """Create a new ProjectLinesCount object and populate it with the given scc
     results.
