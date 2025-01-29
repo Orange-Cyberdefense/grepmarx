@@ -81,7 +81,6 @@ def async_scan(self, analysis_id):
     analysis_log_to_file(analysis)
     # Status in now Analysing
     analysis.started_on = datetime.now()
-    analysis.project.status = STATUS_ANALYZING
     analysis.task_id = self.request.id
     db.session.commit()
     current_app.logger.info(
@@ -90,20 +89,27 @@ def async_scan(self, analysis_id):
         analysis.project.name,
         analysis.project.id,
     )
-    # Prepare semgrep options
-    files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
     try:
+        progress(analysis, 0)
+
         # SAST scan: invoke semgrep
+        files_to_scan, project_rules_path, ignore = generate_semgrep_options(analysis)
+        progress(analysis, 5)
         sast_scan(analysis, files_to_scan, project_rules_path, ignore)
+        progress(analysis, 30)
 
         # SCA scan: invoke depscan
         sca_result = sca_scan(analysis)
+        progress(analysis, 60)
         load_sca_scan_results(analysis, sca_result)
+        progress(analysis, 70)
 
         # Inspector scan: invoke ApplicationInspector
         inspector_result = inspector_scan(analysis)
+        progress(analysis, 80)
         load_inspector_results(analysis, inspector_result)
 
+        progress(analysis, 100)
         analysis.project.status = STATUS_FINISHED
     except Exception as e:
         current_app.logger.exception(
@@ -113,6 +119,7 @@ def async_scan(self, analysis_id):
             analysis.project.id,
         )
         analysis.project.error_message = repr(e) + "\nCheck scan logs for more details"
+        progress(analysis, 100)
         analysis.project.status = STATUS_ERROR
 
     # Done
@@ -773,7 +780,6 @@ def inspector_scan(analysis):
             "ApplicationInspector scan was cancelled because exceeding defined timeout (%i seconds)",
             APPLICATION_INSPECTOR_TIMEOUT,
         )
-
     if os.path.exists(output_file):
         f = open(output_file)
     try:
@@ -898,3 +904,8 @@ def analysis_log_to_file(analysis):
     )
     handler.setFormatter(formatter)
     current_app.logger.addHandler(handler)
+
+def progress(analysis, progress):
+    analysis.progress = progress
+    analysis.progress_updated_on = datetime.now()
+    db.session.commit()

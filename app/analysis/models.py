@@ -18,6 +18,8 @@ class Analysis(db.Model):
     id = Column(Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("Project.id"))
     project = db.relationship("Project", back_populates="analysis")
+    progress = db.Column(Integer)
+    progress_updated_on = db.Column(db.DateTime())
     started_on = db.Column(db.DateTime())
     finished_on = db.Column(db.DateTime())
     rule_packs = db.relationship(

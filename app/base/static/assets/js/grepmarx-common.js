@@ -86,21 +86,43 @@ function switchTheme() {
 
 // ------------ Projects auto-refresh
 
-async function ajaxRefreshStatus(projectId) {
-    while(true) {
-        // https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
-        await new Promise(r => setTimeout(r, 5000));
-        reqProjectStatus = new XMLHttpRequest();
-        reqProjectStatus.onreadystatechange = function () {
-            if (reqProjectStatus.readyState === XMLHttpRequest.DONE) {
-                state = reqProjectStatus.responseText;
-                if (state != 2 && state != 4) {
+function setIntervalAndExecute(fn, t) {
+    fn();
+    return(setInterval(fn, t));
+}
+
+async function checkAnalysisProgress() {
+    const elements = document.querySelectorAll('.check-status');
+    elements.forEach((element) => {
+        const id = element.getAttribute('id');
+        // Fetch progress from server every 5s
+        const interval = setIntervalAndExecute(async () => {
+            try {
+                const response = await fetch(`/projects/${id}/progress`);
+                const progress = await response.json();
+                updateAnalysisProgress('progress-' + id, progress);
+                if (progress >= 100) {
+                    clearInterval(interval);
                     document.location = '/projects';
                 }
+            } catch (error) {
+                console.error('Error checking status:', error);
             }
-        };
-        reqProjectStatus.open('GET', '/projects/' + projectId + '/status');
-        reqProjectStatus.send();
+        }, 5000);
+    });
+}
+
+async function updateAnalysisProgress(progressId, progressValue) {
+    var progressElement = document.getElementById(progressId);
+    var progressTextElement = document.getElementById(progressId + '-text');
+    if(progressValue === -1) {
+        progressElement.setAttribute("style", "width:100%");
+        progressElement.setAttribute("aria-valuenow", "100");
+        progressTextElement.innerText = "Pending";
+    } else {
+        progressElement.setAttribute("style", "width:" + progressValue + "%");
+        progressElement.setAttribute("aria-valuenow", progressValue);
+        progressTextElement.innerText = progressValue + "%";
     }
 }
 
@@ -141,7 +163,7 @@ function ajaxSyncRules() {
  * @param {*} buttonId Identifier of the button
  * @param {*} location URL to redirect when the button is clicked
  */
- function setConfirmAction(buttonId, location) {
+function setConfirmAction(buttonId, location) {
     btn = document.getElementById(buttonId);
     btn.onclick = function () {
         document.location = location;

@@ -3,6 +3,7 @@
 Copyright (c) 2021 - present Orange Cyberdefense
 """
 
+from datetime import datetime
 import json
 import os
 import pathlib
@@ -111,6 +112,21 @@ def projects_status(project_id):
         return render_template("403.html"), 403
     return str(project.status), 200
 
+@blueprint.route("/projects/<project_id>/progress")
+@login_required
+def projects_progress(project_id):
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    # Check if the user has access to the project
+    if not has_access(current_user, project):
+        return render_template("403.html"), 403
+    # Calculate current analysis progress in %
+    progress = project.analysis.progress
+    delta = datetime.now() - project.analysis.progress_updated_on
+    if progress < 100 and progress > -1:
+        progress = int(progress + delta.seconds / 60)
+        if progress > 100:
+            progress = 99
+    return str(progress), 200
 
 @blueprint.route("/projects/remove/<project_id>")
 @login_required

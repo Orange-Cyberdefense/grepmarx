@@ -41,6 +41,7 @@ from app.analysis.util import (
     async_scan,
     import_rules,
     md2html,
+    progress,
     stop_analysis,
     vulnerabilities_sorted_by_severity,
 )
@@ -53,7 +54,7 @@ from app.constants import (
     OWASP_TOP10_LINKS,
     PROJECTS_SRC_PATH,
     RESULT_FOLDER,
-    STATUS_PENDING,
+    STATUS_ANALYZING,
     STATUS,
 )
 from app.projects.models import Project
@@ -139,12 +140,10 @@ def scans_launch():
         if not os.path.isdir(reports_path):
             os.mkdir(reports_path)
         # Start celery asynchronous scan
-        project.status = STATUS_PENDING
-        db.session.commit()
+        project.analysis.project.status = STATUS_ANALYZING
+        progress(project.analysis, -1) # -1 is pending state
         current_app.logger.info("New analysis queued (project.id=%i)", project.id)
         async_scan.delay(project.analysis.id)
-        # Wait to make sure the status changed to STATUS_ANALYZING before rendering the projects list
-        time.sleep(2.0)
         flash("Analysis successfully launched", "success")
         return redirect(url_for("projects_blueprint.projects_list"))
     # Form is not valid, form.error is populated
