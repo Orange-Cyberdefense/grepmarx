@@ -28,10 +28,9 @@ RUN apt-get install -y npm openjdk-17-jdk maven gradle golang composer
 RUN npm install -g @cyclonedx/cdxgen@11.1.4
 
 # Application Inspector dependencies (dotnet runtime)
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -  
-RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN add-apt-repository -y ppa:dotnet/backports
 RUN apt-get update
-RUN apt-get install -y dotnet-runtime-8.0
+RUN apt-get install -y dotnet-runtime-9.0
 
 # Downloaded packages cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
