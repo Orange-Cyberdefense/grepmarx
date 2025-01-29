@@ -22,10 +22,10 @@ def upgrade():
         batch_op.create_unique_constraint("unique_shortname", ['shortname'])
 
     # Fill it for JS, TS and KT 
-    op.execute("UPDATE SupportedLanguage SET shortname = 'js' WHERE name = 'JavaScript'")
-    op.execute("UPDATE SupportedLanguage SET shortname = 'ts' WHERE name = 'TypeScript'")
-    op.execute("UPDATE SupportedLanguage SET shortname = 'kt' WHERE name = 'Kotlin'")
-    op.execute("UPDATE SupportedLanguage SET shortname = 'yml' WHERE name = 'Yaml'")
+    op.execute("UPDATE \"SupportedLanguage\" SET shortname = 'js' WHERE name = 'JavaScript'")
+    op.execute("UPDATE \"SupportedLanguage\" SET shortname = 'ts' WHERE name = 'TypeScript'")
+    op.execute("UPDATE \"SupportedLanguage\" SET shortname = 'kt' WHERE name = 'Kotlin'")
+    op.execute("UPDATE \"SupportedLanguage\" SET shortname = 'yml' WHERE name = 'Yaml'")
 
 
 def downgrade():

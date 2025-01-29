@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("INSERT INTO SupportedLanguage (name, extensions) VALUES ('Yaml', '.yml,.yaml')")
+    op.execute("INSERT INTO \"SupportedLanguage\" (name, extensions) VALUES ('Yaml', '.yml,.yaml')")
 
 
 def downgrade():
-    op.execute("DELETE FROM SupportedLanguage WHERE name='Yaml'")
+    op.execute("DELETE FROM \"SupportedLanguage\" WHERE name='Yaml'")
