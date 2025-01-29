@@ -220,6 +220,7 @@ def semgrep_invoke(files_to_scan, project_rules_path, ignore):
         "scan",
         "--config",
         project_rules_path,
+        "--dataflow-traces",
         "--disable-nosem",
         "--json",
     ] + files_to_scan
