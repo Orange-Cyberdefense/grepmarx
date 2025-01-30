@@ -77,12 +77,13 @@ Visit `http://localhost:8001` in your browser. The app should be up & running.
 
 In order to run a scan you will need to manually add at least one entry in `Administration/Repository`. Here are a few examples of Semgrep rule repositories which can be used:
 - `https://github.com/semgrep/semgrep-rules`: the standard library for Semgrep rules
-- `https://github.com/trailofbits/semgrep-rules`: Semgrep rules developed by Trail of Bits
-- `https://github.com/Decurity/semgrep-smart-contracts`: Semgrep rules that look for patterns of vulnerabilities in smart contracts
-- `https://github.com/0xdea/semgrep-rules`: Semgrep rules by 0xdea
+- `https://github.com/patched-codes/semgrep-rules`: a collection of permissively licensed Semgrep rules
+- `https://github.com/trailofbits/semgrep-rules`: semgrep rules developed by Trail of Bits
+- `https://github.com/Decurity/semgrep-smart-contracts`: semgrep rules that look for patterns of vulnerabilities in smart contracts
+- `https://github.com/0xdea/semgrep-rules`: semgrep rules by 0xdea
 - `https://github.com/mindedsecurity/semgrep-rules-android-security`: Semgrep rules derived from the OWASP MASTG specifically for Android applications
 - `https://github.com/akabe1/akabe1-semgrep-rules`:  collection of akabe1's custom Semgrep rules
-- `https://github.com/s0rcy/semgrep-rules`: Collection of s0rcy's personal Semgrep rules for security analysis and research
+- `https://github.com/s0rcy/semgrep-rules`: collection of s0rcy's personal Semgrep rules for security analysis and research
 
 **Make sure you agree & comply with the LICENSE file of the rules repositories you use!**
 
