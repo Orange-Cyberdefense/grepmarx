@@ -103,6 +103,8 @@ class RuleRepository(db.Model):
     description = Column(String)
     uri = Column(String)
     last_update_on = Column(DateTime())
+    username = Column(String)
+    token = Column(String)
 
 
 class SupportedLanguage(db.Model):

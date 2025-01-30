@@ -8,6 +8,7 @@ import re
 from glob import glob
 from datetime import datetime
 from shutil import rmtree
+from urllib.parse import urlparse, urlunparse
 
 import git
 from flask import current_app
@@ -269,27 +270,28 @@ def comma_separated_to_list(comma_separated):
 ##
 
 
-def clone_rule_repo(repo, username="", token=""):
+def clone_rule_repo(repo):
     """Perform a 'clone' operation on the rule repository.
     The rule repository's 'last_update_on' attribute will be updated.
 
     Args:
         repo (RuleRepository): rule repository to clone
-        username (String): optional username for private repos
-        token (String): optional token for private repos
     """
     repo_path = os.path.join(RULES_PATH, repo.name)
-    if username == "" or token == "":
+    if repo.username is None or repo.token is None:
         clone_uri = repo.uri
     else:
-        clone_uri = re.sub(
-            r"(https?://)([a-zA-Z0-9].*)",
-            r"\1" + username + ":" + token + "@\2",
-            repo.uri,
-        )
-
+        parsed = urlparse(repo.uri)
+        netloc = f"{repo.username}:{repo.token}@{parsed.netloc}"
+        clone_uri = urlunparse((
+            parsed.scheme,
+            netloc,
+            parsed.path,
+            parsed.params,
+            parsed.query,
+            parsed.fragment
+        ))
     git.Repo.clone_from(clone_uri, repo_path)
-
     repo.last_update_on = datetime.now()
     db.session.commit()
 
