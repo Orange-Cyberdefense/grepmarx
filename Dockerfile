@@ -28,7 +28,10 @@ RUN apt-get install -y npm openjdk-17-jdk maven gradle golang composer
 RUN npm install -g @cyclonedx/cdxgen@11.1.4
 
 # Application Inspector dependencies (dotnet runtime)
-RUN add-apt-repository -y ppa:dotnet/backports
+RUN apt-get install wget
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN rm packages-microsoft-prod.deb
 RUN apt-get update
 RUN apt-get install -y dotnet-runtime-9.0
 
