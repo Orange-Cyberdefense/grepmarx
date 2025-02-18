@@ -378,14 +378,14 @@ def load_occurence(sast_result):
         if "intermediate_vars" in current_dataflow:
             for c_var in current_dataflow["intermediate_vars"]:
                 occurence.dataflow.append(
-                DataflowPosition(
-                    content=c_var["content"],
-                    line_start=c_var["location"]["start"]["line"],
-                    line_end=c_var["location"]["end"]["line"],
-                    column_start=c_var["location"]["start"]["col"],
-                    column_end=c_var["location"]["end"]["col"],
+                    DataflowPosition(
+                        content=c_var["content"],
+                        line_start=c_var["location"]["start"]["line"],
+                        line_end=c_var["location"]["end"]["line"],
+                        column_start=c_var["location"]["start"]["col"],
+                        column_end=c_var["location"]["end"]["col"],
+                    )
                 )
-            )
         # Taint sink
         if "taint_sink" in current_dataflow:
             taint_sink = current_dataflow["taint_sink"][1]
@@ -783,15 +783,22 @@ def inspector_scan(analysis):
         )
     if os.path.exists(output_file):
         f = open(output_file)
-    try:
-        json_result = json.load(f)
-    except json.JSONDecodeError as e:
+        try:
+            json_result = json.load(f)
+        except json.JSONDecodeError as e:
+            current_app.logger.error(
+                "[Analysis %i] Error when gathering results file for Application Inspector scan (file is probably empty)",
+                analysis.id,
+            )
+            return ""
+        f.close()
+    else:
         current_app.logger.error(
-            "[Analysis %i] Error when gathering results file for Application Inspector scan (file is probably empty)",
+            "[Analysis %i] Application Inspector output file not found: %s",
             analysis.id,
+            output_file,
         )
         return ""
-    f.close()
     current_app.logger.info(
         "[Analysis %i] Inspector scan (ApplicationInspector) finished", analysis.id
     )
@@ -905,6 +912,7 @@ def analysis_log_to_file(analysis):
     )
     handler.setFormatter(formatter)
     current_app.logger.addHandler(handler)
+
 
 def progress(analysis, progress):
     analysis.progress = progress
