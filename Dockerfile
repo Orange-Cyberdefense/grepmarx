@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install cdxgen as an npm global tool
-RUN npm install -g @cyclonedx/cdxgen@11.1.4
+RUN npm install -g @cyclonedx/cdxgen@12.1.4
 
 # Install Python dependencies (Leverage Docker cache)
 COPY requirements.txt requirements-pgsql.txt ./

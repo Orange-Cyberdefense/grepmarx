@@ -14,7 +14,7 @@ is_safe_url==1.0
 jinja2==3.1.4
 jsonschema==4.23.0
 openpyxl==3.1.5
-owasp-depscan==5.5.0
+owasp-depscan==6.1.0
 pygments==2.18.0
 python-decouple==3.8
 pyyaml==6.0.2
