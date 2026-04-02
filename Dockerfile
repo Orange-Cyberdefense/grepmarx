@@ -29,11 +29,11 @@ RUN npm install -g @cyclonedx/cdxgen@11.1.4
 
 # Application Inspector dependencies (dotnet runtime)
 RUN apt-get install wget
-RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-RUN dpkg -i packages-microsoft-prod.deb
-RUN rm packages-microsoft-prod.deb
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /usr/share/keyrings/packages.microsoft.gpg > /dev/null
+RUN echo "deb [signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" |  tee /etc/apt/sources.list.d/microsoft-prod.list >/dev/null
 RUN apt-get update
 RUN apt-get install -y dotnet-runtime-9.0
+
 
 # Downloaded packages cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
