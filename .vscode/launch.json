@@ -35,6 +35,8 @@
                 "info",
                 "-P",
                 "prefork",
+                "-Q",
+                "scans"
             ]
         }
     
