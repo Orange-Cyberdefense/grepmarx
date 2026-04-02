@@ -1,45 +1,74 @@
-FROM nikolaik/python-nodejs:python3.10-nodejs20-slim
+# Python 3.12 slim image based on Debian Bookworm
+FROM python:3.12-slim-bookworm
 
-WORKDIR /opt/grepmarx
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLASK_APP=run.py \
+    WORKDIR=/opt/grepmarx
 
-ENV FLASK_APP run.py
+WORKDIR $WORKDIR
 
-RUN apt-get update
+# Create a non-root user
+RUN groupadd -r grepmarx && useradd -r -g grepmarx -d $WORKDIR grepmarx
 
-# Supervisord install & configuration
-RUN apt-get install -y supervisor
-RUN mkdir -p /var/log/supervisor
-COPY supervisord-docker.conf /etc/supervisor/conf.d/supervisord.conf
+# Install system dependencies, Node.js 20, and Dotnet 9.0 in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    supervisor \
+    wget \
+    curl \
+    ca-certificates \
+    gnupg \
+    openjdk-17-jdk \
+    maven \
+    gradle \
+    golang \
+    composer \
+    git \
+    && mkdir -p /var/log/supervisor /etc/supervisor/conf.d \
+    # Install Node.js 20
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    # Install Dotnet Runtime 9.0
+    && wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt-get update && apt-get install -y --no-install-recommends dotnet-runtime-9.0 \
+    # Cleanup
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy required files into the container
-COPY entrypoint.sh run.py gunicorn-cfg.py requirements.txt requirements-pgsql.txt ./
+# Install cdxgen as an npm global tool
+RUN npm install -g @cyclonedx/cdxgen@11.1.4
+
+# Install Python dependencies (Leverage Docker cache)
+COPY requirements.txt requirements-pgsql.txt ./
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements-pgsql.txt
+
+# Copy application source code and configurations
+COPY entrypoint.sh run.py gunicorn-cfg.py supervisord-docker.conf ./
 COPY .env-docker .env
 COPY nginx nginx
 COPY app app
 COPY migrations migrations
-RUN mkdir data
 
-# Install dependencies
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements-pgsql.txt
+# Uncomment and adjust to add custom certificates
+#ADD ../certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#RUN chmod 644 /etc/ssl/certs/ca-certificates.crt && update-ca-certificates
 
-# Dependency scan (cdxgen / depscan) requirements
-RUN apt-get update && apt-get install -y npm openjdk-21-jdk maven gradle golang composer && apt-get clean
-RUN npm install -g @cyclonedx/cdxgen@11.1.4
+# Uncomment to add proxy configuration to maven settings
+# RUN sed -i 's#</proxies>#<proxy>\n  <active>true</active>\n  <protocol>http</protocol>\n  <host>PROXY_IP</host>\n  <port>8080</port>\n</proxy>\n</proxies>#' /usr/share/maven/conf/settings.xml
 
-# Application Inspector dependencies (dotnet runtime)
-RUN apt-get install wget
-RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-RUN dpkg -i packages-microsoft-prod.deb
-RUN rm packages-microsoft-prod.deb
-RUN apt-get update
-RUN apt-get install -y dotnet-runtime-9.0
+# Set up directories and permissions
+RUN mkdir -p data && \
+    chmod +x entrypoint.sh && \
+    mv supervisord-docker.conf /etc/supervisor/conf.d/supervisord.conf && \
+    chown -R grepmarx:grepmarx $WORKDIR /var/log/supervisor /etc/supervisor/conf.d/
 
-# Downloaded packages cleaning
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Switch to the non-root user
+USER grepmarx
 
-EXPOSE 5000
+EXPOSE 5005
 #EXPOSE 443
 
-RUN chmod u+x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]

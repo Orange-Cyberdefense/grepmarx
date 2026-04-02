@@ -9,4 +9,4 @@ if [ -z "$(flask db current 2>/dev/null | grep -v INFO)" ]
         flask db upgrade
 fi
 
-/usr/bin/supervisord
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
