@@ -52,6 +52,9 @@ COPY nginx nginx
 COPY app app
 COPY migrations migrations
 
+# Uncomment to add LDAP certificate
+#COPY ldap-cert ldap-cert
+
 # Uncomment and adjust to add custom certificates
 #ADD ../certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 #RUN chmod 644 /etc/ssl/certs/ca-certificates.crt && update-ca-certificates

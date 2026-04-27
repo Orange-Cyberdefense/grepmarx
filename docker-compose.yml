@@ -20,6 +20,7 @@ services:
   grepmarx:
     restart: always
     volumes: 
+      # todo fix permission on this share
       - gpx-data:/opt/grepmarx/data
       # todo add docker socket
     #  - ./ldap-cert:/opt/grepmarx/ldap-cert/
