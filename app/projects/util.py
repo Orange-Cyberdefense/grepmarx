@@ -269,6 +269,8 @@ def format_metric_prefix(number: int) -> str:
         >>> format_metric_prefix(345)
         '345'
     """
+    if number is None:
+        return "N/A"
     if number >= 1000000:
         return f"{number/1000000:.1f}M"  # Format in millions
     elif number >= 1000:
