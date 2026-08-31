@@ -143,7 +143,6 @@ function ajaxRuleDetails(el, ruleId) {
 // ------------ Asynchronous rules sync
 
 function ajaxSyncRules() {
-    document.getElementById('overlay-modal-sync').classList.remove('d-none');
     document.getElementById('confirm-sync-button').setAttribute('disabled', 'true');
     reqRuleSync = new XMLHttpRequest();
     reqRuleSync.onreadystatechange = function () {
